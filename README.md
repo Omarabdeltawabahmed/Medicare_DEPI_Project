@@ -1,4 +1,4 @@
-# Clinic_DEPI_Project 
+# Medicare_DEPI_Project 
 
 A full-stack clinic management system developed as a collaborative team project during the Digital Egypt Pioneers Initiative (DEPI).
 
