@@ -52,6 +52,11 @@ This project follows a feature-branch workflow to keep development organized and
 ## Team
 
 This project is developed collaboratively by a team of developers as part of the DEPI program.
+- Omar Abdeltawab
+- Hossam Adel
+- Abdelrahman Eid
+- Engy Nasser
+- Menna Saber
 
 ## Project Goals
 Apply backend and frontend development concepts in a real-world project.
