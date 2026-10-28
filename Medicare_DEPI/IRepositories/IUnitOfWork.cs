@@ -6,6 +6,8 @@ namespace Medicare_DEPI.IRepositories
     {
         IGenericRepository<Specialization> Specializations { get; }
         IGenericRepository<MedicalRecord> MedicalRecords { get; }
+        IGenericRepository<Prescription> Prescriptions { get; }
+        IGenericRepository<PrescriptionItem> PrescriptionItems { get; }
         Task<int> SaveAsync();
     }
 }

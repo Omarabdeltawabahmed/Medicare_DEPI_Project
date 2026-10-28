@@ -10,12 +10,16 @@ namespace Medicare_DEPI.Repositories
 
         public IGenericRepository<Specialization> Specializations { get; }
         public IGenericRepository<MedicalRecord> MedicalRecords { get; }
+        public IGenericRepository<Prescription> Prescriptions { get; }
+        public IGenericRepository<PrescriptionItem> PrescriptionItems { get; }
 
         public UnitOfWork(AppDbContext context)
         {
             _context = context;
             Specializations = new GenericRepository<Specialization>(_context);
             MedicalRecords = new GenericRepository<MedicalRecord>(_context);
+            Prescriptions = new GenericRepository<Prescription>(_context);
+            PrescriptionItems = new GenericRepository<PrescriptionItem>(_context);
         }
 
         public async Task<int> SaveAsync()
