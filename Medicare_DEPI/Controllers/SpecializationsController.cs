@@ -1,7 +1,6 @@
-﻿using Medicare_DEPI.Data;
+﻿using Microsoft.AspNetCore.Mvc;
 using Medicare_DEPI.Models;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Medicare_DEPI.IRepositories;
 
 namespace Medicare_DEPI.Controllers
 {
@@ -9,18 +8,18 @@ namespace Medicare_DEPI.Controllers
     [Route("api/specializations")]
     public class SpecializationsController : ControllerBase
     {
-        private readonly AppDbContext _context;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public SpecializationsController(AppDbContext context)
+        public SpecializationsController(IUnitOfWork unitOfWork)
         {
-            _context = context;
+            _unitOfWork = unitOfWork;
         }
 
         // 1. GET: api/specializations 
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var specializations = await _context.Specializations.AsNoTracking().ToListAsync();
+            var specializations = await _unitOfWork.Specializations.GetAllAsync();
             return Ok(specializations);
         }
 
@@ -28,7 +27,7 @@ namespace Medicare_DEPI.Controllers
         [HttpGet("{id:int}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var spec = await _context.Specializations.FindAsync(id);
+            var spec = await _unitOfWork.Specializations.GetByIdAsync(id);
             if (spec == null)
             {
                 return NotFound(new { message = "Specialization not found." });
@@ -46,17 +45,21 @@ namespace Medicare_DEPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            bool exists = await _context.Specializations.AnyAsync(s => s.Name.ToLower() == model.Name.ToLower() || s.NameAr == model.NameAr);
+            bool exists = await _unitOfWork.Specializations.AnyAsync(s => 
+                s.Name.ToLower() == model.Name.ToLower() || s.NameAr == model.NameAr);
 
             if (exists)
             {
                 return Conflict(new { message = "Specialization already exists in English or Arabic." });
             }
 
-            _context.Specializations.Add(model);
-            await _context.SaveChangesAsync();
+            await _unitOfWork.Specializations.AddAsync(model);
+            await _unitOfWork.SaveAsync();
 
-            return CreatedAtAction(nameof(GetById), new { id = model.Id }, model);
+            return CreatedAtAction(
+                nameof(GetById),
+                new { id = model.Id },
+                model);
         }
 
         // 4. PUT: api/specializations/5 
@@ -68,13 +71,15 @@ namespace Medicare_DEPI.Controllers
                 return BadRequest(ModelState);
             }
 
-            var existingSpec = await _context.Specializations.FindAsync(id);
+            var existingSpec = await _unitOfWork.Specializations.GetByIdAsync(id);
+
             if (existingSpec == null)
             {
                 return NotFound(new { message = "Specialization not found." });
             }
 
-            bool duplicate = await _context.Specializations.AnyAsync(s => s.Id != id && (s.Name.ToLower() == model.Name.ToLower() || s.NameAr == model.NameAr));
+            bool duplicate = await _unitOfWork.Specializations.AnyAsync(s =>
+                s.Id != id && (s.Name.ToLower() == model.Name.ToLower() || s.NameAr == model.NameAr));
 
             if (duplicate)
             {
@@ -84,7 +89,9 @@ namespace Medicare_DEPI.Controllers
             existingSpec.Name = model.Name;
             existingSpec.NameAr = model.NameAr;
 
-            await _context.SaveChangesAsync();
+            _unitOfWork.Specializations.Update(existingSpec);
+            await _unitOfWork.SaveAsync();
+
             return Ok(new { message = "Specialization updated successfully.", data = existingSpec });
         }
 
@@ -92,14 +99,14 @@ namespace Medicare_DEPI.Controllers
         [HttpDelete("{id:int}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var spec = await _context.Specializations.FindAsync(id);
+            var spec = await _unitOfWork.Specializations.GetByIdAsync(id);
             if (spec == null)
             {
                 return NotFound(new { message = "Specialization not found." });
             }
 
-            _context.Specializations.Remove(spec);
-            await _context.SaveChangesAsync();
+            _unitOfWork.Specializations.Delete(spec);
+            await _unitOfWork.SaveAsync();
 
             return Ok(new { message = "Specialization deleted successfully." });
         }
