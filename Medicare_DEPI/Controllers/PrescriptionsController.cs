@@ -1,26 +1,29 @@
-﻿using Medicare_DEPI.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Medicare_DEPI.DTOs;
+using Medicare_DEPI.Hubs;
 using Medicare_DEPI.IRepositories;
 using Medicare_DEPI.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Medicare_DEPI.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/prescriptions")]
     public class PrescriptionsController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
-        public PrescriptionsController(IUnitOfWork unitOfWork)
+        private readonly IHubContext<NotificationHub> _hubContext;
+
+        public PrescriptionsController(IUnitOfWork unitOfWork, IHubContext<NotificationHub> hubContext)
         {
             _unitOfWork = unitOfWork;
+            _hubContext = hubContext;
         }
 
-        // POST: api/prescriptions/create
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] CreatePrescriptionDto dto)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState);
             }
@@ -28,11 +31,11 @@ namespace Medicare_DEPI.Controllers
             var prescription = new Prescription
             {
                 AppointmentId = dto.AppointmentId,
-                DoctorId = 1,
-                PatientId = "P-101",
                 Diagnosis = dto.Diagnosis,
                 FollowUpDate = dto.FollowUpDate,
                 CreatedAt = DateTime.UtcNow,
+                DoctorId = 1,
+                PatientId = "P-101",
                 Items = dto.Medicines.Select(m => new PrescriptionItem
                 {
                     MedicineName = m.Name,
@@ -46,6 +49,14 @@ namespace Medicare_DEPI.Controllers
             await _unitOfWork.Prescriptions.AddAsync(prescription);
             await _unitOfWork.SaveAsync();
 
+            await _hubContext.Clients.Group($"Patient_{prescription.PatientId}").SendAsync("PrescriptionReady", new
+            {
+                prescriptionId = prescription.Id,
+                diagnosis = prescription.Diagnosis,
+                message = "Your medical prescription has been issued by your doctor.",
+                createdAt = prescription.CreatedAt
+            });
+
             return Ok(new
             {
                 message = "Prescription created successfully.",
@@ -54,22 +65,20 @@ namespace Medicare_DEPI.Controllers
         }
 
 
-        // GET: /api/prescriptions/patient/{patientId}
+
         [HttpGet("patient/{patientId}")]
         public async Task<IActionResult> GetByPatient(string patientId)
         {
             var prescriptions = await _unitOfWork.Prescriptions.FindAsync(p => p.PatientId == patientId);
-
             return Ok(prescriptions);
         }
 
 
-        // GET: /api/prescriptions/{prescriptionId}/print-data
+
         [HttpGet("{prescriptionId:int}/print-data")]
         public async Task<IActionResult> GetPrintData(int prescriptionId)
         {
             var prescription = await _unitOfWork.Prescriptions.GetByIdAsync(prescriptionId);
-
             if (prescription == null)
             {
                 return NotFound(new { message = "Prescription not found." });
