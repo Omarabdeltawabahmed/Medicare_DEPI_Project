@@ -16,6 +16,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<ILogService, LogService>();
 builder.Services.AddScoped<CheckDoctorApprovalFilter>();
 
 builder.Services.AddHttpClient<IGeminiService, GeminiService>();
