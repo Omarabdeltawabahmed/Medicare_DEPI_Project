@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Sign in to MediCare Clinic Management System to manage your healthcare.">
+  <meta name="theme-color" content="#1769AA">
+  <title>Login | MediCare Clinic Management System</title>
+ 
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
+ 
+    <meta name="theme-color" content="#1769aa" />
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/login.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+</head>
+<body data-page="login">
+    <script src="js/sidebar.js"></script>
+ 
+  <!-- SVG icon sprite -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <defs>
+      <symbol id="i-cross" viewBox="0 0 24 24"><path d="M9 2h6a1 1 0 0 1 1 1v5h5a1 1 0 0 1 1 1v6a1 1 0 0 1-1 1h-5v5a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-5H3a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h5V3a1 1 0 0 1 1-1z"/></symbol>
+      <symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></symbol>
+      <symbol id="i-lock" viewBox="0 0 24 24"><rect x="4" y="11" width="16" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></symbol>
+      <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></symbol>
+      <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M3 3l18 18"/><path d="M10.6 5.1A9.8 9.8 0 0 1 12 5c6.5 0 10 7 10 7a17 17 0 0 1-3.2 4.2M6.6 6.6A16.6 16.6 0 0 0 2 12s3.5 7 10 7a9.7 9.7 0 0 0 4.4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></symbol>
+      <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4M12 16h.01"/></symbol>
+      <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="m8 12 3 3 5-6"/></symbol>
+      <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></symbol>
+      <symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 6h16M4 12h16M4 18h16"/></symbol>
+      <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+      <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 10h18"/></symbol>
+      <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+      <symbol id="i-clipboard" viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></symbol>
+    </defs>
+  </svg>
+ 
+  <a class="skip-link" href="#main-content" data-i18n="skip">Skip to main content</a>
+ 
+  
+ 
+  <!-- ===== Main ===== -->
+  <main id="main-content">
+    <section class="brand-panel" aria-labelledby="brandTitle">
+      <div class="brand-copy">
+        <h1 id="brandTitle" data-i18n="brandTitle">Your care, organized in one place.</h1>
+        <p data-i18n="brandText">Book appointments, follow your visits, and stay connected with your clinic team. Sign in to pick up where you left off.</p>
+      </div>
+ 
+      <div class="visual" aria-hidden="true">
+        <div class="visit-card">
+          <div class="visit-head">
+            <div class="avatar"><svg class="icon"><use href="#i-cross"/></svg></div>
+            <div>
+              <strong data-i18n="visualTitle">Upcoming appointment</strong>
+              <span data-i18n="visualSub">Sample preview</span>
+            </div>
+            <span class="visit-time" data-i18n="visualTime">Tomorrow, 10:30</span>
+          </div>
+          <div class="ecg">
+            <svg viewBox="0 0 400 64" preserveAspectRatio="none" focusable="false">
+              <path d="M0 36 H70 L88 36 L100 10 L116 56 L130 22 L142 36 H220 L238 36 L250 14 L266 54 L280 26 L290 36 H400"/>
+            </svg>
+          </div>
+          <div class="visit-tags">
+            <span class="tag"><svg class="icon"><use href="#i-calendar"/></svg><span data-i18n="tagBook">Easy booking</span></span>
+            <span class="tag"><svg class="icon"><use href="#i-clipboard"/></svg><span data-i18n="tagVisits">Visit history</span></span>
+            <span class="tag"><svg class="icon"><use href="#i-user"/></svg><span data-i18n="tagDoctors">Trusted doctors</span></span>
+          </div>
+        </div>
+      </div>
+ 
+      <ul class="brand-points">
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="point1">Find a doctor and book in a few clicks</span></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="point2">Manage your appointments from your dashboard</span></li>
+        <li><svg class="icon" aria-hidden="true"><use href="#i-check"/></svg><span data-i18n="point3">Clinic staff and admins have their own workspace</span></li>
+      </ul>
+    </section>
+ 
+    <section class="form-panel" aria-labelledby="loginTitle">
+      <div class="card">
+        <h2 id="loginTitle" data-i18n="title">Welcome Back</h2>
+        <p class="subtitle" data-i18n="subtitle">Sign in to manage your healthcare, appointments, and visits.</p>
+ 
+        <div id="sessionNotice" class="notice info" hidden>
+          <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+          <div>
+            <span id="sessionText"></span>
+            <div class="notice-actions">
+              <a class="btn btn-outline" id="sessionContinue" href="#" data-i18n="continueDash">Go to dashboard</a>
+              <button class="btn btn-ghost" id="sessionSignOut" type="button" data-i18n="signOut">Sign out</button>
+            </div>
+          </div>
+        </div>
+ 
+        <div id="formMessage" aria-live="polite" aria-atomic="true"></div>
+ 
+        <form id="loginForm" novalidate autocomplete="on">
+          <div class="field">
+            <label for="email" data-i18n="emailLabel">Email address</label>
+            <div class="input-wrap">
+              <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>
+              <input type="email" id="email" name="email" inputmode="email" autocomplete="username email"
+                     autocapitalize="none" spellcheck="false" required aria-describedby="emailError"
+                     placeholder="name@example.com" data-i18n-attr="placeholder:emailPh">
+            </div>
+            <p class="field-error" id="emailError" hidden></p>
+          </div>
+ 
+          <div class="field">
+            <label for="password" data-i18n="passwordLabel">Password</label>
+            <div class="input-wrap has-toggle">
+              <svg class="icon" aria-hidden="true"><use href="#i-lock"/></svg>
+              <input type="password" id="password" name="password" autocomplete="current-password"
+                     required aria-describedby="passwordError"
+                     placeholder="Enter your password" data-i18n-attr="placeholder:passwordPh">
+              <button type="button" class="toggle-pw" id="togglePw" aria-pressed="false" aria-controls="password"
+                      aria-label="Show password" data-i18n-attr="aria-label:showPw">
+                <svg class="icon icon-eye" aria-hidden="true"><use href="#i-eye"/></svg>
+                <svg class="icon icon-eye-off" aria-hidden="true"><use href="#i-eye-off"/></svg>
+              </button>
+            </div>
+            <p class="field-error" id="passwordError" hidden></p>
+          </div>
+ 
+          <div class="row-between">
+            <label class="check" for="remember">
+              <input type="checkbox" id="remember" name="remember">
+              <span data-i18n="remember">Remember me</span>
+            </label>
+            <button type="button" class="link-btn" id="forgotBtn" aria-haspopup="dialog" data-i18n="forgot">Forgot Password?</button>
+          </div>
+ 
+          <button type="submit" class="btn btn-primary" id="submitBtn">
+            <span class="spinner" id="spinner" hidden aria-hidden="true"></span>
+            <span id="submitLabel" data-i18n="login">Login</span>
+          </button>
+        </form>
+ 
+        <p class="form-footer">
+          <span data-i18n="noAccount">Don't have an account?</span>
+          <a href="register.html" data-i18n="createAccount">Create Account</a>
+        </p>
+        <p class="demo-note" data-i18n="demoNote">Demo prototype: sign-in is simulated in your browser and is not secure authentication.</p>
+      </div>
+    </section>
+  </main>
+ 
+  <!-- ===== Forgot password modal ===== -->
+  <div class="modal-backdrop" id="forgotBackdrop" hidden>
+    <div class="modal" id="forgotModal" role="dialog" aria-modal="true" aria-labelledby="forgotTitle" aria-describedby="forgotLead" tabindex="-1">
+      <button type="button" class="modal-close" id="forgotClose" aria-label="Close" data-i18n-attr="aria-label:close">
+        <svg class="icon" aria-hidden="true"><use href="#i-x"/></svg>
+      </button>
+      <h2 id="forgotTitle" data-i18n="forgotTitle">Reset your password</h2>
+      <p class="lead" id="forgotLead" data-i18n="forgotLead">Enter the email address linked to your account.</p>
+ 
+      <div id="forgotMessage" aria-live="polite" aria-atomic="true"></div>
+ 
+      <form id="forgotForm" novalidate>
+        <div class="field">
+          <label for="forgotEmail" data-i18n="emailLabel">Email address</label>
+          <div class="input-wrap">
+            <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>
+            <input type="email" id="forgotEmail" name="forgotEmail" inputmode="email" autocomplete="email"
+                   autocapitalize="none" spellcheck="false" required aria-describedby="forgotEmailError"
+                   placeholder="name@example.com" data-i18n-attr="placeholder:emailPh">
+          </div>
+          <p class="field-error" id="forgotEmailError" hidden></p>
+        </div>
+        <div class="modal-actions">
+          <button type="button" class="btn btn-ghost" id="forgotCancel" data-i18n="cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary" data-i18n="forgotSubmit">Continue</button>
+        </div>
+      </form>
+    </div>
+  </div>
+ 
+  <!-- ===== Footer ===== -->
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p style="margin:0"><span id="copyright"></span></p>
+      <ul class="footer-links">
+        <li><a href="index.html" data-i18n="navHome">Home</a></li>
+        <li><a href="register.html" data-i18n="navCreate">Create Account</a></li>
+      </ul>
+    </div>
+  </footer>
+ 
+    <script src="js/login.js"></script>
+</body>
+</html>
+ 

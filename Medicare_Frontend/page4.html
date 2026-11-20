@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MediCare – Doctor Workspace</title>
+    <meta name="theme-color" content="#1769aa" />
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/page4.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+  </head>
+  <body data-page="page4">
+    <script src="js/sidebar.js"></script>
+    
+
+    <section class="hero">
+      <div class="wrap">
+        <h1 data-i="title">Doctor Workspace</h1>
+        <div class="demo" role="alert" data-i="demo">
+          ⚠ Doctor identity and permissions are simulated. Do not store real
+          patient information in this demonstration.
+        </div>
+      </div>
+    </section>
+
+    <main class="wrap">
+      <div class="cards" id="kpis"></div>
+
+      <div class="who card" style="margin-top: 18px">
+        <div>
+          <label for="docSel" data-i="simDoc">Simulated doctor identity</label
+          ><select id="docSel"></select>
+        </div>
+        <label
+          style="display: flex; gap: 7px; align-items: center; font-weight: 500"
+          ><input type="checkbox" id="scope" /><span data-i="scope"
+            >Show only the selected doctor's appointments</span
+          ></label
+        >
+        <button class="btn o sm" id="refresh" type="button" data-i="refresh">
+          Refresh data
+        </button>
+        <span
+          id="toast"
+          role="status"
+          aria-live="polite"
+          class="tag"
+          style="display: none"
+        ></span>
+      </div>
+
+      <div class="card tabs" role="tablist" id="tabs"></div>
+
+      <!-- Appointments -->
+      <section class="panel" id="p-appts" role="tabpanel">
+        <h2 data-i="tAppts">Appointment Management</h2>
+        <p class="sub" data-i="apptsSub">
+          Read from shared demonstration data in this browser. Status changes
+          are saved and reflected on the other pages.
+        </p>
+        <div class="card" style="margin-bottom: 14px">
+          <h3 data-i="analytics">Status overview</h3>
+          <p class="sub" style="margin-bottom: 6px" data-i="analyticsNote">
+            Illustrative analytics calculated from local demo data only.
+          </p>
+          <div id="chart"></div>
+        </div>
+        <div class="tools">
+          <input
+            id="qS"
+            type="search"
+            data-ph="searchPh"
+            placeholder="Search by appointment ID or patient name"
+            aria-label="Search"
+          />
+          <input id="qD" type="date" aria-label="Date" />
+          <select id="qT" aria-label="Status"></select>
+          <button class="btn o sm" id="clr" type="button" data-i="clear">
+            Clear filters
+          </button>
+        </div>
+        <div id="apptsOut"></div>
+      </section>
+
+      <!-- Schedule -->
+      <section class="panel" id="p-sched" role="tabpanel">
+        <h2 data-i="tSched">Weekly Schedule</h2>
+        <div class="tools">
+          <button class="btn o sm" id="wPrev" type="button" data-i="prevW">
+            Previous week</button
+          ><button class="btn o sm" id="wToday" type="button" data-i="thisW">
+            This week</button
+          ><button class="btn o sm" id="wNext" type="button" data-i="nextW">
+            Next week</button
+          ><strong id="wLabel"></strong>
+        </div>
+        <div class="days" id="days" role="group"></div>
+        <div id="dayOut"></div>
+      </section>
+
+      <!-- Availability -->
+      <section class="panel" id="p-avail" role="tabpanel">
+        <h2 data-i="tAvail">Working Hours and Availability</h2>
+        <div class="note" data-i="availNote">
+          The daily limit controls how many appointments a doctor accepts per
+          day. Slot availability separately prevents duplicate bookings for the
+          same doctor at the same time. Page 2 reads these settings from
+          “medicareDoctors”.
+        </div>
+        <form id="avForm" class="card f" novalidate>
+          <div class="full">
+            <span class="lab" data-i="days">Working days</span>
+            <div class="chk" id="dayChk"></div>
+            <span class="err" id="eDays"></span>
+          </div>
+          <div>
+            <label for="aStart" data-i="start">Start time</label
+            ><input type="time" id="aStart" /><span
+              class="err"
+              id="eStart"
+            ></span>
+          </div>
+          <div>
+            <label for="aEnd" data-i="end">End time</label
+            ><input type="time" id="aEnd" /><span class="err" id="eEnd"></span>
+          </div>
+          <div>
+            <label for="aSlot" data-i="slot">Slot duration (minutes)</label
+            ><input type="number" id="aSlot" min="5" max="240" step="5" /><span
+              class="err"
+              id="eSlot"
+            ></span>
+          </div>
+          <div>
+            <label for="aLim" data-i="limit">Daily patient limit</label
+            ><input type="number" id="aLim" min="1" max="500" /><span
+              class="err"
+              id="eLim"
+            ></span>
+          </div>
+          <div class="full">
+            <label
+              style="
+                display: flex;
+                gap: 8px;
+                align-items: center;
+                font-weight: 600;
+              "
+              ><input type="checkbox" id="aUnl" style="width: auto" /><span
+                data-i="unl"
+                >Unlimited capacity</span
+              ></label
+            >
+          </div>
+          <div class="full">
+            <button class="btn" type="submit" data-i="saveAv">
+              Save availability
+            </button>
+            <div id="avMsg" role="status" aria-live="polite"></div>
+          </div>
+        </form>
+      </section>
+
+      <!-- Visit -->
+      <section class="panel" id="p-visit" role="tabpanel">
+        <h2 data-i="tVisit">Patient Visit</h2>
+        <div id="noSel" class="empty">
+          <h3 data-i="noSelT">No appointment selected</h3>
+          <p data-i="noSelD">
+            Choose “Open” on an appointment to record notes or write a
+            prescription.
+          </p>
+        </div>
+        <div id="visit" hidden>
+          <div class="card" style="margin-bottom: 18px">
+            <h3>
+              <span data-i="details">Patient visit details</span>
+              <span class="tag" data-i="fict">Fictional demo data</span>
+            </h3>
+            <div class="kv" id="detOut"></div>
+          </div>
+          <div class="two">
+            <form id="nForm" class="card f" novalidate>
+              <h3 class="full" data-i="notes">Medical visit notes</h3>
+              <div class="full">
+                <label for="nSym" data-i="sym">Symptoms *</label
+                ><textarea id="nSym"></textarea><span class="err"></span>
+              </div>
+              <div class="full">
+                <label for="nDiag" data-i="diag">Diagnosis *</label
+                ><textarea id="nDiag"></textarea><span class="err"></span>
+              </div>
+              <div class="full">
+                <label for="nTr" data-i="treat">Treatment notes *</label
+                ><textarea id="nTr"></textarea><span class="err"></span>
+              </div>
+              <div class="full">
+                <label for="nFu" data-i="fu">Follow-up date</label
+                ><input type="date" id="nFu" />
+              </div>
+              <div class="full">
+                <button class="btn" type="submit" data-i="saveRec">
+                  Save Visit Record
+                </button>
+                <div id="nMsg" role="status" aria-live="polite"></div>
+              </div>
+            </form>
+            <form id="rForm" class="card" novalidate>
+              <h3 data-i="rx">Electronic prescription</h3>
+              <div class="note" data-i="rxNote">
+                Demo draft only. It is stored in this browser and is not sent to
+                any patient account.
+              </div>
+              <div class="f" style="margin-bottom: 12px">
+                <div>
+                  <label for="rDiag" data-i="diag">Diagnosis *</label
+                  ><input id="rDiag" /><span class="err"></span>
+                </div>
+                <div>
+                  <label for="rFu" data-i="fu">Follow-up date</label
+                  ><input type="date" id="rFu" />
+                </div>
+              </div>
+              <div id="meds"></div>
+              <button
+                class="btn o sm"
+                type="button"
+                id="addMed"
+                data-i="addMed"
+              >
+                + Add medication
+              </button>
+              <p style="margin-top: 14px">
+                <button class="btn" type="submit" data-i="saveRx">
+                  Save Prescription
+                </button>
+                <button class="btn o" type="button" id="prRx" data-i="printRx">
+                  Print Prescription
+                </button>
+              </p>
+              <div id="rMsg" role="status" aria-live="polite"></div>
+            </form>
+          </div>
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section class="panel" id="p-notif" role="tabpanel">
+        <h2 data-i="tNotif">Notifications</h2>
+        <div class="note" data-i="notifNote">
+          Demo notifications generated from the appointment data in this
+          browser. No email, SMS, SignalR or push service is connected.
+        </div>
+        <div id="notifOut"></div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <h4 data-i="confT">Patient confidentiality &amp; security notice</h4>
+        <p data-i="conf">
+          Patient information is confidential. This is a front-end demonstration
+          with no real authentication, authorization, secure medical storage or
+          server-side validation. Data is kept in browser localStorage, which is
+          not secure. Never enter real patient data.
+        </p>
+        <p data-i="prod">
+          In production ASP.NET Core MVC, doctor identity and permissions must
+          be enforced server-side.
+        </p>
+        <p>© MediCare Demo · <a href="index.html" data-i="nHome">Home</a></p>
+      </div>
+    </footer>
+
+    <div id="printSheet"></div>
+
+    <script src="js/page4.js"></script>
+  </body>
+</html>

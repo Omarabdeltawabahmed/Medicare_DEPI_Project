@@ -1,0 +1,116 @@
+/* ==========================================================
+   MediCare – shared theme tokens (light + dark)
+   Loaded on every page BEFORE the page's own stylesheet.
+   Dark mode is switched by  <html data-theme="dark">  (see js/theme.js)
+   ========================================================== */
+
+:root {
+  /* extra tokens that replace previously hard-coded colours */
+  --mc-page: #ffffff;        /* page background where body was white   */
+  --mc-surface: #ffffff;     /* cards, inputs, panels                   */
+  --mc-surface-2: #f4f6f8;   /* subtle grey blocks                      */
+  --mc-tint: #f7fbff;        /* very light blue blocks                  */
+  --mc-tint-2: #d3ebfc;      /* stronger light blue blocks              */
+  --mc-line: #e3edf5;        /* soft dividers                           */
+  --mc-line-2: #b9cbdb;      /* stronger borders                        */
+  --mc-faint: #8591a2;       /* placeholder / disabled text             */
+  --mc-solid: #103b66;       /* deep blue used as a BACKGROUND          */
+
+  --mc-warn-bg: #fff4d6;  --mc-warn-tx: #7a5200;  --mc-warn-bd: #f0d58a;
+  --mc-err-bg:  #fdecea;  --mc-err-tx:  #9b2c20;  --mc-err-bd:  #f3b8b3;
+  --mc-ok-bg:   #e6f6ec;  --mc-ok-tx:   #146c43;  --mc-ok-bd:   #b5e2c8;
+
+  --sb-w: 268px;            /* sidebar width (desktop) */
+  --topbar-h: 0px;          /* becomes 56px on small screens (see sidebar.css) */
+}
+
+html[data-theme="dark"] {
+  color-scheme: dark;
+
+  /* ----- tokens shared by index / page2 / page3 / page4 / page5 ----- */
+  --p: #3b8fdc;
+  --d: #d8eafb;              /* headings (was deep blue) */
+  --l: #183450;              /* light-blue tint backgrounds */
+  --bg: #0e1722;
+  --tx: #e5edf5;
+  --mu: #9db0c4;
+  --bd: #2a3d52;
+  --ok: #4cc38a;
+  --er: #ff8f85;
+  --wn: #f0b45a;
+  --wa: #f0b45a;
+  --sh: 0 4px 18px rgba(0, 0, 0, 0.45);
+  --r: 16px;
+
+  /* ----- login.html tokens ----- */
+  --primary: #3b8fdc;
+  --primary-hover: #5aa4e8;
+  --dark: #d8eafb;
+  --light: #183450;
+  --text: #e5edf5;
+  --muted: #9db0c4;
+  --border: #2a3d52;
+  --error: #ff8f85;
+  --error-bg: #3a1c1a;
+  --success: #4cc38a;
+  --success-bg: #14301f;
+  --info-bg: #183450;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 10px 30px rgba(0, 0, 0, 0.45);
+  --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.55);
+
+  /* ----- register.html tokens ----- */
+  --primary-dark: #d8eafb;
+  --primary-light: #183450;
+  --card: #16222f;
+  --danger: #ff8f85;
+  --danger-bg: #3a1c1a;
+  --ok-bg: #14301f;
+  --warn: #f0b45a;
+  --warn-bg: #3a2c10;
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.45);
+
+  /* ----- new tokens ----- */
+  --mc-page: #0e1722;
+  --mc-surface: #16222f;
+  --mc-surface-2: #1d2b3b;
+  --mc-tint: #14202d;
+  --mc-tint-2: #1f3a56;
+  --mc-line: #26384c;
+  --mc-line-2: #36506b;
+  --mc-faint: #7d8fa3;
+  --mc-solid: #0f4577;
+
+  --mc-warn-bg: #3a2c10;  --mc-warn-tx: #f5d48b;  --mc-warn-bd: #6b5420;
+  --mc-err-bg:  #3a1c1a;  --mc-err-tx:  #ffb4ad;  --mc-err-bd:  #7a3430;
+  --mc-ok-bg:   #14301f;  --mc-ok-tx:   #8fe0b4;  --mc-ok-bd:   #2a6a47;
+}
+
+/* form controls in dark mode */
+html[data-theme="dark"] input,
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  color: var(--mc-text, #e5edf5);
+  background-color: var(--mc-surface);
+  border-color: var(--bd, #2a3d52);
+}
+html[data-theme="dark"] ::placeholder { color: var(--mc-faint); opacity: 1; }
+html[data-theme="dark"] option { background: #16222f; color: #e5edf5; }
+html[data-theme="dark"] input[type="checkbox"],
+html[data-theme="dark"] input[type="radio"] { background-color: transparent; }
+html[data-theme="dark"] ::selection { background: #2f6fb0; color: #fff; }
+html[data-theme="dark"] img { filter: brightness(0.92); }
+
+/* smooth switch (only after first paint, see theme.js) */
+html.theme-anim,
+html.theme-anim body,
+html.theme-anim * {
+  transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease !important;
+}
+
+/* modal dialogs: centred, and follow the theme */
+dialog {
+  margin: auto;
+  background: var(--mc-surface);
+  color: var(--tx, var(--text, #1d2b3a));
+}

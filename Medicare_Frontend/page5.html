@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MediCare – Clinic Administration</title>
+    <meta name="theme-color" content="#1769aa" />
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/page5.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+  </head>
+  <body data-page="page5">
+    <script src="js/sidebar.js"></script>
+    
+    <main>
+      <div class="banner" role="alert" data-i="banner"></div>
+      <header class="bar" style="justify-content: space-between">
+        <div>
+          <h1 data-i="title"></h1>
+          <p class="note" data-i="sub"></p>
+        </div>
+        <div class="noprint">
+          <button type="button" id="refreshBtn" data-i="refresh"></button>
+          <button type="button" class="s" id="printBtn" data-i="print"></button>
+        </div>
+      </header>
+
+      <section class="grid k4" aria-label="KPI">
+        <div class="kpi">
+          <small data-i="kDoc"></small><b id="kDoc">0</b
+          ><span class="est" data-i="est"></span>
+        </div>
+        <div class="kpi">
+          <small data-i="kPat"></small><b id="kPat">0</b
+          ><span class="est" data-i="est"></span>
+        </div>
+        <div class="kpi">
+          <small data-i="kAppt"></small><b id="kAppt">0</b
+          ><span class="est" data-i="est"></span>
+        </div>
+        <div class="kpi">
+          <small data-i="kRev"></small><b id="kRev">0</b
+          ><span class="est" data-i="est"></span>
+        </div>
+      </section>
+      <p class="note" data-i="revNote" style="margin-top: 8px"></p>
+
+      <h2 data-i="anTitle"></h2>
+      <section class="grid g2">
+        <div class="card" id="ch1">
+          <h3 data-i="cMonth"></h3>
+          <span class="est" data-i="est"></span>
+          <div class="cw">
+            <canvas></canvas>
+            <div class="fb"></div>
+          </div>
+        </div>
+        <div class="card" id="ch2">
+          <h3 data-i="cStatus"></h3>
+          <span class="est" data-i="est"></span>
+          <div class="cw">
+            <canvas></canvas>
+            <div class="fb"></div>
+          </div>
+        </div>
+        <div class="card" id="ch3">
+          <h3 data-i="cSpec"></h3>
+          <span class="est" data-i="est"></span>
+          <div class="cw">
+            <canvas></canvas>
+            <div class="fb"></div>
+          </div>
+        </div>
+        <div class="card" id="ch4">
+          <h3 data-i="cDoc"></h3>
+          <span class="est" data-i="est"></span>
+          <div class="cw">
+            <canvas></canvas>
+            <div class="fb"></div>
+          </div>
+          <div class="tw">
+            <table>
+              <thead>
+                <tr>
+                  <th data-i="doctor"></th>
+                  <th data-i="rating"></th>
+                  <th data-i="cDone"></th>
+                  <th data-i="kAppt"></th>
+                </tr>
+              </thead>
+              <tbody id="perfBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="docSec">
+        <h2 data-i="docTitle"></h2>
+        <div class="bar noprint">
+          <input type="search" id="dSearch" data-ph="phDoc" /><select
+            id="dSpec"
+          ></select
+          ><button type="button" id="addDoc" data-i="addDoc"></button>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th data-i="name"></th>
+                <th data-i="spec"></th>
+                <th data-i="fee"></th>
+                <th data-i="rating"></th>
+                <th data-i="exp"></th>
+                <th data-i="approval"></th>
+                <th class="noprint" data-i="actions"></th>
+              </tr>
+            </thead>
+            <tbody id="docBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 data-i="schedTitle"></h2>
+        <p class="note" data-i="schedNote"></p>
+        <form class="f" id="schedForm" novalidate>
+          <label class="w"
+            ><span data-i="doctor"></span
+            ><select id="sDoc"></select
+          ></label>
+          <div class="w days" id="sDays"></div>
+          <label
+            ><span data-i="start"></span><input type="time" id="sStart"
+          /></label>
+          <label
+            ><span data-i="end"></span><input type="time" id="sEnd"
+          /></label>
+          <label
+            ><span data-i="slot"></span
+            ><input type="number" id="sSlot" min="5" step="5"
+          /></label>
+          <label
+            ><span data-i="limit"></span
+            ><select id="sCapType">
+              <option value="f" data-i="finite"></option>
+              <option value="u" data-i="unlimited"></option></select
+          ></label>
+          <label
+            ><span data-i="limitN"></span
+            ><input type="number" id="sCap" min="1" step="1"
+          /></label>
+          <div class="w">
+            <button type="submit" data-i="saveSched"></button>
+          </div>
+        </form>
+      </section>
+
+      <section class="card">
+        <h2 data-i="patTitle"></h2>
+        <p class="note" data-i="acctNote"></p>
+        <div class="bar noprint">
+          <input type="search" id="pSearch" data-ph="phPat" />
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th data-i="name"></th>
+                <th data-i="email"></th>
+                <th data-i="kAppt"></th>
+                <th data-i="acct"></th>
+                <th class="noprint" data-i="actions"></th>
+              </tr>
+            </thead>
+            <tbody id="patBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 data-i="specTitle"></h2>
+        <form class="bar noprint" id="specForm" novalidate>
+          <input id="spEn" data-ph="phSpEn" /><input
+            id="spAr"
+            dir="rtl"
+            data-ph="phSpAr"
+          /><input type="hidden" id="spId" /><button
+            type="submit"
+            id="spBtn"
+            data-i="addSpec"
+          ></button
+          ><button
+            type="button"
+            class="s"
+            id="spCancel"
+            hidden
+            data-i="cancel"
+          ></button>
+        </form>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>EN</th>
+                <th>AR</th>
+                <th data-i="doctors"></th>
+                <th class="noprint" data-i="actions"></th>
+              </tr>
+            </thead>
+            <tbody id="specBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 data-i="apTitle"></h2>
+        <div class="bar noprint">
+          <input type="search" id="aSearch" data-ph="phAp" /><input
+            type="date"
+            id="aDate"
+            aria-label="Date"
+          /><select id="aStatus"></select
+          ><button type="button" class="s" id="aClear" data-i="clear"></button>
+        </div>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th data-i="patient"></th>
+                <th data-i="doctor"></th>
+                <th data-i="spec"></th>
+                <th data-i="date"></th>
+                <th data-i="time"></th>
+                <th data-i="fee"></th>
+                <th data-i="status"></th>
+                <th data-i="payStatus"></th>
+                <th class="noprint" data-i="actions"></th>
+              </tr>
+            </thead>
+            <tbody id="apBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 data-i="payTitle"></h2>
+        <p class="note" data-i="payNote"></p>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th data-i="fee"></th>
+                <th data-i="deposit"></th>
+                <th data-i="balance"></th>
+                <th data-i="payStatus"></th>
+                <th data-i="provider"></th>
+              </tr>
+            </thead>
+            <tbody id="payBody"></tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2 data-i="repTitle"></h2>
+        <p class="note" data-i="csvNote"></p>
+        <div class="bar noprint">
+          <button type="button" id="csvBtn" data-i="csv"></button
+          ><button type="button" class="s" id="print2" data-i="print"></button>
+        </div>
+        <p class="note" id="repInfo"></p>
+      </section>
+
+      <section class="card noprint">
+        <h2 data-i="setTitle"></h2>
+        <p class="note" data-i="setNote"></p>
+        <form class="f" id="setForm" novalidate>
+          <label><span data-i="clinicName"></span><input id="cName" /></label>
+          <label
+            ><span data-i="email"></span><input id="cEmail" type="email"
+          /></label>
+          <label
+            ><span data-i="phone"></span><input id="cPhone" type="tel"
+          /></label>
+          <label
+            ><span data-i="slot"></span
+            ><input id="cSlot" type="number" min="5" step="5"
+          /></label>
+          <label
+            ><span data-i="depPct"></span
+            ><input id="cDep" type="number" min="0" max="100"
+          /></label>
+          <label
+            ><span data-i="currency"></span
+            ><select id="cCur">
+              <option>EGP</option>
+              <option>USD</option>
+              <option>EUR</option>
+              <option>SAR</option>
+            </select></label
+          >
+          <div class="w"><button type="submit" data-i="saveSet"></button></div>
+        </form>
+      </section>
+    </main>
+
+    <dialog id="dlg" aria-labelledby="dlgT">
+      <h2 id="dlgT"></h2>
+      <form class="f" id="docForm" novalidate>
+        <label><span>ID</span><input id="fId" /></label>
+        <label><span data-i="name"></span><input id="fName" /></label>
+        <label
+          ><span data-i="spec"></span
+          ><select id="fSpec"></select
+        ></label>
+        <label
+          ><span data-i="fee"></span
+          ><input id="fFee" type="number" min="0.01" step="0.01"
+        /></label>
+        <label
+          ><span data-i="rating"></span
+          ><input id="fRate" type="number" min="0" max="5" step="0.1"
+        /></label>
+        <label
+          ><span data-i="exp"></span
+          ><input id="fExp" type="number" min="0" step="1"
+        /></label>
+        <label class="w"
+          ><span data-i="bio"></span><textarea id="fBio" rows="3"></textarea>
+        </label>
+        <label
+          ><span data-i="approval"></span
+          ><select id="fAppr">
+            <option value="Approved" data-i="Approved"></option>
+            <option value="Pending" data-i="Pending"></option>
+            <option value="Rejected" data-i="Rejected"></option></select
+        ></label>
+        <div class="w bar">
+          <button type="submit" data-i="save"></button
+          ><button
+            type="button"
+            class="s"
+            id="dlgCancel"
+            data-i="cancel"
+          ></button>
+        </div>
+      </form>
+    </dialog>
+    <div id="toast" aria-live="polite" role="status"></div>
+
+    <footer>
+      <p data-i="foot"></p>
+      <p class="x" data-i="footSrv"></p>
+      <p>© MediCare</p>
+    </footer>
+
+    <script src="js/page5.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"
+      async
+    ></script>
+  </body>
+</html>
