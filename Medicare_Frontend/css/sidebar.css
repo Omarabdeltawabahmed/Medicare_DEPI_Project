@@ -1,0 +1,226 @@
+/* ==========================================================
+   MediCare – side navigation (replaces the old top navigation)
+   Uses logical properties, so it automatically sits on the
+   left in English (LTR) and on the right in Arabic (RTL).
+   ========================================================== */
+
+/* page content makes room for the sidebar on desktop */
+body {
+  padding-inline-start: var(--sb-w);
+}
+
+.app-sidebar {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: var(--sb-w);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 18px 14px 14px;
+  background: var(--mc-surface, #fff);
+  border-inline-end: 1px solid var(--bd, var(--border, #d6e4f0));
+  box-shadow: 2px 0 18px rgba(16, 59, 102, 0.06);
+  overflow-y: auto;
+  font-family: "Segoe UI", Tahoma, "Noto Sans Arabic", Arial, sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--tx, var(--text, #1d2b3a));
+}
+[dir="rtl"] .app-sidebar { box-shadow: -2px 0 18px rgba(16, 59, 102, 0.06); }
+
+.sb-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 10px 14px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  color: var(--d, var(--dark, #103b66));
+}
+.sb-brand svg { width: 34px; height: 34px; flex: none; }
+
+.sb-section {
+  padding: 14px 12px 4px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--mu, var(--muted, #5b6b7b));
+}
+[dir="rtl"] .sb-section { letter-spacing: 0; font-size: 0.8rem; }
+
+.sb-nav { display: flex; flex-direction: column; gap: 2px; }
+
+.app-sidebar .sb-link {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  color: var(--tx, var(--text, #1d2b3a));
+  font: inherit;
+  font-weight: 600;
+  text-align: start;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.app-sidebar .sb-link svg,
+.sb-ctl svg {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.app-sidebar .sb-link:hover {
+  background: var(--l, var(--light, #e8f5ff));
+  color: var(--d, var(--dark, #103b66));
+}
+.app-sidebar .sb-link.active,
+.app-sidebar .sb-link[aria-current="page"] {
+  background: var(--p, var(--primary, #1769aa));
+  color: #fff;
+}
+.app-sidebar .sb-link.active svg { stroke: #fff; }
+
+.sb-user {
+  margin: 6px 4px 0;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: var(--l, var(--light, #e8f5ff));
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--d, var(--dark, #103b66));
+}
+.sb-user[hidden] { display: none; }
+.sb-user #userName { display: block; margin-bottom: 6px; }
+.sb-user .sb-link { padding: 8px 4px; }
+
+/* the original script still looks for these, we keep them but invisible */
+.sb-stub { display: none !important; }
+
+.sb-foot {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 14px;
+  border-top: 1px solid var(--bd, var(--border, #d6e4f0));
+}
+.sb-ctls { display: flex; gap: 8px; }
+.app-sidebar .sb-ctl {
+  flex: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  border: 1.5px solid var(--bd, var(--border, #d6e4f0));
+  background: var(--mc-surface, #fff);
+  color: var(--tx, var(--text, #1d2b3a));
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+.app-sidebar .sb-ctl:hover {
+  background: var(--l, var(--light, #e8f5ff));
+  border-color: var(--p, var(--primary, #1769aa));
+}
+.app-sidebar .sb-ctl[aria-pressed="true"] {
+  background: var(--p, var(--primary, #1769aa));
+  border-color: var(--p, var(--primary, #1769aa));
+  color: #fff;
+}
+.sb-lang-switch { display: flex; flex: 1; gap: 6px; }
+.sb-lang-switch button { flex: 1; }
+
+.app-sidebar a:focus-visible,
+.app-sidebar button:focus-visible,
+.app-topbar button:focus-visible {
+  outline: 3px solid #f5a524;
+  outline-offset: 2px;
+}
+
+/* ---------- top bar + drawer on tablets / phones ---------- */
+.app-topbar,
+.sb-backdrop { display: none; }
+
+@media (max-width: 991px) {
+  :root { --topbar-h: 56px; }
+  body { padding-inline-start: 0; }
+
+  .app-topbar {
+    position: sticky;
+    top: 0;
+    z-index: 55;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    height: var(--topbar-h);
+    padding: 0 14px;
+    background: var(--mc-surface, #fff);
+    border-bottom: 1px solid var(--bd, var(--border, #d6e4f0));
+  }
+  .app-topbar .sb-burger {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1.5px solid var(--bd, var(--border, #d6e4f0));
+    background: var(--mc-surface, #fff);
+    color: var(--tx, var(--text, #1d2b3a));
+    cursor: pointer;
+  }
+  .app-topbar .sb-burger svg {
+    width: 22px; height: 22px; fill: none; stroke: currentColor;
+    stroke-width: 2; stroke-linecap: round;
+  }
+  .app-topbar .sb-brand { padding: 0; font-size: 1.15rem; }
+  .app-topbar .sb-brand svg { width: 28px; height: 28px; }
+
+  .app-sidebar {
+    z-index: 80;
+    max-width: 86vw;
+    transform: translateX(-105%);
+    transition: transform 0.25s ease;
+    box-shadow: none;
+  }
+  [dir="rtl"] .app-sidebar { transform: translateX(105%); }
+  html.sb-open .app-sidebar {
+    transform: none;
+    box-shadow: 0 0 40px rgba(0, 0, 0, 0.35);
+  }
+  .sb-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: rgba(8, 20, 34, 0.55);
+  }
+  html.sb-open .sb-backdrop { display: block; }
+  html.sb-open { overflow: hidden; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-sidebar { transition: none; }
+}
+
+@media print {
+  .app-sidebar, .app-topbar, .sb-backdrop { display: none !important; }
+  body { padding-inline-start: 0 !important; }
+}

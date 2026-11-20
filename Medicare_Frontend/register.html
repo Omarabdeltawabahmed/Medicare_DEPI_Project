@@ -1,0 +1,1208 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Register | MediCare Clinic Management System</title>
+    <meta
+      name="description"
+      content="Create a MediCare patient account or apply for a verified doctor account."
+    />
+    <meta name="theme-color" content="#1769aa" />
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/register.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+  </head>
+  <body data-page="register">
+    <script src="js/sidebar.js"></script>
+    <a class="skip" href="#main" data-i18n="skip">Skip to main content</a>
+
+    
+
+    <main id="main" class="wrap">
+      <section class="intro" id="intro">
+        <h1 data-i18n="intro.title">Create your MediCare account</h1>
+        <p data-i18n="intro.sub">
+          Choose the type of account you would like to register.
+        </p>
+      </section>
+
+      <div id="formArea">
+        <!-- ACCOUNT TYPE (public Admin registration is intentionally NOT offered) -->
+        <fieldset class="acct" id="acctType">
+          <legend data-i18n="acct.legend">Account type</legend>
+          <label class="acard">
+            <input type="radio" name="acct" value="patient" checked />
+            <span class="ico" aria-hidden="true"
+              ><svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <circle cx="12" cy="8" r="4" />
+                <path d="M4 21c0-4 4-6 8-6s8 2 8 6" /></svg
+            ></span>
+            <span
+              ><strong data-i18n="acct.patient">Patient Registration</strong
+              ><span class="d" data-i18n="acct.patientD"
+                >Book appointments and manage your health journey.</span
+              ></span
+            >
+            <span class="tick" aria-hidden="true">✓</span>
+          </label>
+          <label class="acard">
+            <input type="radio" name="acct" value="doctor" />
+            <span class="ico" aria-hidden="true"
+              ><svg
+                width="24"
+                height="24"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+              >
+                <path d="M6 3v6a4 4 0 0 0 8 0V3" />
+                <path d="M10 13v3a4 4 0 0 0 8 0v-1" />
+                <circle cx="18" cy="12" r="2" /></svg
+            ></span>
+            <span
+              ><strong data-i18n="acct.doctor">Doctor Registration</strong
+              ><span class="d" data-i18n="acct.doctorD"
+                >Apply to join as a healthcare professional. Requires document
+                verification.</span
+              ></span
+            >
+            <span class="tick" aria-hidden="true">✓</span>
+          </label>
+        </fieldset>
+
+        <!-- =================== PATIENT FORM =================== -->
+        <form id="patientForm" class="card" novalidate autocomplete="on">
+          <div class="sec-head">
+            <h2 data-i18n="p.title">Patient Registration</h2>
+            <p class="sub" data-i18n="p.sub">
+              Create your account to book appointments with verified doctors.
+            </p>
+          </div>
+          <div class="grid">
+            <div class="field full">
+              <label class="l" for="p_name"
+                ><span data-i18n="f.fullName">Full name</span
+                ><b class="req" aria-hidden="true">*</b></label
+              >
+              <input
+                type="text"
+                id="p_name"
+                required
+                data-rule="name"
+                autocomplete="name"
+              />
+              <p class="err" hidden></p>
+            </div>
+            <div class="field">
+              <label class="l" for="p_email"
+                ><span data-i18n="f.email">Email address</span
+                ><b class="req" aria-hidden="true">*</b></label
+              >
+              <input
+                type="email"
+                id="p_email"
+                required
+                data-rule="email"
+                autocomplete="email"
+                inputmode="email"
+              />
+              <p class="err" hidden></p>
+            </div>
+            <div class="field">
+              <label class="l" for="p_phone"
+                ><span data-i18n="f.phone">Mobile phone number</span
+                ><b class="req" aria-hidden="true">*</b></label
+              >
+              <input
+                type="tel"
+                id="p_phone"
+                required
+                data-rule="phone"
+                autocomplete="tel"
+                inputmode="tel"
+                dir="ltr"
+                data-i18n-ph="ph.phone"
+                placeholder="+20 100 000 0000"
+              />
+              <p class="err" hidden></p>
+            </div>
+            <div class="field">
+              <label class="l" for="p_pw"
+                ><span data-i18n="f.password">Password</span
+                ><b class="req" aria-hidden="true">*</b></label
+              >
+              <div class="pw-wrap">
+                <input
+                  type="password"
+                  id="p_pw"
+                  required
+                  data-rule="password"
+                  autocomplete="new-password"
+                /><button
+                  type="button"
+                  class="pw-toggle"
+                  data-toggle="p_pw"
+                  data-i18n="show"
+                >
+                  Show
+                </button>
+              </div>
+              <div class="meter" aria-hidden="true"><i></i></div>
+              <span class="meter-txt" aria-live="polite"></span>
+              <p class="hint" data-i18n="hint.pw">
+                At least 8 characters with upper-case, lower-case and a number.
+              </p>
+              <p class="err" hidden></p>
+            </div>
+            <div class="field">
+              <label class="l" for="p_pw2"
+                ><span data-i18n="f.confirm">Confirm password</span
+                ><b class="req" aria-hidden="true">*</b></label
+              >
+              <div class="pw-wrap">
+                <input
+                  type="password"
+                  id="p_pw2"
+                  required
+                  data-rule="confirm"
+                  autocomplete="new-password"
+                /><button
+                  type="button"
+                  class="pw-toggle"
+                  data-toggle="p_pw2"
+                  data-i18n="show"
+                >
+                  Show
+                </button>
+              </div>
+              <p class="err" hidden></p>
+            </div>
+            <div class="field">
+              <label class="l" for="p_dob"
+                ><span data-i18n="f.dob">Date of birth</span
+                ><b class="req" aria-hidden="true">*</b></label
+              >
+              <input
+                type="date"
+                id="p_dob"
+                required
+                data-rule="dob"
+                data-minage="0"
+                autocomplete="bday"
+              />
+              <p class="err" hidden></p>
+            </div>
+            <div class="field">
+              <label class="l" for="p_gender"
+                ><span data-i18n="f.gender">Gender</span
+                ><span class="opt" data-i18n="opt">Optional</span></label
+              >
+              <select id="p_gender">
+                <option value="" data-i18n="sel">Select…</option>
+                <option value="Male" data-i18n="g.male">Male</option>
+                <option value="Female" data-i18n="g.female">Female</option>
+                <option value="Prefer not to say" data-i18n="g.none">
+                  Prefer not to say
+                </option>
+              </select>
+            </div>
+            <div class="field full">
+              <div class="check">
+                <input type="checkbox" id="p_terms" required />
+                <label for="p_terms"
+                  ><span data-i18n="c.read">I have read and accept the</span>
+                  <a href="#" data-legal data-i18n="c.terms">Terms</a>
+                  <span data-i18n="c.and">and</span>
+                  <a href="#" data-legal data-i18n="c.privacy">Privacy Policy</a
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+              </div>
+              <p class="err" hidden></p>
+            </div>
+          </div>
+          <div class="note warn" style="margin-top: 18px">
+            <strong data-i18n="demo.t">Prototype notice</strong
+            ><span data-i18n="demo.patient"
+              >This is a front-end demo. Real account creation, password storage
+              and email verification require the MediCare backend.</span
+            >
+          </div>
+          <div class="actions">
+            <span class="sp"></span
+            ><button
+              type="submit"
+              class="btn btn-primary"
+              data-i18n="btn.create"
+            >
+              Create Account
+            </button>
+          </div>
+          <p class="signin">
+            <span data-i18n="have">Already have an account?</span>
+            <a href="login.html" data-i18n="nav.signin">Sign In</a>
+          </p>
+        </form>
+
+        <!-- =================== DOCTOR FORM =================== -->
+        <form id="doctorForm" class="card" novalidate hidden autocomplete="on">
+          <div class="sec-head">
+            <h2 data-i18n="d.title">
+              Doctor Registration &amp; Verification Request
+            </h2>
+            <p class="sub" data-i18n="d.sub">
+              Submit your details and documents. Your professional account stays
+              pending until the MediCare team verifies them.
+            </p>
+          </div>
+
+          <div class="note warn">
+            <strong data-i18n="demo.t">Prototype notice</strong
+            ><span data-i18n="demo.doctor"
+              >This is a browser-only demo. Selected files are NOT uploaded
+              anywhere and no account is created. Real submission, verification
+              and account activation require the MediCare backend.</span
+            >
+          </div>
+
+          <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
+          <ol class="steps" id="stepList"></ol>
+          <p class="sr" id="stepLive" aria-live="polite"></p>
+
+          <div
+            class="summary"
+            id="dSummary"
+            role="alert"
+            tabindex="-1"
+            hidden
+          ></div>
+
+          <!-- STEP 1: PERSONAL -->
+          <section class="step" data-step="0" aria-labelledby="s0h">
+            <div class="sec-head">
+              <h2 id="s0h" tabindex="-1" data-i18n="s1.t">
+                Personal Information
+              </h2>
+              <p class="sub" data-i18n="s1.d">
+                Enter your details exactly as they appear on your official
+                identification.
+              </p>
+            </div>
+            <div class="grid">
+              <div class="field full">
+                <label class="l" for="d_name"
+                  ><span data-i18n="f.legalName"
+                    >Full legal name (as on official ID)</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input
+                  type="text"
+                  id="d_name"
+                  required
+                  data-rule="name"
+                  autocomplete="name"
+                />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_email"
+                  ><span data-i18n="f.email">Email address</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input
+                  type="email"
+                  id="d_email"
+                  required
+                  data-rule="email"
+                  autocomplete="email"
+                  inputmode="email"
+                />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_phone"
+                  ><span data-i18n="f.phone">Mobile phone number</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input
+                  type="tel"
+                  id="d_phone"
+                  required
+                  data-rule="phone"
+                  autocomplete="tel"
+                  inputmode="tel"
+                  dir="ltr"
+                  placeholder="+20 100 000 0000"
+                />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_pw"
+                  ><span data-i18n="f.password">Password</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <div class="pw-wrap">
+                  <input
+                    type="password"
+                    id="d_pw"
+                    required
+                    data-rule="password"
+                    autocomplete="new-password"
+                  /><button
+                    type="button"
+                    class="pw-toggle"
+                    data-toggle="d_pw"
+                    data-i18n="show"
+                  >
+                    Show
+                  </button>
+                </div>
+                <div class="meter" aria-hidden="true"><i></i></div>
+                <span class="meter-txt" aria-live="polite"></span>
+                <p class="hint" data-i18n="hint.pw">
+                  At least 8 characters with upper-case, lower-case and a
+                  number.
+                </p>
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_pw2"
+                  ><span data-i18n="f.confirm">Confirm password</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <div class="pw-wrap">
+                  <input
+                    type="password"
+                    id="d_pw2"
+                    required
+                    data-rule="confirm"
+                    autocomplete="new-password"
+                  /><button
+                    type="button"
+                    class="pw-toggle"
+                    data-toggle="d_pw2"
+                    data-i18n="show"
+                  >
+                    Show
+                  </button>
+                </div>
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_dob"
+                  ><span data-i18n="f.dob">Date of birth</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input
+                  type="date"
+                  id="d_dob"
+                  required
+                  data-rule="dob"
+                  data-minage="21"
+                  autocomplete="bday"
+                />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_nat"
+                  ><span data-i18n="f.nationality">Nationality</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input
+                  type="text"
+                  id="d_nat"
+                  required
+                  autocomplete="country-name"
+                />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_gender"
+                  ><span data-i18n="f.gender">Gender</span
+                  ><span class="opt" data-i18n="opt">Optional</span></label
+                >
+                <select id="d_gender">
+                  <option value="" data-i18n="sel">Select…</option>
+                  <option value="Male" data-i18n="g.male">Male</option>
+                  <option value="Female" data-i18n="g.female">Female</option>
+                  <option value="Prefer not to say" data-i18n="g.none">
+                    Prefer not to say
+                  </option>
+                </select>
+              </div>
+              <div class="field">
+                <label class="l" for="d_nid"
+                  ><span data-i18n="f.nid">National ID number</span
+                  ><span class="opt" data-i18n="opt">Optional</span></label
+                >
+                <input
+                  type="text"
+                  id="d_nid"
+                  data-rule="nid"
+                  autocomplete="off"
+                  dir="ltr"
+                />
+                <p class="hint" data-i18n="hint.nid">
+                  Only provide if necessary. It is never shown publicly. It is
+                  NOT stored by this demo; production must handle it over an
+                  encrypted channel with strict access control.
+                </p>
+                <p class="err" hidden></p>
+              </div>
+              <div class="field full">
+                <label class="l" for="d_addr"
+                  ><span data-i18n="f.address">Residential address</span
+                  ><span class="opt" data-i18n="opt">Optional</span></label
+                >
+                <input type="text" id="d_addr" autocomplete="street-address" />
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 2: PROFESSIONAL -->
+          <section class="step" data-step="1" aria-labelledby="s1h" hidden>
+            <div class="sec-head">
+              <h2 id="s1h" tabindex="-1" data-i18n="s2.t">
+                Professional Information
+              </h2>
+              <p class="sub" data-i18n="s2.d">
+                Details you enter here are self-reported and are not treated as
+                verified.
+              </p>
+            </div>
+            <div class="grid">
+              <div class="field">
+                <label class="l" for="d_spec"
+                  ><span data-i18n="f.specialty">Medical specialty</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <select id="d_spec" required></select>
+                <p class="err" hidden></p>
+              </div>
+              <div class="field" id="otherWrap" hidden>
+                <label class="l" for="d_specOther"
+                  ><span data-i18n="f.specOther">Other specialty</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input type="text" id="d_specOther" disabled />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_uni"
+                  ><span data-i18n="f.uni">University and medical school</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input type="text" id="d_uni" required />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_degree"
+                  ><span data-i18n="f.degree"
+                    >Medical degree / qualification</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input
+                  type="text"
+                  id="d_degree"
+                  required
+                  placeholder="MBBCh, MD, MBBS…"
+                  dir="auto"
+                />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_grad"
+                  ><span data-i18n="f.grad">Graduation year</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input
+                  type="number"
+                  id="d_grad"
+                  required
+                  data-rule="year"
+                  inputmode="numeric"
+                  min="1950"
+                  step="1"
+                  dir="ltr"
+                />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_exp"
+                  ><span data-i18n="f.exp">Years of clinical experience</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input
+                  type="number"
+                  id="d_exp"
+                  required
+                  data-rule="exp"
+                  inputmode="decimal"
+                  min="0"
+                  max="60"
+                  step="0.5"
+                  dir="ltr"
+                />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_title"
+                  ><span data-i18n="f.title">Current professional title</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input type="text" id="d_title" required dir="auto" />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_auth"
+                  ><span data-i18n="f.auth"
+                    >Medical syndicate / licensing authority</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input type="text" id="d_auth" required dir="auto" />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_lic"
+                  ><span data-i18n="f.licNo"
+                    >Medical license / practice permit number</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <input
+                  type="text"
+                  id="d_lic"
+                  required
+                  autocomplete="off"
+                  dir="ltr"
+                />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_issue"
+                  ><span data-i18n="f.issue">License issue date</span
+                  ><span class="opt" data-i18n="opt">Optional</span></label
+                >
+                <input type="date" id="d_issue" data-rule="issue" />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_expiry"
+                  ><span data-i18n="f.expiry">License expiry date</span
+                  ><span class="opt" data-i18n="opt">Optional</span></label
+                >
+                <input type="date" id="d_expiry" data-rule="expiry" />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field full">
+                <label class="l" for="d_quals"
+                  ><span data-i18n="f.quals"
+                    >Professional qualifications and training</span
+                  ><span class="opt" data-i18n="opt">Optional</span></label
+                >
+                <textarea id="d_quals" maxlength="1000" dir="auto"></textarea>
+                <p class="hint" data-i18n="hint.quals">
+                  Describe fellowships, courses and training. This text is
+                  self-reported and is not verified.
+                </p>
+              </div>
+              <div class="field full">
+                <div class="check">
+                  <input type="checkbox" id="d_accurate" required />
+                  <label for="d_accurate"
+                    ><span data-i18n="c.accurateProf"
+                      >I confirm that the professional information above is
+                      accurate.</span
+                    ><b class="req" aria-hidden="true">*</b></label
+                  >
+                </div>
+                <p class="err" hidden></p>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 3: DOCUMENTS -->
+          <section class="step" data-step="2" aria-labelledby="s2h" hidden>
+            <div class="sec-head">
+              <h2 id="s2h" tabindex="-1" data-i18n="s3.t">
+                Verification Documents
+              </h2>
+              <p class="sub" data-i18n="s3.d">
+                Upload clear, readable copies. Accepted: PDF, JPG, JPEG, PNG —
+                up to 5 MB each.
+              </p>
+            </div>
+            <div class="note info">
+              <strong data-i18n="why.t">Why we ask for these documents</strong
+              ><span data-i18n="why.b"
+                >Qualification, licence and identity documents let our
+                administrators check who you are and that you are entitled to
+                practise before patients can see you as a verified doctor.
+                Uploading documents does not by itself prove that you are a
+                qualified doctor.</span
+              >
+            </div>
+
+            <div class="ucard">
+              <header>
+                <span class="badge" aria-hidden="true">A</span>
+                <div>
+                  <h3 data-i18n="uA.t">Proof of Medical Qualification</h3>
+                  <p class="sub" style="margin: 0" data-i18n="uA.d">
+                    Medical degree certificate, graduation certificate or
+                    another accepted professional qualification document.
+                  </p>
+                </div>
+              </header>
+              <div data-upload="qualification"></div>
+            </div>
+
+            <div class="ucard">
+              <header>
+                <span class="badge" aria-hidden="true">B</span>
+                <div>
+                  <h3 data-i18n="uB.t">Professional Practice License</h3>
+                  <p class="sub" style="margin: 0" data-i18n="uB.d">
+                    Your current medical practice licence or professional
+                    practice permit.
+                  </p>
+                </div>
+              </header>
+              <div data-upload="license"></div>
+            </div>
+
+            <div class="ucard">
+              <header>
+                <span class="badge" aria-hidden="true">C</span>
+                <div>
+                  <h3 data-i18n="uC.t">Personal Identity Document</h3>
+                  <p class="sub" style="margin: 0" data-i18n="uC.d">
+                    National ID card or another government-issued identity
+                    document. Add the back side too when the document has one.
+                  </p>
+                </div>
+              </header>
+              <div data-upload="idFront"></div>
+              <div data-upload="idBack"></div>
+            </div>
+
+            <div class="ucard">
+              <header>
+                <span class="badge" aria-hidden="true">D</span>
+                <div>
+                  <h3 data-i18n="uD.t">Optional Supporting Documents</h3>
+                  <p class="sub" style="margin: 0" data-i18n="uD.d">
+                    Postgraduate qualifications, specialist certificates or
+                    other professional certifications.
+                  </p>
+                </div>
+              </header>
+              <div data-upload="postgrad"></div>
+              <div data-upload="specialist"></div>
+              <div data-upload="extra"></div>
+            </div>
+          </section>
+
+          <!-- STEP 4: WORKPLACE -->
+          <section class="step" data-step="3" aria-labelledby="s3h" hidden>
+            <div class="sec-head">
+              <h2 id="s3h" tabindex="-1" data-i18n="s4.t">
+                Clinic and Workplace Information
+              </h2>
+              <p class="sub" data-i18n="s4.d">
+                Tell us where you practise. Workplaces are not verified partners
+                of MediCare unless confirmed by our team.
+              </p>
+            </div>
+            <div class="note info">
+              <strong data-i18n="wpn.t">Workplace not verified</strong
+              ><span data-i18n="wpn.b"
+                >Listing a hospital or clinic does not make it an officially
+                verified MediCare partner, and we do not assume you own it.
+                Please state your relationship to each workplace.</span
+              >
+            </div>
+            <div id="wpList"></div>
+            <button type="button" class="btn btn-outline btn-sm" id="addWp">
+              <span aria-hidden="true">＋</span>
+              <span data-i18n="wp.add">Add Another Workplace</span>
+            </button>
+
+            <div class="grid" style="margin-top: 22px">
+              <div class="field">
+                <span class="lbl" id="onlineLbl"
+                  ><span data-i18n="f.online"
+                    >Do you offer online consultations?</span
+                  ><b class="req" aria-hidden="true">*</b></span
+                >
+                <div
+                  class="radios"
+                  role="radiogroup"
+                  aria-labelledby="onlineLbl"
+                >
+                  <label class="chip"
+                    ><input
+                      type="radio"
+                      name="online"
+                      value="yes"
+                      required
+                      id="d_online"
+                    /><span data-i18n="yes">Yes</span></label
+                  >
+                  <label class="chip"
+                    ><input type="radio" name="online" value="no" /><span
+                      data-i18n="no"
+                      >No</span
+                    ></label
+                  >
+                </div>
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_method"
+                  ><span data-i18n="f.method"
+                    >Preferred consultation method</span
+                  ><b class="req" aria-hidden="true">*</b></label
+                >
+                <select id="d_method" required data-rule="method">
+                  <option value="" data-i18n="sel">Select…</option>
+                  <option value="In-person" data-i18n="m.in">In-person</option>
+                  <option value="Online" data-i18n="m.on">Online</option>
+                  <option value="Both" data-i18n="m.both">Both</option>
+                </select>
+                <p class="err" hidden></p>
+              </div>
+              <div class="field">
+                <label class="l" for="d_fee"
+                  ><span data-i18n="f.fee">Consultation fee</span
+                  ><span class="opt" data-i18n="opt">Optional</span></label
+                >
+                <div class="inline2">
+                  <input
+                    type="number"
+                    id="d_fee"
+                    data-rule="fee"
+                    min="0"
+                    step="1"
+                    inputmode="decimal"
+                    dir="ltr"
+                  />
+                  <select id="d_cur" aria-label="Currency">
+                    <option>EGP</option>
+                    <option>USD</option>
+                    <option>SAR</option>
+                    <option>AED</option>
+                    <option>EUR</option>
+                  </select>
+                </div>
+                <p class="err" hidden></p>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 5: PROFILE -->
+          <section class="step" data-step="4" aria-labelledby="s4h" hidden>
+            <div class="sec-head">
+              <h2 id="s4h" tabindex="-1" data-i18n="s5.t">Doctor Profile</h2>
+              <p class="sub" data-i18n="s5.d">
+                Optional details for your public profile once approved. This is
+                separate from verification documents.
+              </p>
+            </div>
+            <div class="grid">
+              <div class="field full">
+                <label class="l" for="d_bio"
+                  ><span data-i18n="f.bio">Professional biography</span
+                  ><span class="opt" data-i18n="opt">Optional</span></label
+                >
+                <textarea id="d_bio" maxlength="800" dir="auto"></textarea>
+                <div class="counter"><span id="bioCount">0</span>/800</div>
+              </div>
+              <div class="field full">
+                <span class="lbl" id="langLbl" data-i18n="f.langs"
+                  >Languages spoken</span
+                >
+                <div
+                  class="chips"
+                  role="group"
+                  aria-labelledby="langLbl"
+                  id="langChips"
+                >
+                  <label class="chip"
+                    ><input type="checkbox" value="Arabic" /><span
+                      data-i18n="l.ar"
+                      >Arabic</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input type="checkbox" value="English" /><span
+                      data-i18n="l.en"
+                      >English</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input type="checkbox" value="French" /><span
+                      data-i18n="l.fr"
+                      >French</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input type="checkbox" value="German" /><span
+                      data-i18n="l.de"
+                      >German</span
+                    ></label
+                  >
+                </div>
+              </div>
+              <div class="field full">
+                <label class="l" for="d_expertise"
+                  ><span data-i18n="f.expertise">Areas of expertise</span
+                  ><span class="opt" data-i18n="opt">Optional</span></label
+                >
+                <input
+                  type="text"
+                  id="d_expertise"
+                  dir="auto"
+                  data-i18n-ph="ph.expertise"
+                  placeholder="e.g. Hypertension, Echocardiography"
+                />
+                <p class="hint" data-i18n="hint.expertise">
+                  Separate items with commas.
+                </p>
+              </div>
+              <div class="field full">
+                <span class="lbl" id="daysLbl" data-i18n="f.days"
+                  >Preferred working days</span
+                >
+                <div
+                  class="chips"
+                  role="group"
+                  aria-labelledby="daysLbl"
+                  id="dayChips"
+                >
+                  <label class="chip"
+                    ><input type="checkbox" value="Sat" /><span
+                      data-i18n="dy.sat"
+                      >Sat</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input type="checkbox" value="Sun" /><span
+                      data-i18n="dy.sun"
+                      >Sun</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input type="checkbox" value="Mon" /><span
+                      data-i18n="dy.mon"
+                      >Mon</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input type="checkbox" value="Tue" /><span
+                      data-i18n="dy.tue"
+                      >Tue</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input type="checkbox" value="Wed" /><span
+                      data-i18n="dy.wed"
+                      >Wed</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input type="checkbox" value="Thu" /><span
+                      data-i18n="dy.thu"
+                      >Thu</span
+                    ></label
+                  >
+                  <label class="chip"
+                    ><input type="checkbox" value="Fri" /><span
+                      data-i18n="dy.fri"
+                      >Fri</span
+                    ></label
+                  >
+                </div>
+              </div>
+              <div class="field">
+                <label class="l" for="d_from"
+                  ><span data-i18n="f.from">Preferred hours — from</span></label
+                >
+                <input type="time" id="d_from" dir="ltr" />
+              </div>
+              <div class="field">
+                <label class="l" for="d_to"
+                  ><span data-i18n="f.to">Preferred hours — to</span></label
+                >
+                <input type="time" id="d_to" data-rule="hoursTo" dir="ltr" />
+                <p class="err" hidden></p>
+              </div>
+              <div class="field full">
+                <div data-upload="photo"></div>
+                <p class="hint" data-i18n="photo.note">
+                  The profile photo is for your public profile only. It does not
+                  replace your identity document or proof of qualifications.
+                </p>
+              </div>
+            </div>
+          </section>
+
+          <!-- STEP 6: CONSENT -->
+          <section class="step" data-step="5" aria-labelledby="s5h" hidden>
+            <div class="sec-head">
+              <h2 id="s5h" tabindex="-1" data-i18n="s6.t">
+                Consent and Declarations
+              </h2>
+              <p class="sub" data-i18n="s6.d">
+                Please read and confirm the following before submitting.
+              </p>
+            </div>
+            <div class="note info">
+              <strong data-i18n="why.t">Why we ask for these documents</strong
+              ><span data-i18n="why.b2"
+                >We request identity and licensing documents so administrators
+                can confirm who you are and that you are authorised to practise.
+                Submitting them does not guarantee approval and does not prove
+                you are a qualified doctor — only the administrative review can
+                do that.</span
+              >
+            </div>
+            <div class="grid">
+              <div class="field full">
+                <div class="check">
+                  <input type="checkbox" id="c1" required /><label for="c1"
+                    ><span data-i18n="c1"
+                      >The information I submitted is accurate to the best of my
+                      knowledge.</span
+                    ><b class="req" aria-hidden="true">*</b></label
+                  >
+                </div>
+                <p class="err" hidden></p>
+              </div>
+              <div class="field full">
+                <div class="check">
+                  <input type="checkbox" id="c2" required /><label for="c2"
+                    ><span data-i18n="c2"
+                      >I am authorised to submit these documents.</span
+                    ><b class="req" aria-hidden="true">*</b></label
+                  >
+                </div>
+                <p class="err" hidden></p>
+              </div>
+              <div class="field full">
+                <div class="check">
+                  <input type="checkbox" id="c3" required /><label for="c3"
+                    ><span data-i18n="c3"
+                      >MediCare may review the submitted professional documents
+                      for verification purposes.</span
+                    ><b class="req" aria-hidden="true">*</b></label
+                  >
+                </div>
+                <p class="err" hidden></p>
+              </div>
+              <div class="field full">
+                <div class="check">
+                  <input type="checkbox" id="c4" required /><label for="c4"
+                    ><span data-i18n="c.read">I have read and accept the</span>
+                    <a href="#" data-legal data-i18n="c.terms">Terms</a>
+                    <span data-i18n="c.and">and</span>
+                    <a href="#" data-legal data-i18n="c.privacy"
+                      >Privacy Policy</a
+                    ><b class="req" aria-hidden="true">*</b></label
+                  >
+                </div>
+                <p class="err" hidden></p>
+              </div>
+            </div>
+            <div class="note warn" style="margin-top: 18px">
+              <strong data-i18n="next.t">What happens next</strong
+              ><span data-i18n="next.b"
+                >Your request will have the status “Pending”. You will not be
+                verified or receive access to the Doctor Dashboard until an
+                administrator approves your application.</span
+              >
+            </div>
+          </section>
+
+          <div class="actions">
+            <button type="button" class="btn btn-outline" id="btnBack">
+              <svg
+                class="flip"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M15 18l-6-6 6-6" /></svg
+              ><span data-i18n="btn.back">Back</span>
+            </button>
+            <span class="sp"></span>
+            <button type="button" class="btn btn-primary" id="btnNext">
+              <span data-i18n="btn.next">Next</span
+              ><svg
+                class="flip"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="3"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                aria-hidden="true"
+              >
+                <path d="M9 18l6-6-6-6" />
+              </svg>
+            </button>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              id="btnSubmit"
+              hidden
+              data-i18n="btn.submit"
+            >
+              Submit Verification Request
+            </button>
+          </div>
+          <p class="signin">
+            <span data-i18n="have">Already have an account?</span>
+            <a href="login.html" data-i18n="nav.signin">Sign In</a>
+          </p>
+        </form>
+      </div>
+
+      <!-- SUCCESS: PATIENT -->
+      <section
+        id="successPatient"
+        class="card success"
+        hidden
+        aria-live="polite"
+      >
+        <div class="big" aria-hidden="true">
+          <svg
+            width="36"
+            height="36"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="3"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path d="M5 13l4 4L19 7" />
+          </svg>
+        </div>
+        <h2 data-i18n="ps.t" tabindex="-1" id="psHead">Account created</h2>
+        <p class="sub" data-i18n="ps.b">
+          Your patient account has been created in this demo. You can now sign
+          in.
+        </p>
+        <a class="btn btn-primary" href="login.html" data-i18n="nav.signin"
+          >Sign In</a
+        >
+      </section>
+
+      <!-- SUCCESS: DOCTOR -->
+      <section
+        id="successDoctor"
+        class="card success pending"
+        hidden
+        aria-live="polite"
+      >
+        <div class="big" aria-hidden="true">
+          <svg
+            width="36"
+            height="36"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="12" cy="12" r="9" />
+            <path d="M12 7v5l3 2" />
+          </svg>
+        </div>
+        <h2 data-i18n="ds.t" tabindex="-1" id="dsHead">
+          Verification request ready
+        </h2>
+        <p><span class="status" data-i18n="status.pending">Pending</span></p>
+        <div class="note warn" style="margin-top: 16px">
+          <span data-i18n="notice"
+            >Your doctor registration request is ready for review. Your
+            professional account will remain pending until the MediCare
+            administration team verifies your documents and approves your
+            application.</span
+          >
+        </div>
+        <dl class="dl" id="dsDetails"></dl>
+        <div class="note info">
+          <strong data-i18n="demo.t">Prototype notice</strong
+          ><span data-i18n="ds.demo"
+            >No account has been created and no files were uploaded or sent
+            anywhere. Only non-sensitive metadata (no passwords, ID numbers or
+            document contents) was saved in this browser as a demo record.
+            Actual submission requires the MediCare backend, and approval can
+            only be granted by an administrator.</span
+          >
+        </div>
+        <div
+          style="
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 8px;
+          "
+        >
+          <a class="btn btn-primary" href="index.html" data-i18n="nav.home"
+            >Home</a
+          >
+          <a class="btn btn-outline" href="login.html" data-i18n="nav.signin"
+            >Sign In</a
+          >
+        </div>
+      </section>
+    </main>
+
+    <footer>© 2026 MediCare Clinic Management System</footer>
+
+    <dialog id="legalDlg" aria-labelledby="legalT">
+      <h2 id="legalT" data-i18n="legal.t">
+        Terms &amp; Privacy (demo summary)
+      </h2>
+      <p data-i18n="legal.b">
+        This is a placeholder for the full Terms of Service and Privacy Policy.
+        Identity and licensing documents are used only to verify professional
+        eligibility, are accessible only to authorised administrators, and are
+        retained according to the production retention policy.
+      </p>
+      <button
+        type="button"
+        class="btn btn-primary btn-sm"
+        id="legalClose"
+        data-i18n="close"
+      >
+        Close
+      </button>
+    </dialog>
+
+    <script src="js/register.js"></script>
+  </body>
+</html>

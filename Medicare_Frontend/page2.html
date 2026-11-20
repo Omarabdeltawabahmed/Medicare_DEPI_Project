@@ -1,0 +1,308 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MediCare – Doctor Profile & Booking (Demo)</title>
+    <meta name="theme-color" content="#1769aa" />
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/page2.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+  </head>
+  <body data-page="page2">
+    <script src="js/sidebar.js"></script>
+    
+
+    <main>
+      <div class="top">
+        <div class="wrap">
+          <nav class="crumb" aria-label="Breadcrumb">
+            <a href="index.html" data-i18n="nav.home">Home</a
+            ><span aria-hidden="true">›</span
+            ><a href="index.html#doctors" data-i18n="bc.doctors">Doctors</a
+            ><span aria-hidden="true">›</span
+            ><span aria-current="page" data-i18n="bc.book"
+              >Book Appointment</span
+            >
+          </nav>
+          <h1 data-i18n="title">Doctor Profile & Booking</h1>
+          <p class="sub" style="margin-top: 6px">
+            <span class="demo" data-i18n="demo.badge"
+              >Front-end demo · no real booking or payment</span
+            >
+          </p>
+        </div>
+      </div>
+
+      <section>
+        <div class="wrap">
+          <div class="layout" id="mainLayout">
+            <div class="stack">
+              <article class="card" id="profile" aria-live="polite"></article>
+              <div id="bookArea" class="stack">
+                <form class="card" id="bform" novalidate>
+                  <h2 data-i18n="f.h">1. Your details</h2>
+                  <div class="row">
+                    <div class="f">
+                      <label for="pName" data-i18n="f.name"
+                        >Patient full name</label
+                      ><input id="pName" autocomplete="name" maxlength="80" />
+                      <div class="err" id="eName"></div>
+                    </div>
+                    <div class="f">
+                      <label for="pEmail" data-i18n="f.email"
+                        >Email address</label
+                      ><input
+                        id="pEmail"
+                        type="email"
+                        autocomplete="email"
+                        maxlength="120"
+                      />
+                      <div class="err" id="eEmail"></div>
+                    </div>
+                  </div>
+                  <div class="f">
+                    <label for="pPhone" data-i18n="f.phone">Phone number</label
+                    ><input
+                      id="pPhone"
+                      type="tel"
+                      autocomplete="tel"
+                      inputmode="tel"
+                      maxlength="20"
+                      placeholder="+20 100 000 0000"
+                    />
+                    <div class="err" id="ePhone"></div>
+                  </div>
+                  <div class="f">
+                    <label for="pReason" data-i18n="f.reason"
+                      >Reason for visit</label
+                    ><textarea
+                      id="pReason"
+                      maxlength="300"
+                      data-i18n-ph="f.rph"
+                      placeholder="Briefly describe the reason"
+                    ></textarea>
+                    <div class="hint" data-i18n="f.rhint">
+                      Keep it short. Do not enter sensitive medical details or
+                      real personal data.
+                    </div>
+                    <div class="err" id="eReason"></div>
+                  </div>
+
+                  <h2 style="margin-top: 22px" data-i18n="c.h">
+                    2. Choose date and time
+                  </h2>
+                  <div class="ch">
+                    <button
+                      type="button"
+                      class="btn o sm"
+                      id="prevM"
+                      aria-label="Previous month"
+                    >
+                      ‹</button
+                    ><b id="monthLbl" aria-live="polite"></b
+                    ><button
+                      type="button"
+                      class="btn o sm"
+                      id="nextM"
+                      aria-label="Next month"
+                    >
+                      ›
+                    </button>
+                  </div>
+                  <div class="cal" id="cal" role="grid"></div>
+                  <div class="leg">
+                    <span>■ <span data-i18n="c.l1">Available</span></span
+                    ><span style="color: #aab4be"
+                      >■
+                      <span data-i18n="c.l2"
+                        >Unavailable / not working / full</span
+                      ></span
+                    ><span style="color: #f5a524"
+                      >■ <span data-i18n="c.l3">Today</span></span
+                    >
+                  </div>
+                  <div class="err" id="eDate"></div>
+                  <h3
+                    style="margin-top: 18px; font-size: 1rem"
+                    data-i18n="c.slots"
+                  >
+                    Available time slots
+                  </h3>
+                  <div id="slotInfo" class="hint" aria-live="polite"></div>
+                  <div class="slots" id="slots"></div>
+                  <div class="err" id="eTime"></div>
+                </form>
+              </div>
+            </div>
+
+            <aside class="side stack" id="sideCol">
+              <div class="card pay" id="payCard">
+                <h2 data-i18n="pay.h">Payment summary</h2>
+                <div class="l">
+                  <span data-i18n="pay.fee">Consultation fee</span
+                  ><b id="pFee">–</b>
+                </div>
+                <div class="l">
+                  <span data-i18n="pay.dep">Required deposit (25%)</span
+                  ><b id="pDep">–</b>
+                </div>
+                <div class="l">
+                  <span data-i18n="pay.bal">Remaining balance (75%)</span
+                  ><b id="pBal">–</b>
+                </div>
+                <div class="l">
+                  <span data-i18n="pay.status">Payment status</span
+                  ><b id="pStat">–</b>
+                </div>
+                <label class="opt"
+                  ><input type="radio" name="pm" value="demo" checked /><span
+                    ><b data-i18n="pay.demo">Pay deposit – DEMO simulation</b
+                    ><br /><span class="hint" data-i18n="pay.demod"
+                      >No card is collected and no money is charged.</span
+                    ></span
+                  ></label
+                >
+                <label class="opt"
+                  ><input type="radio" name="pm" value="later" /><span
+                    ><b data-i18n="pay.later">Pay deposit later at the clinic</b
+                    ><br /><span class="hint" data-i18n="pay.laterd"
+                      >Deposit stays “Due”.</span
+                    ></span
+                  ></label
+                >
+                <button
+                  type="button"
+                  class="btn o"
+                  style="width: 100%; margin-top: 12px"
+                  disabled
+                  data-i18n="pay.stripe"
+                >
+                  Stripe Checkout (not connected)
+                </button>
+                <p class="hint" style="margin-top: 6px" data-i18n="pay.note">
+                  Real Stripe Checkout needs a secure server endpoint that holds
+                  secret keys and verifies payment. This page never processes a
+                  real charge.
+                </p>
+                <div class="sum" id="sumBox" aria-live="polite"></div>
+                <button
+                  type="submit"
+                  form="bform"
+                  class="btn"
+                  id="submitBtn"
+                  style="width: 100%; margin-top: 12px"
+                  data-i18n="b.confirm"
+                >
+                  Confirm booking
+                </button>
+                <div
+                  class="err"
+                  id="eForm"
+                  role="alert"
+                  style="margin-top: 6px"
+                ></div>
+              </div>
+            </aside>
+          </div>
+          <div id="done" hidden></div>
+        </div>
+      </section>
+
+      <section class="light">
+        <div class="wrap">
+          <h2 data-i18n="how.h">How booking works</h2>
+          <div class="how">
+            <div class="card">
+              <div class="n">1</div>
+              <b data-i18n="how.t1">Enter your details</b>
+              <p class="sub" data-i18n="how.d1">
+                Name, email, phone and a short reason for the visit.
+              </p>
+            </div>
+            <div class="card">
+              <div class="n">2</div>
+              <b data-i18n="how.t2">Pick a date and slot</b>
+              <p class="sub" data-i18n="how.d2">
+                Only the doctor's working days and free slots can be selected.
+              </p>
+            </div>
+            <div class="card">
+              <div class="n">3</div>
+              <b data-i18n="how.t3">Review the deposit</b>
+              <p class="sub" data-i18n="how.d3">
+                A 25% deposit is shown. In this demo it is only simulated.
+              </p>
+            </div>
+            <div class="card">
+              <div class="n">4</div>
+              <b data-i18n="how.t4">Get your booking ID</b>
+              <p class="sub" data-i18n="how.d4">
+                Your request is saved as “Pending” until the clinic confirms it.
+              </p>
+            </div>
+          </div>
+          <div class="notice" style="margin-top: 22px">
+            <b data-i18n="priv.h">Privacy notice:</b>
+            <span data-i18n="priv.p"
+              >Details you enter are saved only in this browser's localStorage,
+              which is not secure clinical storage. Do not enter real personal
+              or medical information.</span
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <div class="fg">
+          <div>
+            <a class="logo" href="index.html" style="color: #fff"
+              ><svg viewBox="0 0 40 40" aria-hidden="true">
+                <rect width="40" height="40" rx="11" fill="#1769AA" />
+                <path d="M17 8h6v9h9v6h-9v9h-6v-9H8v-6h9z" fill="#fff" /></svg
+              >MediCare</a
+            >
+            <p style="margin-top: 10px" data-i18n="ft.tag">
+              Healthcare made simpler (demo).
+            </p>
+          </div>
+          <div>
+            <h3 data-i18n="ft.nav">Navigation</h3>
+            <a href="index.html" data-i18n="nav.home">Home</a
+            ><a href="page2.html" data-i18n="nav.book">Book Appointment</a
+            ><a href="page3.html" data-i18n="nav.patient">Patient Portal</a
+            ><a href="page4.html" data-i18n="nav.doctor">Doctor Portal</a
+            ><a href="page5.html" data-i18n="nav.admin">Admin Dashboard</a>
+          </div>
+          <div>
+            <h3 data-i18n="ft.contact">Contact (illustrative)</h3>
+            <p id="fPhone"></p>
+            <p id="fMail"></p>
+            <p id="fAddr"></p>
+          </div>
+          <div>
+            <h3 data-i18n="ft.priv">Privacy notice</h3>
+            <p data-i18n="ft.privp">
+              Data entered here stays in your browser's localStorage. It is not
+              secure clinical storage. Do not enter real personal or medical
+              information.
+            </p>
+          </div>
+        </div>
+        <div class="fb" data-i18n="ft.disc">
+          Demo disclaimer: MediCare is a fictional front-end prototype with no
+          real authentication, payment processing, clinical booking or secure
+          database. A production ASP.NET Core MVC system must use server-side
+          validation, ASP.NET Identity, role-based authorization, and
+          server-created, server-verified Stripe payments.
+        </div>
+      </div>
+    </footer>
+    <div id="toast" role="status" hidden></div>
+
+    <script src="js/page2.js"></script>
+  </body>
+</html>

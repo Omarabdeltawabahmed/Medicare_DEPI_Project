@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MediCare – Clinic Management (Demo)</title>
+    <meta name="theme-color" content="#1769aa" />
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/index.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+  </head>
+  <body data-page="index">
+    <script src="js/sidebar.js"></script>
+    
+
+    <main>
+      <section class="hero">
+        <div class="wrap">
+          <div>
+            <span class="demo" data-i18n="demo.badge"
+              >Front-end demo · illustrative content</span
+            >
+            <h1 data-i18n="hero.h1">Healthcare made simpler, for everyone.</h1>
+            <p data-i18n="hero.p">
+              Find trusted doctors, book appointments in minutes, and manage
+              your healthcare information in one clear, friendly place.
+            </p>
+            <div class="cta">
+              <a class="btn" href="#doctors" data-i18n="hero.find"
+                >Find a Doctor</a
+              >
+              <a class="btn o" href="page3.html" data-i18n="hero.profile"
+                >My Health Profile</a
+              >
+            </div>
+          </div>
+          <div class="panel">
+            <h3 data-i18n="hero.panel">What you can do</h3>
+            <ul>
+              <li>
+                ✔
+                <span data-i18n="hero.l1"
+                  >Search doctors by name or specialty</span
+                >
+              </li>
+              <li>
+                ✔ <span data-i18n="hero.l2">Book and track appointments</span>
+              </li>
+              <li>
+                ✔
+                <span data-i18n="hero.l3"
+                  >View e-prescriptions in your portal</span
+                >
+              </li>
+              <li>
+                ✔
+                <span data-i18n="hero.l4"
+                  >Sign in as a patient or a doctor</span
+                >
+              </li>
+            </ul>
+          </div>
+        </div>
+      </section>
+
+      <section id="doctors">
+        <div class="wrap">
+          <h2 data-i18n="srch.h">Find your doctor</h2>
+          <p class="sub" data-i18n="srch.p">
+            Search by name, or narrow results by specialty.
+          </p>
+          <form class="sbar" id="sform" role="search">
+            <div>
+              <label for="qName" data-i18n="srch.name">Doctor name</label
+              ><input
+                id="qName"
+                type="search"
+                data-i18n-ph="srch.ph"
+                placeholder="e.g. Dr. Amal"
+              />
+            </div>
+            <div>
+              <label for="qSpec" data-i18n="srch.spec">Specialty</label
+              ><select id="qSpec"></select>
+            </div>
+            <button class="btn" type="submit" data-i18n="srch.go">
+              Search
+            </button>
+            <button
+              class="btn o"
+              type="button"
+              id="reset"
+              data-i18n="srch.reset"
+            >
+              Reset search
+            </button>
+          </form>
+          <p
+            class="small"
+            id="count"
+            aria-live="polite"
+            style="margin: 14px 0"
+          ></p>
+          <div class="grid g3" id="docGrid"></div>
+          <div class="empty" id="empty" hidden role="status">
+            <b data-i18n="srch.none">No doctors match your search.</b
+            ><br /><span data-i18n="srch.none2"
+              >Try a different name or choose “All specialties”.</span
+            >
+          </div>
+        </div>
+      </section>
+
+      <section class="light">
+        <div class="wrap">
+          <span class="demo" data-i18n="demo.badge2"
+            >Illustrative demo content</span
+          >
+          <h2 style="margin-top: 10px" data-i18n="about.h">About MediCare</h2>
+          <p class="sub" data-i18n="about.p">
+            MediCare is a fictional clinic created to demonstrate a modern
+            healthcare website.
+          </p>
+          <div class="grid g3">
+            <div class="card">
+              <h3 data-i18n="about.t1">Our mission</h3>
+              <p data-i18n="about.d1">
+                To make quality outpatient care easy to reach, with clear
+                information and respectful service.
+              </p>
+            </div>
+            <div class="card">
+              <h3 data-i18n="about.t2">Medical specialties</h3>
+              <p data-i18n="about.d2">
+                Cardiology, dermatology, pediatrics, dentistry, family medicine
+                and orthopedics.
+              </p>
+            </div>
+            <div class="card">
+              <h3 data-i18n="about.t3">Doctors & clinical team</h3>
+              <p data-i18n="about.d3">
+                Doctors diagnose and treat; nurses and coordinators prepare
+                visits and follow up with patients.
+              </p>
+            </div>
+            <div class="card">
+              <h3 data-i18n="about.t4">Booking & patient support</h3>
+              <p data-i18n="about.d4">
+                Choose a doctor, pick an open time slot, and track your
+                appointment. Our support desk helps with questions.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="stats">
+        <div class="wrap">
+          <h2 data-i18n="stat.h">MediCare at a glance</h2>
+          <p class="sub" data-i18n="stat.p">
+            Illustrative demo figures only – not verified real-world numbers.
+          </p>
+          <div
+            class="grid g3"
+            style="grid-template-columns: repeat(auto-fit, minmax(200px, 1fr))"
+          >
+            <div class="st">
+              <b id="sDocs">0</b
+              ><span data-i18n="stat.1">Registered doctors (demo)</span>
+            </div>
+            <div class="st">
+              <b id="sSpec">0</b
+              ><span data-i18n="stat.2">Available specialties (demo)</span>
+            </div>
+            <div class="st">
+              <b>24/7</b
+              ><span data-i18n="stat.3"
+                >Convenient appointment booking (demo)</span
+              >
+            </div>
+            <div class="st">
+              <b>♥</b><span data-i18n="stat.4">Patient-first care (demo)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="specialties">
+        <div class="wrap">
+          <h2 data-i18n="sp.h">Medical specialties</h2>
+          <p class="sub" data-i18n="sp.p">
+            Choose a specialty to browse matching doctors.
+          </p>
+          <div class="grid g3" id="spGrid"></div>
+        </div>
+      </section>
+
+      <section class="light">
+        <div class="wrap">
+          <h2 data-i18n="why.h">Why choose MediCare?</h2>
+          <p class="sub" data-i18n="why.p">
+            Everything a patient needs, designed to be simple.
+          </p>
+          <div class="grid g3">
+            <div class="card">
+              <h3 data-i18n="why.t1">Convenient scheduling</h3>
+              <p data-i18n="why.d1">
+                See each doctor's working days and hours, then pick a slot that
+                suits you.
+              </p>
+            </div>
+            <div class="card">
+              <h3 data-i18n="why.t2">Doctor discovery</h3>
+              <p data-i18n="why.d2">
+                Compare ratings, experience and fees before you book.
+              </p>
+            </div>
+            <div class="card">
+              <h3 data-i18n="why.t3">Appointment tracking</h3>
+              <p data-i18n="why.d3">
+                Follow upcoming and past visits from your patient portal.
+              </p>
+            </div>
+            <div class="card">
+              <h3 data-i18n="why.t4">Electronic prescriptions</h3>
+              <p data-i18n="why.d4">
+                Prescriptions from your doctor appear in one place, ready to
+                review.
+              </p>
+            </div>
+            <div class="card">
+              <h3 data-i18n="why.t5">Patient privacy awareness</h3>
+              <p data-i18n="why.d5">
+                Health data is sensitive. A real service must protect it with
+                secure servers and access controls.
+              </p>
+            </div>
+          </div>
+          <div class="notice" data-i18n="why.note">
+            <b>Demo notice:</b> This website is a front-end demonstration, not a
+            real clinical service. It does not provide medical advice, real
+            patient records or real clinic operations.
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <div class="fg">
+          <div>
+            <a class="logo" href="index.html" style="color: #fff"
+              ><svg viewBox="0 0 40 40" aria-hidden="true">
+                <rect width="40" height="40" rx="11" fill="#1769AA" />
+                <path d="M17 8h6v9h9v6h-9v9h-6v-9H8v-6h9z" fill="#fff" /></svg
+              >MediCare</a
+            >
+            <p style="margin-top: 10px" data-i18n="ft.tag">
+              Healthcare made simpler (demo).
+            </p>
+          </div>
+          <div>
+            <h3 data-i18n="ft.nav">Navigation</h3>
+            <a href="index.html" data-i18n="nav.home">Home</a
+            ><a href="page2.html" data-i18n="nav.book">Book Appointment</a
+            ><a href="page3.html" data-i18n="nav.patient">Patient Portal</a
+            ><a href="page4.html" data-i18n="nav.doctor">Doctor Portal</a
+            ><a href="page5.html" data-i18n="nav.admin">Admin Dashboard</a>
+          </div>
+          <div>
+            <h3 data-i18n="ft.contact">Contact (illustrative)</h3>
+            <p id="fPhone"></p>
+            <p id="fMail"></p>
+            <p id="fAddr"></p>
+          </div>
+          <div>
+            <h3 data-i18n="ft.priv">Privacy notice</h3>
+            <p data-i18n="ft.privp">
+              Data entered here stays in your browser’s localStorage. It is not
+              secure clinical storage. Do not enter real personal or medical
+              information.
+            </p>
+          </div>
+        </div>
+        <div class="fb" data-i18n="ft.disc">
+          Demo disclaimer: MediCare is a fictional front-end prototype. A
+          production ASP.NET Core MVC system must use server-side validation,
+          ASP.NET Identity, role-based authorization and proper protection of
+          patient information.
+        </div>
+      </div>
+    </footer>
+
+    <dialog id="authDlg" aria-labelledby="authTitle">
+      <div class="mh">
+        <h3 id="authTitle" data-i18n="auth.title">Welcome to MediCare</h3>
+        <button class="mx" id="authClose" aria-label="Close">×</button>
+      </div>
+      <div class="mb">
+        <div class="tabs" role="group">
+          <button
+            type="button"
+            id="tabLogin"
+            aria-pressed="true"
+            data-i18n="auth.login"
+          >
+            Log in
+          </button>
+          <button
+            type="button"
+            id="tabReg"
+            aria-pressed="false"
+            data-i18n="auth.reg"
+          >
+            Create account
+          </button>
+        </div>
+        <div>
+          <label for="aRole" data-i18n="auth.role">I am a</label>
+          <select id="aRole">
+            <option value="patient" data-i18n="auth.patient">Patient</option>
+            <option value="doctor" data-i18n="auth.doctor">Doctor</option>
+          </select>
+        </div>
+        <form id="authForm" novalidate style="display: grid; gap: 12px">
+          <div id="fName" hidden>
+            <label for="aName" data-i18n="auth.name">Full name</label
+            ><input id="aName" autocomplete="name" />
+            <div class="err"></div>
+          </div>
+          <div>
+            <label for="aEmail" data-i18n="auth.email">Email</label
+            ><input id="aEmail" type="email" autocomplete="email" />
+            <div class="err"></div>
+          </div>
+          <div id="fPhoneF" hidden>
+            <label for="aPhone" data-i18n="auth.phone">Phone</label
+            ><input id="aPhone" type="tel" autocomplete="tel" />
+            <div class="err"></div>
+          </div>
+          <div>
+            <label for="aPass" data-i18n="auth.pass">Password</label
+            ><input
+              id="aPass"
+              type="password"
+              autocomplete="current-password"
+            />
+            <div class="err"></div>
+          </div>
+          <div id="docFields" hidden style="display: none; gap: 12px">
+            <div>
+              <label for="aSpec" data-i18n="auth.spec">Specialty</label
+              ><select id="aSpec"></select>
+            </div>
+            <div>
+              <label for="aExp" data-i18n="auth.exp">Years of experience</label
+              ><input id="aExp" type="number" min="0" max="60" value="5" />
+              <div class="err"></div>
+            </div>
+            <div>
+              <label for="aFee" data-i18n="auth.fee"
+                >Consultation fee (EGP)</label
+              ><input id="aFee" type="number" min="0" value="300" />
+              <div class="err"></div>
+            </div>
+            <p class="small" data-i18n="auth.pend">
+              Doctor accounts stay “pending” until an administrator approves
+              them.
+            </p>
+          </div>
+          <div id="authMsg" role="alert" hidden></div>
+          <button
+            class="btn"
+            type="submit"
+            id="authSubmit"
+            data-i18n="auth.login"
+          >
+            Log in
+          </button>
+        </form>
+        <p class="small" data-i18n="auth.demo">
+          Demo only: this is not real authentication. Passwords are checked for
+          format but never stored.
+        </p>
+      </div>
+    </dialog>
+    <div id="toast" role="status" hidden></div>
+
+    <script src="js/index.js"></script>
+  </body>
+</html>

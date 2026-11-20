@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MediCare – Patient Portal</title>
+    <meta name="theme-color" content="#1769aa" />
+    <script src="js/theme.js"></script>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/page3.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+  </head>
+  <body data-page="page3">
+    <script src="js/sidebar.js"></script>
+    
+
+    <section class="hero">
+      <div class="wrap">
+        <h1 data-i="title">Your Health Dashboard</h1>
+        <div class="demo" role="alert" data-i="demo">
+          ⚠ All information shown is illustrative demo data. This portal has no
+          real authentication, so nothing here identifies or verifies a real
+          patient.
+        </div>
+      </div>
+    </section>
+
+    <main class="wrap">
+      <div class="cards" id="summary"></div>
+      <div class="layout">
+        <aside
+          class="card tabs"
+          role="tablist"
+          id="tabs"
+          aria-orientation="vertical"
+        ></aside>
+        <div>
+          <!-- Appointments -->
+          <section class="panel" id="p-appts" role="tabpanel">
+            <h2 data-i="tAppts">My Appointments</h2>
+            <p class="sub" data-i="apptsSub">
+              Bookings are read from shared demonstration data stored in this
+              browser.
+            </p>
+            <div class="note" data-i="apptsNote">
+              These bookings are shared demonstration data and are not linked to
+              a verified patient identity.
+            </div>
+            <div class="tools">
+              <input
+                id="aSearch"
+                type="search"
+                data-ph="searchPh"
+                placeholder="Search by doctor or appointment ID"
+              />
+              <select id="aStatus" aria-label="Status"></select>
+              <select id="aSort">
+                <option value="desc" data-i="newest">Date: newest first</option>
+                <option value="asc" data-i="oldest">Date: oldest first</option>
+              </select>
+              <a class="btn" href="page2.html" data-i="book"
+                >Book Appointment</a
+              >
+            </div>
+            <div id="apptsOut"></div>
+          </section>
+
+          <!-- History -->
+          <section class="panel" id="p-hist" role="tabpanel">
+            <h2 data-i="tHist">Medical History</h2>
+            <div class="note" id="histNote"></div>
+            <div class="list" id="histOut"></div>
+            <div class="up">
+              <h3 style="margin-top: 0; color: var(--d)" data-i="upTitle">
+                Document upload (preview only)
+              </h3>
+              <p class="sub" data-i="upSub">
+                Accepted: PDF, JPG, PNG up to 5 MB. Files stay in your browser
+                and are never uploaded or saved.
+              </p>
+              <input
+                type="file"
+                id="fileIn"
+                accept=".pdf,.jpg,.jpeg,.png"
+                aria-label="File"
+              />
+              <div id="fileOut" aria-live="polite"></div>
+            </div>
+          </section>
+
+          <!-- Prescriptions -->
+          <section class="panel" id="p-rx" role="tabpanel">
+            <h2 data-i="tRx">Prescriptions</h2>
+            <div class="note" data-i="rxNote">
+              Sample prescriptions are illustrative drafts and are not medical
+              advice.
+            </div>
+            <div class="list" id="rxOut"></div>
+          </section>
+
+          <!-- Profile -->
+          <section class="panel" id="p-prof" role="tabpanel">
+            <h2 data-i="tProf">My Profile</h2>
+            <div class="note" id="profNote"></div>
+            <form id="pf" class="card f" novalidate>
+              <div>
+                <label for="fName" data-i="fName">Full name *</label
+                ><input id="fName" autocomplete="off" /><span
+                  class="err"
+                  id="eName"
+                ></span>
+              </div>
+              <div>
+                <label for="fEmail" data-i="fEmail">Email *</label
+                ><input id="fEmail" type="email" autocomplete="off" /><span
+                  class="err"
+                  id="eEmail"
+                ></span>
+              </div>
+              <div>
+                <label for="fPhone" data-i="fPhone">Phone *</label
+                ><input id="fPhone" type="tel" autocomplete="off" /><span
+                  class="err"
+                  id="ePhone"
+                ></span>
+              </div>
+              <div>
+                <label for="fDob" data-i="fDob">Date of birth</label
+                ><input id="fDob" type="date" /><span
+                  class="err"
+                  id="eDob"
+                ></span>
+              </div>
+              <div>
+                <label for="fBlood" data-i="fBlood">Blood group</label
+                ><select id="fBlood">
+                  <option value=""></option>
+                  <option>A+</option>
+                  <option>A-</option>
+                  <option>B+</option>
+                  <option>B-</option>
+                  <option>AB+</option>
+                  <option>AB-</option>
+                  <option>O+</option>
+                  <option>O-</option>
+                </select>
+              </div>
+              <div>
+                <label for="fAllg" data-i="fAllg">Allergies</label
+                ><input id="fAllg" />
+              </div>
+              <div class="full">
+                <label for="fNotes" data-i="fNotes">Medical notes</label
+                ><textarea id="fNotes"></textarea>
+              </div>
+              <div class="full">
+                <button class="btn" type="submit" data-i="save">
+                  Save profile
+                </button>
+                <div id="pfMsg" role="status" aria-live="polite"></div>
+              </div>
+            </form>
+          </section>
+
+          <!-- Notifications -->
+          <section class="panel" id="p-notif" role="tabpanel">
+            <h2 data-i="tNotif">Notifications</h2>
+            <div class="note" data-i="notifNote">
+              Demo notifications generated in this page from appointment and
+              prescription data. No SMS, email, push or SignalR service is
+              connected. Read state is saved under the demo key
+              “medicareDemoNotificationsRead”.
+            </div>
+            <div class="tools">
+              <button
+                class="btn o sm"
+                id="readAll"
+                type="button"
+                data-i="markAll"
+              >
+                Mark all as read
+              </button>
+            </div>
+            <div class="list" id="notifOut"></div>
+          </section>
+
+          <!-- Assistant -->
+          <section class="panel" id="p-med" role="tabpanel">
+            <h2 data-i="tMed">Medicine Information Assistant</h2>
+            <div class="note" data-i="medNote">
+              Built-in educational sample content only. No AI model or medical
+              API is connected, and nothing here is personalised advice.
+            </div>
+            <form class="ask" id="medForm">
+              <input
+                id="medQ"
+                data-ph="medPh"
+                placeholder="Enter a medicine name, e.g. Paracetamol"
+                aria-label="Medicine"
+              /><button class="btn" type="submit" data-i="search">
+                Search
+              </button>
+            </form>
+            <div class="chips" id="chips"></div>
+            <div id="medOut" aria-live="polite"></div>
+            <div class="safety" data-i="safety">
+              Safety note: this tool does not prescribe, diagnose or suggest
+              doses. Always consult a qualified clinician or pharmacist and
+              follow the official package leaflet.
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <footer>
+      <div class="wrap">
+        <h4 data-i="privT">Privacy notice</h4>
+        <p data-i="priv">
+          This demo stores data in your browser’s localStorage, which is not
+          secure clinical storage. The application has no authentication and
+          does not provide secure handling of medical data. Do not enter real
+          personal or medical information.
+        </p>
+        <p>© MediCare Demo · <a href="index.html" data-i="nHome">Home</a></p>
+      </div>
+    </footer>
+
+    <script src="js/page3.js"></script>
+  </body>
+</html>
