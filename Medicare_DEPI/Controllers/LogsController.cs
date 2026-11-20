@@ -18,10 +18,7 @@ namespace Medicare_DEPI.Controllers
         [HttpGet]
         public async Task<IActionResult> GetLogs()
         {
-            var logs = await _context.ErrorLogs
-                .OrderByDescending(l => l.CreatedAt)
-                .Take(50)
-                .ToListAsync();
+            var logs = await _context.ErrorLogs.OrderByDescending(l => l.CreatedAt).Take(50).ToListAsync();
 
             return Ok(logs);
         }
