@@ -1,6 +1,7 @@
 using Medicare_DEPI.Data;
 using Medicare_DEPI.Filters;
 using Medicare_DEPI.IRepositories;
+using Medicare_DEPI.Middlewares;
 using Medicare_DEPI.Repositories;
 using Medicare_DEPI.Services;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+// Global Exception Handling Middleware (Try-Catch)
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
