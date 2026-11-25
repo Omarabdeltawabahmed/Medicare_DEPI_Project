@@ -36,7 +36,7 @@ namespace Medicare_DEPI.Middlewares
                 {
                     StatusCode = context.Response.StatusCode,
                     Message = "Internal Server Error. An unexpected error occurred.",
-                    Detailed = ex.Message // ممكن نشيلها وقت الـ Production للأمان
+                    Detailed = ex.Message 
                 };
 
                 var json = JsonSerializer.Serialize(response);

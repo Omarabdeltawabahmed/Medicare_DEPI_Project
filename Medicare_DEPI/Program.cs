@@ -28,8 +28,9 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// Global Exception Handling Middleware (Try-Catch)
+
 app.UseMiddleware<ExceptionMiddleware>();
+
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
