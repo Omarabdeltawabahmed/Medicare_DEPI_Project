@@ -62,9 +62,9 @@ namespace Medicare_DEPI.Services
 
                 await File.AppendAllTextAsync(filePath, logContent);
             }
-            catch
+            catch (Exception fileEx)
             {
-                // منع انهيار التطبيق إذا تعذرت الكتابة على القرص لأي سبب
+                Console.WriteLine($"Critical: Failed to write fallback log to disk: {fileEx.Message}");
             }
         }
     }
