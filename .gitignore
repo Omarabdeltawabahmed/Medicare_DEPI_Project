@@ -6,6 +6,9 @@ out/
 [Oo]bj/
 [Oo]ut/
 
+## Local Logs
+Logs/
+
 ## Visual Studio
 .vs/
 *.user
