@@ -2,34 +2,56 @@
    MediCare – side navigation (shared by every page)
    Add  <script src="js/sidebar.js"></script>  right after <body>
    and put  data-page="index|page2|page3|page4|page5|login|register"
-   on the <body> tag.  To add/remove a menu item, edit LINKS below.
+   on the <body> tag.
    ========================================================== */
 (function () {
   "use strict";
 
   var page = document.body.getAttribute("data-page") || "";
 
-  /* ---------- menu items (edit here) ---------- */
-  var LINKS = [
-    { href: "index.html", id: "index", icon: "home", key: "home" },
-    { href: "page2.html", id: "page2", icon: "calendar", key: "book" },
-    { href: "page3.html", id: "page3", icon: "user", key: "patient" },
-    { href: "page4.html", id: "page4", icon: "steth", key: "doctor" },
-    { href: "page5.html", id: "page5", icon: "grid", key: "admin" },
+  /* ---------- User authentication state ---------- */
+  var user = (typeof window.getCurrentUser === "function") 
+    ? window.getCurrentUser() 
+    : (function() {
+        try {
+          var raw = localStorage.getItem("medicareCurrentUser");
+          return raw ? JSON.parse(raw) : null;
+        } catch(e) { return null; }
+      })();
+
+  var token = (typeof window.getToken === "function") 
+    ? window.getToken() 
+    : localStorage.getItem("medicare_token");
+
+  var userRole = (user && (user.role || (Array.isArray(user.roles) && user.roles[0]))) || null;
+  var isAuthenticated = !!(token && user && userRole);
+
+  /* ---------- menu items (filtered by role) ---------- */
+  var ALL_LINKS = [
+    { href: "index.html", id: "index", icon: "home", key: "home", roles: ["public", "Patient", "Doctor", "Admin"] },
+    { href: "page2.html", id: "page2", icon: "calendar", key: "book", roles: ["public", "Patient", "Admin"] },
+    { href: "page3.html", id: "page3", icon: "user", key: "patient", roles: ["Patient", "Admin"] },
+    { href: "page4.html", id: "page4", icon: "steth", key: "doctor", roles: ["Doctor", "Admin"] },
+    { href: "page5.html", id: "page5", icon: "grid", key: "admin", roles: ["Admin"] },
   ];
+
+  var activeRole = isAuthenticated ? userRole : "public";
+  var LINKS = ALL_LINKS.filter(function (l) {
+    return l.roles.indexOf(activeRole) !== -1;
+  });
 
   var TXT = {
     en: {
       home: "Home", book: "Book Appointment", patient: "Patient Portal",
       doctor: "Doctor Portal", admin: "Admin Dashboard",
-      signin: "Sign in", register: "Create account",
+      signin: "Sign in", register: "Create account", logout: "Log out",
       pages: "Pages", account: "Account", menu: "Menu", main: "Main navigation",
       toDark: "Dark mode", toLight: "Light mode",
     },
     ar: {
       home: "الرئيسية", book: "حجز موعد", patient: "بوابة المريض",
       doctor: "بوابة الطبيب", admin: "لوحة الإدارة",
-      signin: "تسجيل الدخول", register: "إنشاء حساب",
+      signin: "تسجيل الدخول", register: "إنشاء حساب", logout: "تسجيل الخروج",
       pages: "الصفحات", account: "الحساب", menu: "القائمة", main: "التنقل الرئيسي",
       toDark: "الوضع الداكن", toLight: "الوضع الفاتح",
     },
@@ -66,33 +88,37 @@
     );
   }
 
-  // sign-in entry: index & page2 keep the ids their own script expects
-  var signIn, userBox = "", stubs = "";
-  if (page === "index") {
-    signIn =
-      '<button type="button" class="sb-link" id="authBtn">' + svg("login") +
-      '<span data-i18n="auth.open">Log in / Sign up</span></button>';
-  } else if (page === "page2") {
-    signIn =
-      '<a class="sb-link" id="authBtn" href="login.html">' + svg("login") +
-      '<span data-i18n="auth.open">Log in / Sign up</span></a>';
-  } else {
-    signIn =
-      '<a class="sb-link' + (page === "login" ? " active" : "") + '" href="login.html">' +
-      svg("login") + '<span data-sb="signin"></span></a>';
-  }
-  var registerLink =
-    '<a class="sb-link' + (page === "register" ? " active" : "") + '" href="register.html">' +
-    svg("plus") + '<span data-sb="register"></span></a>';
+  // Account section
+  var accountNav = "";
+  var userBox = "", stubs = "";
 
-  if (page === "index" || page === "page2") {
-    userBox =
-      '<div class="sb-user" id="userBox" hidden><span id="userName"></span>' +
-      (page === "index"
-        ? '<button type="button" class="sb-link" id="logoutBtn">' + svg("out") +
-          '<span data-i18n="auth.logout">Log out</span></button>'
-        : "") +
-      "</div>";
+  if (isAuthenticated) {
+    accountNav =
+      '<div class="sb-user-card" style="padding: 10px 14px; margin-bottom: 8px; background: rgba(23,105,170,0.08); border-radius: 8px;">' +
+        '<div style="font-weight: 600; font-size: 0.88rem; color: var(--text, #1e293b); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">' + (user.fullName || user.email) + '</div>' +
+        '<div style="font-size: 0.75rem; color: #1769aa; font-weight: 600; text-transform: uppercase;">' + userRole + '</div>' +
+      '</div>' +
+      '<button type="button" class="sb-link" id="globalLogoutBtn">' + svg("out") +
+        '<span data-sb="logout">Log out</span></button>';
+  } else {
+    var signIn;
+    if (page === "index") {
+      signIn =
+        '<button type="button" class="sb-link" id="authBtn">' + svg("login") +
+        '<span data-i18n="auth.open">Log in / Sign up</span></button>';
+    } else if (page === "page2") {
+      signIn =
+        '<a class="sb-link" id="authBtn" href="login.html">' + svg("login") +
+        '<span data-i18n="auth.open">Log in / Sign up</span></a>';
+    } else {
+      signIn =
+        '<a class="sb-link' + (page === "login" ? " active" : "") + '" href="login.html">' +
+        svg("login") + '<span data-sb="signin"></span></a>';
+    }
+    var registerLink =
+      '<a class="sb-link' + (page === "register" ? " active" : "") + '" href="register.html">' +
+      svg("plus") + '<span data-sb="register"></span></a>';
+    accountNav = signIn + registerLink;
   }
 
   // elements the original page scripts look up by id (kept so nothing breaks)
@@ -119,7 +145,7 @@
     '<div class="sb-section" data-sb="pages"></div>' +
     "<nav" + navId + ' class="sb-nav" data-sb-label="main">' + LINKS.map(navItem).join("") + "</nav>" +
     '<div class="sb-section" data-sb="account"></div>' +
-    '<div class="sb-nav">' + signIn + registerLink + "</div>" + userBox +
+    '<div class="sb-nav">' + accountNav + "</div>" + userBox +
     '<div class="sb-foot"><div class="sb-ctls">' +
     '<button type="button" class="sb-ctl" id="themeBtn"><span class="sb-theme-ico"></span><span class="sb-theme-txt"></span></button>' +
     "</div>" +
@@ -156,6 +182,22 @@
   document.getElementById("themeBtn").addEventListener("click", function () {
     if (window.MediTheme) window.MediTheme.toggle();
   });
+
+  /* ---------- logout button ---------- */
+  var logoutBtn = document.getElementById("globalLogoutBtn") || document.getElementById("logoutBtn");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", function () {
+      if (typeof window.logout === "function") {
+        window.logout();
+      } else {
+        localStorage.removeItem("medicare_token");
+        localStorage.removeItem("medicareCurrentUser");
+        localStorage.removeItem("medicare_roles");
+        localStorage.removeItem("medicare_user_id");
+        window.location.href = "login.html";
+      }
+    });
+  }
 
   /* ---------- mobile drawer ---------- */
   var toggle = document.getElementById("sbToggle");

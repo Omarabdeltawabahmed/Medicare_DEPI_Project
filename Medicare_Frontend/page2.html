@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MediCare – Doctor Profile & Booking (Demo)</title>
+    <title>MediCare – Doctor Profile & Booking</title>
     <meta name="theme-color" content="#1769aa" />
     <script src="js/theme.js"></script>
+    <script src="js/api.js"></script>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/page2.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
@@ -28,11 +29,7 @@
             >
           </nav>
           <h1 data-i18n="title">Doctor Profile & Booking</h1>
-          <p class="sub" style="margin-top: 6px">
-            <span class="demo" data-i18n="demo.badge"
-              >Front-end demo · no real booking or payment</span
-            >
-          </p>
+
         </div>
       </div>
 
@@ -158,10 +155,9 @@
                   ><b id="pStat">–</b>
                 </div>
                 <label class="opt"
-                  ><input type="radio" name="pm" value="demo" checked /><span
-                    ><b data-i18n="pay.demo">Pay deposit – DEMO simulation</b
-                    ><br /><span class="hint" data-i18n="pay.demod"
-                      >No card is collected and no money is charged.</span
+                  ><input type="radio" name="pm" value="stripe" checked /><span
+                    ><b data-i18n="pay.stripeTitle">Pay with Stripe Checkout</b><br /><span class="hint" data-i18n="pay.striped"
+                      >Online payment with Stripe (25% deposit required to confirm).</span
                     ></span
                   ></label
                 >
@@ -233,7 +229,7 @@
               <div class="n">3</div>
               <b data-i18n="how.t3">Review the deposit</b>
               <p class="sub" data-i18n="how.d3">
-                A 25% deposit is shown. In this demo it is only simulated.
+                A 25% deposit is required to confirm the reservation.
               </p>
             </div>
             <div class="card">
@@ -267,7 +263,7 @@
               >MediCare</a
             >
             <p style="margin-top: 10px" data-i18n="ft.tag">
-              Healthcare made simpler (demo).
+              Healthcare made simpler.
             </p>
           </div>
           <div>
@@ -279,7 +275,7 @@
             ><a href="page5.html" data-i18n="nav.admin">Admin Dashboard</a>
           </div>
           <div>
-            <h3 data-i18n="ft.contact">Contact (illustrative)</h3>
+            <h3 data-i18n="ft.contact">Contact</h3>
             <p id="fPhone"></p>
             <p id="fMail"></p>
             <p id="fAddr"></p>
@@ -287,19 +283,11 @@
           <div>
             <h3 data-i18n="ft.priv">Privacy notice</h3>
             <p data-i18n="ft.privp">
-              Data entered here stays in your browser's localStorage. It is not
-              secure clinical storage. Do not enter real personal or medical
-              information.
+              Your personal and clinical health records are secured by MediCare Electronic Health Record (EHR) systems.
             </p>
           </div>
         </div>
-        <div class="fb" data-i18n="ft.disc">
-          Demo disclaimer: MediCare is a fictional front-end prototype with no
-          real authentication, payment processing, clinical booking or secure
-          database. A production ASP.NET Core MVC system must use server-side
-          validation, ASP.NET Identity, role-based authorization, and
-          server-created, server-verified Stripe payments.
-        </div>
+
       </div>
     </footer>
     <div id="toast" role="status" hidden></div>

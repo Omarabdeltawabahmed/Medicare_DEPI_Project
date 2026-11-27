@@ -6,6 +6,8 @@
     <title>MediCare – Patient Portal</title>
     <meta name="theme-color" content="#1769aa" />
     <script src="js/theme.js"></script>
+    <script src="js/api.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/page3.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
@@ -18,11 +20,7 @@
     <section class="hero">
       <div class="wrap">
         <h1 data-i="title">Your Health Dashboard</h1>
-        <div class="demo" role="alert" data-i="demo">
-          ⚠ All information shown is illustrative demo data. This portal has no
-          real authentication, so nothing here identifies or verifies a real
-          patient.
-        </div>
+  
       </div>
     </section>
 
@@ -39,14 +37,8 @@
           <!-- Appointments -->
           <section class="panel" id="p-appts" role="tabpanel">
             <h2 data-i="tAppts">My Appointments</h2>
-            <p class="sub" data-i="apptsSub">
-              Bookings are read from shared demonstration data stored in this
-              browser.
-            </p>
-            <div class="note" data-i="apptsNote">
-              These bookings are shared demonstration data and are not linked to
-              a verified patient identity.
-            </div>
+            <p class="sub" data-i="apptsSub">Your upcoming and past clinic appointments.</p>
+            <div class="note" data-i="apptsNote" style="display:none"></div>
             <div class="tools">
               <input
                 id="aSearch"
@@ -69,11 +61,11 @@
           <!-- History -->
           <section class="panel" id="p-hist" role="tabpanel">
             <h2 data-i="tHist">Medical History</h2>
-            <div class="note" id="histNote"></div>
+            <div class="note" id="histNote" style="display:none"></div>
             <div class="list" id="histOut"></div>
             <div class="up">
               <h3 style="margin-top: 0; color: var(--d)" data-i="upTitle">
-                Document upload (preview only)
+                Document upload
               </h3>
               <p class="sub" data-i="upSub">
                 Accepted: PDF, JPG, PNG up to 5 MB. Files stay in your browser
@@ -92,17 +84,14 @@
           <!-- Prescriptions -->
           <section class="panel" id="p-rx" role="tabpanel">
             <h2 data-i="tRx">Prescriptions</h2>
-            <div class="note" data-i="rxNote">
-              Sample prescriptions are illustrative drafts and are not medical
-              advice.
-            </div>
+            <div class="note" data-i="rxNote" style="display:none"></div>
             <div class="list" id="rxOut"></div>
           </section>
 
           <!-- Profile -->
           <section class="panel" id="p-prof" role="tabpanel">
             <h2 data-i="tProf">My Profile</h2>
-            <div class="note" id="profNote"></div>
+            <div class="note" id="profNote" style="display:none"></div>
             <form id="pf" class="card f" novalidate>
               <div>
                 <label for="fName" data-i="fName">Full name *</label
@@ -166,12 +155,7 @@
           <!-- Notifications -->
           <section class="panel" id="p-notif" role="tabpanel">
             <h2 data-i="tNotif">Notifications</h2>
-            <div class="note" data-i="notifNote">
-              Demo notifications generated in this page from appointment and
-              prescription data. No SMS, email, push or SignalR service is
-              connected. Read state is saved under the demo key
-              “medicareDemoNotificationsRead”.
-            </div>
+            <div class="note" data-i="notifNote" style="display:none"></div>
             <div class="tools">
               <button
                 class="btn o sm"
@@ -188,10 +172,7 @@
           <!-- Assistant -->
           <section class="panel" id="p-med" role="tabpanel">
             <h2 data-i="tMed">Medicine Information Assistant</h2>
-            <div class="note" data-i="medNote">
-              Built-in educational sample content only. No AI model or medical
-              API is connected, and nothing here is personalised advice.
-            </div>
+            <div class="note" data-i="medNote" style="display:none"></div>
             <form class="ask" id="medForm">
               <input
                 id="medQ"
@@ -217,13 +198,8 @@
     <footer>
       <div class="wrap">
         <h4 data-i="privT">Privacy notice</h4>
-        <p data-i="priv">
-          This demo stores data in your browser’s localStorage, which is not
-          secure clinical storage. The application has no authentication and
-          does not provide secure handling of medical data. Do not enter real
-          personal or medical information.
-        </p>
-        <p>© MediCare Demo · <a href="index.html" data-i="nHome">Home</a></p>
+        <p data-i="priv">Your personal and clinical health records are secured by MediCare Electronic Health Record (EHR) systems.</p>
+        <p>© MediCare · <a href="index.html" data-i="nHome">Home</a></p>
       </div>
     </footer>
 

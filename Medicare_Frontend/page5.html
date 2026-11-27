@@ -6,6 +6,7 @@
     <title>MediCare – Clinic Administration</title>
     <meta name="theme-color" content="#1769aa" />
     <script src="js/theme.js"></script>
+    <script src="js/api.js"></script>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/page5.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
@@ -15,7 +16,7 @@
     <script src="js/sidebar.js"></script>
     
     <main>
-      <div class="banner" role="alert" data-i="banner"></div>
+      <div class="banner" role="alert" data-i="banner" style="display:none"></div>
       <header class="bar" style="justify-content: space-between">
         <div>
           <h1 data-i="title"></h1>
@@ -306,6 +307,67 @@
           >
           <div class="w"><button type="submit" data-i="saveSet"></button></div>
         </form>
+      </section>
+    
+      <!-- Add Doctor Modal -->
+      <div id="addDoctorModal" style="position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:9999;padding:16px;">
+        <div class="card" style="max-width:550px;width:100%;max-height:90vh;overflow-y:auto;background:var(--bg-card, #fff);border-radius:12px;padding:24px;box-shadow:0 20px 40px rgba(0,0,0,0.3);">
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;border-bottom:1px solid var(--border-color,#e2e8f0);padding-bottom:10px;">
+            <h3 style="margin:0;color:var(--text-primary,#0f172a);">Add New Doctor</h3>
+            <button type="button" class="s sm" id="closeAddDocBtn" style="padding:4px 8px;cursor:pointer;">✕</button>
+          </div>
+          <form id="newDoctorForm" class="f" novalidate>
+            <label class="w"><span>Full Name *</span><input id="ndName" required placeholder="Dr. Full Name" /></label>
+            <label class="w"><span>Email Address *</span><input id="ndEmail" type="email" required placeholder="doctor@medicare.com" /></label>
+            <label><span>Password *</span><input id="ndPass" type="password" required placeholder="Min 6 characters" /></label>
+            <label><span>Phone Number *</span><input id="ndPhone" type="tel" required placeholder="+20 100 000 0000" /></label>
+            <label class="w"><span>Specialization *</span><select id="ndSpec" required></select></label>
+            <label><span>Consultation Fee (EGP)</span><input id="ndFee" type="number" min="50" step="50" value="350" /></label>
+            <label><span>Daily Patient Limit</span><input id="ndLimit" type="number" min="1" max="100" value="20" /></label>
+            <label><span>Work Start Time</span><input id="ndStart" type="time" value="09:00" /></label>
+            <label><span>Work End Time</span><input id="ndEnd" type="time" value="17:00" /></label>
+            <div class="w">
+              <span style="font-weight:600;display:block;margin-bottom:6px;">Working Days</span>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;" id="ndDays">
+                <label style="display:flex;gap:4px;align-items:center;"><input type="checkbox" value="SUN" checked /> Sun</label>
+                <label style="display:flex;gap:4px;align-items:center;"><input type="checkbox" value="MON" checked /> Mon</label>
+                <label style="display:flex;gap:4px;align-items:center;"><input type="checkbox" value="TUE" checked /> Tue</label>
+                <label style="display:flex;gap:4px;align-items:center;"><input type="checkbox" value="WED" checked /> Wed</label>
+                <label style="display:flex;gap:4px;align-items:center;"><input type="checkbox" value="THU" checked /> Thu</label>
+                <label style="display:flex;gap:4px;align-items:center;"><input type="checkbox" value="FRI" /> Fri</label>
+                <label style="display:flex;gap:4px;align-items:center;"><input type="checkbox" value="SAT" /> Sat</label>
+              </div>
+            </div>
+            <div class="w" style="margin-top:16px;display:flex;gap:12px;justify-content:flex-end;">
+              <button type="button" class="s" id="cancelAddDoc">Cancel</button>
+              <button type="submit" id="submitNewDocBtn">Create Doctor</button>
+            </div>
+            <div id="newDocMsg" class="w" style="margin-top:8px;"></div>
+          </form>
+        </div>
+      </div>
+
+      <!-- System Error Logs Viewer -->
+      <section class="card" id="logsSec" style="margin-top:24px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <h2 style="margin:0;">System Error Logs</h2>
+          <button type="button" class="s sm" id="refreshLogsBtn">Refresh Logs</button>
+        </div>
+        <p class="note">Real-time system exceptions and fallback logs recorded in SQL Server.</p>
+        <div class="tw">
+          <table>
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>Message</th>
+                <th>Source</th>
+                <th>Level / Action</th>
+                <th>Timestamp (UTC)</th>
+              </tr>
+            </thead>
+            <tbody id="logsBody"></tbody>
+          </table>
+        </div>
       </section>
     </main>
 

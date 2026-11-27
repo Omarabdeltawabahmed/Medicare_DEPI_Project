@@ -37,7 +37,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
     options.Password.RequireDigit = true;
     options.Password.RequireUppercase = true;
     options.Password.RequireLowercase = true;
-    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequireNonAlphanumeric = false;
 
     // User settings
     options.User.RequireUniqueEmail = true;
@@ -46,7 +46,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
 .AddDefaultTokenProviders();
 
 // =====================================
-// 3. JWT Authentication
+// 3. JWT Authentication & Authorization
 // =====================================
 
 var jwtKey = builder.Configuration["Jwt:Key"];
@@ -87,16 +87,53 @@ builder.Services.AddAuthentication(options =>
 
         ClockSkew = TimeSpan.Zero
     };
+
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken) && path.StartsWithSegments("/hubs/notifications"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
 });
 
 // =====================================
-// 4. SignalR
+// 4. CORS Policy
+// =====================================
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFrontend", policy =>
+    {
+        policy.WithOrigins(
+            "http://localhost:5500",
+            "http://127.0.0.1:5500",
+            "http://localhost:5501",
+            "http://127.0.0.1:5501",
+            "http://localhost:3000",
+            "http://127.0.0.1:3000"
+        )
+        .SetIsOriginAllowed(origin => true)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
+    });
+});
+
+// =====================================
+// 5. SignalR
 // =====================================
 
 builder.Services.AddSignalR();
 
 // =====================================
-// 5. Dependency Injection & Hosted Services
+// 6. Dependency Injection & Hosted Services
 // =====================================
 
 builder.Services.AddScoped<ITokenService, TokenService>();
@@ -112,13 +149,13 @@ builder.Services.AddHttpClient<IGeminiService, GeminiService>();
 builder.Services.AddHostedService<AppointmentReminderWorker>();
 
 // =====================================
-// 6. Authorization
+// 7. Authorization
 // =====================================
 
 builder.Services.AddAuthorization();
 
 // =====================================
-// 7. Controllers & Swagger
+// 8. Controllers & Swagger
 // =====================================
 
 builder.Services.AddControllers();
@@ -154,19 +191,19 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 // =====================================
-// 8. Build Application
+// 9. Build Application
 // =====================================
 
 var app = builder.Build();
 
 // =====================================
-// 9. Exception Middleware
+// 10. Exception Middleware
 // =====================================
 
 app.UseMiddleware<ExceptionMiddleware>();
 
 // =====================================
-// 10. Swagger
+// 11. Swagger
 // =====================================
 
 if (app.Environment.IsDevelopment())
@@ -176,7 +213,7 @@ if (app.Environment.IsDevelopment())
 }
 
 // =====================================
-// 11. Seed Identity Roles
+// 12. Seed Identity Roles
 // =====================================
 
 using (var scope = app.Services.CreateScope())
@@ -187,10 +224,17 @@ using (var scope = app.Services.CreateScope())
 }
 
 // =====================================
-// 12. HTTP Pipeline
+// 13. HTTP Pipeline (CORS early, guard HTTPS)
 // =====================================
 
-app.UseHttpsRedirection();
+app.UseRouting();
+
+app.UseCors("AllowFrontend");
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 
 app.UseStaticFiles();
 
@@ -199,7 +243,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 // =====================================
-// 13. Map Controllers & Hubs
+// 14. Map Controllers & Hubs
 // =====================================
 
 app.MapControllers();
@@ -207,7 +251,7 @@ app.MapControllers();
 app.MapHub<NotificationHub>("/hubs/notifications");
 
 // =====================================
-// 14. Run Application
+// 15. Run Application
 // =====================================
 
 app.Run();

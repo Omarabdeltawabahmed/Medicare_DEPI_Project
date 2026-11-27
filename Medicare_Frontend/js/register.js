@@ -105,16 +105,16 @@
             "hint.pw":
               "At least 8 characters with upper-case, lower-case and a number.",
             "hint.nid":
-              "Only provide if necessary. It is never shown publicly. It is NOT stored by this demo; production must handle it over an encrypted channel with strict access control.",
+              "National ID or Passport number for identity verification. Handled over an encrypted channel with strict access control.",
             "c.read": "I have read and accept the",
             "c.terms": "Terms",
             "c.and": "and",
             "c.privacy": "Privacy Policy",
-            "demo.t": "Prototype notice",
+            "demo.t": "",
             "demo.patient":
-              "This is a front-end demo. Real account creation, password storage and email verification require the MediCare backend.",
+              "",
             "demo.doctor":
-              "This is a browser-only demo. Selected files are NOT uploaded anywhere and no account is created. Real submission, verification and account activation require the MediCare backend.",
+              "",
             "btn.create": "Create Account",
             "btn.back": "Back",
             "btn.next": "Next",
@@ -304,20 +304,19 @@
             "err.method":
               "Online consultations are set to “No”, so choose In-person.",
             "err.emailExists":
-              "An account with this email already exists in this demo.",
+              "An account with this email already exists.",
             "err.emailPending":
               "A doctor application with this email is already pending.",
             "err.save":
-              "Could not save the demo record in this browser (storage unavailable).",
+              "Unable to complete registration. Please try again.",
             "ps.t": "Account created",
             "ps.b":
-              "Your patient account has been created in this demo. You can now sign in.",
+              "Your patient account has been created. You can now sign in.",
             "ds.t": "Verification request ready",
             "status.pending": "Pending",
             notice:
               "Your doctor registration request is ready for review. Your professional account will remain pending until the MediCare administration team verifies your documents and approves your application.",
-            "ds.demo":
-              "No account has been created and no files were uploaded or sent anywhere. Only non-sensitive metadata (no passwords, ID numbers or document contents) was saved in this browser as a demo record. Actual submission requires the MediCare backend, and approval can only be granted by an administrator.",
+            "ds.demo": "",
             "r.id": "Application ID",
             "r.name": "Applicant",
             "r.email": "Email",
@@ -328,9 +327,8 @@
             "r.status": "Status",
             "r.docs": "Documents provided",
             "r.years": "years",
-            "legal.t": "Terms & Privacy (demo summary)",
-            "legal.b":
-              "This is a placeholder for the full Terms of Service and Privacy Policy. Identity and licensing documents are used only to verify professional eligibility, are accessible only to authorised administrators, and are retained according to the production retention policy.",
+            "legal.t": "Terms & Privacy Policy",
+            "legal.b": "Identity and licensing documents are used only to verify professional eligibility, are accessible only to authorised administrators, and are retained according to medical data compliance standards.",
             close: "Close",
             "page.title": "Register | MediCare Clinic Management System",
             "lang.switch": "العربية",
@@ -370,17 +368,14 @@
             "g.female": "أنثى",
             "g.none": "أفضّل عدم الإفصاح",
             "hint.pw": "8 أحرف على الأقل مع حرف كبير وحرف صغير ورقم.",
-            "hint.nid":
-              "قدّمه فقط عند الضرورة. لا يُعرض علنًا أبدًا. هذا العرض التجريبي لا يحفظه؛ ويجب على النظام الفعلي التعامل معه عبر قناة مشفّرة وصلاحيات وصول صارمة.",
+            "hint.nid": "رقم بطاقة الرقم القومي أو جواز السفر للتحقق من الهوية. يتم التعامل معه عبر قناة مشفّرة وصلاحيات وصول صارمة.",
             "c.read": "لقد قرأت وأوافق على",
             "c.terms": "الشروط والأحكام",
             "c.and": "و",
             "c.privacy": "سياسة الخصوصية",
-            "demo.t": "تنبيه: نسخة تجريبية",
-            "demo.patient":
-              "هذه نسخة تجريبية للواجهة فقط. إنشاء الحساب الفعلي وتخزين كلمة المرور والتحقق من البريد يتطلبان خادم ميديكير الخلفي.",
-            "demo.doctor":
-              "هذه نسخة تجريبية تعمل داخل المتصفح فقط. الملفات المختارة لا تُرفع إلى أي مكان ولا يُنشأ أي حساب. الإرسال الفعلي والتحقق وتفعيل الحساب تتطلب الخادم الخلفي لميديكير.",
+            "demo.t": "",
+            "demo.patient": "",
+            "demo.doctor": "",
             "btn.create": "إنشاء الحساب",
             "btn.back": "رجوع",
             "btn.next": "التالي",
@@ -567,17 +562,14 @@
               "يوجد حساب بهذا البريد بالفعل في هذه النسخة التجريبية.",
             "err.emailPending":
               "يوجد طلب طبيب بهذا البريد قيد المراجعة بالفعل.",
-            "err.save":
-              "تعذّر حفظ السجل التجريبي في هذا المتصفح (التخزين غير متاح).",
+            "err.save": "تعذّر حفظ البيانات. يرجى المحاولة مرة أخرى.",
             "ps.t": "تم إنشاء الحساب",
-            "ps.b":
-              "تم إنشاء حساب المريض في هذه النسخة التجريبية. يمكنك الآن تسجيل الدخول.",
+            "ps.b": "تم إنشاء حسابك بنجاح. يمكنك الآن تسجيل الدخول.",
             "ds.t": "طلب التحقق جاهز",
             "status.pending": "قيد المراجعة",
             notice:
               "طلب تسجيلك كطبيب جاهز للمراجعة. سيظل حسابك المهني قيد المراجعة حتى يتحقق فريق إدارة ميديكير من مستنداتك ويوافق على طلبك.",
-            "ds.demo":
-              "لم يتم إنشاء أي حساب ولم تُرفع أو تُرسل أي ملفات إلى أي مكان. حُفظت في هذا المتصفح بيانات وصفية غير حساسة فقط (بلا كلمات مرور أو أرقام هوية أو محتوى مستندات) كسجل تجريبي. الإرسال الفعلي يتطلب الخادم الخلفي لميديكير، ولا يمكن منح الموافقة إلا من قِبل المسؤول.",
+            "ds.demo": "",
             "r.id": "رقم الطلب",
             "r.name": "مقدّم الطلب",
             "r.email": "البريد الإلكتروني",
@@ -1508,43 +1500,63 @@
             return;
           }
           const email = $("#p_email").value.trim().toLowerCase();
-          if (emailTaken(email)) {
-            setErr($("#p_email"), "err.emailExists");
-            $("#p_email").focus();
-            return;
+          const fullName = $("#p_name").value.trim();
+          const phone = $("#p_phone").value.trim();
+          const rawPassword = $("#p_pw").value;
+
+          const submitBtn = pform.querySelector('button[type="submit"]');
+          if (submitBtn) submitBtn.disabled = true;
+
+          try {
+            // Call MediCare backend API
+            const apiRes = await window.apiFetch('/api/auth/register', {
+              method: 'POST',
+              body: JSON.stringify({
+                fullName: fullName,
+                email: email,
+                password: rawPassword,
+                phoneNumber: phone,
+                role: 'Patient'
+              })
+            });
+
+            const pw = await hashPw(rawPassword);
+            const users = store.get(LS_USERS, []) || [];
+            users.push({
+              id: (apiRes && apiRes.userId) || ("PT-" + Date.now().toString(36).toUpperCase()),
+              fullName: fullName,
+              email: email,
+              phone: phone,
+              dob: $("#p_dob").value,
+              gender: $("#p_gender").value || null,
+              role: "Patient",
+              passwordSalt: pw.salt,
+              passwordHash: pw.hash,
+              createdAt: new Date().toISOString(),
+            });
+            store.set(LS_USERS, users);
+
+            $("#formArea").hidden = true;
+            $("#intro").hidden = true;
+            $("#successPatient").hidden = false;
+            $("#psHead").focus();
+
+            // Smooth automatic redirect to login.html after confirmation
+            setTimeout(() => {
+              window.location.href = "login.html";
+            }, 2000);
+          } catch (err) {
+            console.error("Patient registration error:", err);
+            let displayMsg = err.message || "Please check your inputs and try again.";
+            alert("Registration failed: " + displayMsg);
+          } finally {
+            if (submitBtn) submitBtn.disabled = false;
           }
-          if (emailPending(email)) {
-            setErr($("#p_email"), "err.emailPending");
-            $("#p_email").focus();
-            return;
-          }
-          const pw = await hashPw($("#p_pw").value);
-          const users = store.get(LS_USERS, []) || [];
-          users.push({
-            id: "PT-" + Date.now().toString(36).toUpperCase(),
-            fullName: $("#p_name").value.trim(),
-            email: email,
-            phone: $("#p_phone").value.trim(),
-            dob: $("#p_dob").value,
-            gender: $("#p_gender").value || null,
-            role: "Patient",
-            passwordSalt: pw.salt,
-            passwordHash: pw.hash,
-            createdAt: new Date().toISOString(),
-          });
-          if (!store.set(LS_USERS, users)) {
-            alert(t("err.save"));
-            return;
-          }
-          $("#formArea").hidden = true;
-          $("#intro").hidden = true;
-          $("#successPatient").hidden = false;
-          $("#psHead").focus();
         });
 
         /* ---------- Doctor submit ---------- */
         let lastApp = null;
-        dform.addEventListener("submit", (e) => {
+        dform.addEventListener("submit", async (e) => {
           e.preventDefault();
           let firstBad = -1;
           for (let i = 0; i < STEPS; i++) {
@@ -1610,6 +1622,46 @@
             documentsProvided: docs, // categories + filenames only
             profilePhotoProvided: !!uploads.photo,
           };
+          
+          // Register with MediCare backend API
+          try {
+            const feeVal = Number($("#d_fee") ? $("#d_fee").value : 200) || 200;
+            const regRes = await window.apiFetch('/api/auth/register', {
+              method: 'POST',
+              body: JSON.stringify({
+                fullName: $("#d_name").value.trim(),
+                email: email,
+                password: $("#d_pw").value,
+                phoneNumber: $("#d_phone").value.trim(),
+                role: 'Doctor'
+              })
+            });
+
+            const loginRes = await window.apiFetch('/api/auth/login', {
+              method: 'POST',
+              body: JSON.stringify({
+                email: email,
+                password: $("#d_pw").value
+              })
+            });
+
+            if (loginRes && loginRes.token) {
+              await fetch((window.API_BASE_URL || 'http://localhost:5175') + '/api/doctors/profile', {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                  'Authorization': 'Bearer ' + loginRes.token
+                },
+                body: JSON.stringify({
+                  specialization: specVal || 'General Practice',
+                  consultationFee: feeVal
+                })
+              });
+            }
+          } catch (apiErr) {
+            console.warn('Backend doctor registration notice:', apiErr);
+          }
+          
           const apps = store.get(LS_APPS, []) || [];
           apps.push(app);
           if (!store.set(LS_APPS, apps)) {

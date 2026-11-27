@@ -13,6 +13,7 @@ namespace MediCare.Web.Controllers;
 
 [ApiController]
 [Route("api/payment")]
+[Route("api/payments")]
 public class PaymentController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;

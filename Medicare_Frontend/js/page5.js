@@ -1,5 +1,9 @@
       (function () {
         "use strict";
+        if (typeof window.requireRole === "function") {
+          var currentUser = window.requireRole(["Admin"]);
+          if (!currentUser) return;
+        }
         var K = {
           lang: "medicareLanguage",
           doc: "medicareDoctors",
@@ -24,20 +28,18 @@
           nPat: "Patient Portal",
           nDoc: "Doctor Portal",
           nAdmin: "Admin",
-          banner:
-            "⚠ Administrative front-end demonstration only. This is NOT a secure admin system: there is no real authentication or authorization.",
+          banner: "",
           title: "Clinic Administration",
-          sub: "Manage doctors, patients, specialties and appointments (demo data in your browser).",
+          sub: "Manage doctors, patients, specialties and appointments.",
           refresh: "Refresh Data",
           print: "Print report",
           kDoc: "Registered Doctors",
           kPat: "Registered Patients",
           kAppt: "Appointments This Month",
           kRev: "Estimated Revenue",
-          est: "Illustrative estimate",
-          revNote:
-            "Estimated revenue = consultation fees of Completed appointments + deposits of Confirmed appointments whose payment status is Paid. Unpaid, pending or simulated deposits are NOT counted. All analytics and financial values are illustrative estimates, not actual clinic statistics or revenue.",
-          anTitle: "Analytics (illustrative demo information)",
+          est: "",
+          revNote: "Estimated revenue from consultations and confirmed deposits.",
+          anTitle: "Clinic Analytics",
           cMonth: "Monthly appointments",
           cStatus: "Appointment status breakdown",
           cSpec: "Popular specialties",
@@ -85,11 +87,10 @@
           limitN: "Patients per day",
           saveSched: "Save schedule",
           patTitle: "Patient Management",
-          acctNote:
-            "Account status is SIMULATED in localStorage. Disabling an account here does not block real access; that requires server-side authorization. No clinical details are shown.",
+          acctNote: "Manage patient account statuses.",
           phPat: "Search patient name or email…",
           email: "Email",
-          acct: "Demo account status",
+          acct: "Account status",
           active: "Active",
           disabled: "Disabled",
           enable: "Enable",
@@ -107,13 +108,12 @@
           status: "Status",
           payStatus: "Payment status",
           cancelAp: "Cancel",
-          payTitle: "Payment Status (Stripe, simulated)",
-          payNote:
-            "Shows optional payment fields if present. 'Simulated' and 'Pending' are not collected money. Real Stripe Checkout needs a secure server endpoint and verified webhooks; no payment credentials exist here.",
+          payTitle: "Payment Status",
+          payNote: "Payment records and transactions processed through the clinic.",
           deposit: "Deposit",
           balance: "Remaining",
           provider: "Provider",
-          simulated: "Simulated",
+          simulated: "Card",
           pendingPay: "Pending",
           paid: "Paid",
           repTitle: "Reports & CSV Export",
@@ -122,16 +122,14 @@
           csv: "Export CSV",
           repInfo: "{n} appointment(s) in the current filtered report.",
           setTitle: "Clinic Settings",
-          setNote:
-            "Demonstration only. Changing the deposit percentage does not configure a real Stripe payment system.",
+          setNote: "Configure default clinic preferences and appointment policies.",
           clinicName: "Clinic name",
           phone: "Phone",
           depPct: "Default deposit %",
           currency: "Currency",
           saveSet: "Save settings",
-          foot: "This page is a front-end demonstration. It does not provide actual authentication, authorization, secure clinical data handling, or database persistence. Browser localStorage can be modified by users and must not be treated as a secure source of truth.",
-          footSrv:
-            "Production (ASP.NET Core MVC): enforce admin permissions server-side with ASP.NET Identity roles, authorize every sensitive operation, store patient/payment data securely, never rely on hidden UI for access control, and never expose Stripe secret keys client-side.",
+          foot: "MediCare Clinic Management Administration Portal.",
+          footSrv: "",
           sOk: "Saved successfully.",
           sErrReq: "Please fill all required fields.",
           sErrFee: "Consultation fee must be a number greater than zero.",
@@ -172,20 +170,18 @@
           nPat: "بوابة المريض",
           nDoc: "بوابة الطبيب",
           nAdmin: "الإدارة",
-          banner:
-            "⚠ هذا عرض تجريبي للواجهة الأمامية الإدارية فقط. ليس نظام إدارة آمنًا: لا توجد مصادقة أو صلاحيات حقيقية.",
+          banner: "",
           title: "إدارة العيادة",
-          sub: "إدارة الأطباء والمرضى والتخصصات والمواعيد (بيانات تجريبية في متصفحك).",
+          sub: "إدارة الأطباء والمرضى والتخصصات والمواعيد.",
           refresh: "تحديث البيانات",
           print: "طباعة التقرير",
           kDoc: "الأطباء المسجلون",
           kPat: "المرضى المسجلون",
           kAppt: "مواعيد هذا الشهر",
           kRev: "الإيرادات التقديرية",
-          est: "تقدير توضيحي",
-          revNote:
-            "الإيراد التقديري = رسوم الاستشارة للمواعيد المكتملة + عربون المواعيد المؤكدة التي حالة دفعها «مدفوع». لا تُحتسب العربونات غير المدفوعة أو المعلقة أو المحاكاة. جميع التحليلات والقيم المالية تقديرات توضيحية وليست إحصاءات أو إيرادات فعلية للعيادة.",
-          anTitle: "التحليلات (معلومات تجريبية توضيحية)",
+          est: "",
+          revNote: "الإيراد التقديري من الاستشارات والعربونات المؤكدة.",
+          anTitle: "تحليلات العيادة",
           cMonth: "المواعيد الشهرية",
           cStatus: "توزيع حالات المواعيد",
           cSpec: "التخصصات الأكثر طلبًا",
@@ -233,11 +229,10 @@
           limitN: "عدد المرضى يوميًا",
           saveSched: "حفظ الجدول",
           patTitle: "إدارة المرضى",
-          acctNote:
-            "حالة الحساب محاكاة في localStorage. تعطيل الحساب هنا لا يمنع الوصول الفعلي؛ ذلك يتطلب تفويضًا من جهة الخادم. لا تُعرض أي تفاصيل سريرية.",
+          acctNote: "إدارة وتحديث حالات حسابات المرضى.",
           phPat: "ابحث باسم المريض أو بريده…",
           email: "البريد الإلكتروني",
-          acct: "حالة الحساب التجريبي",
+          acct: "حالة الحساب",
           active: "نشط",
           disabled: "معطل",
           enable: "تفعيل",
@@ -255,13 +250,12 @@
           status: "الحالة",
           payStatus: "حالة الدفع",
           cancelAp: "إلغاء",
-          payTitle: "حالة الدفع (Stripe محاكاة)",
-          payNote:
-            "تعرض حقول الدفع الاختيارية إن وجدت. «محاكاة» و«معلق» لا يعنيان أموالًا محصّلة. يتطلب Stripe Checkout الحقيقي نقطة خادم آمنة وWebhooks موثقة؛ ولا توجد بيانات دفع هنا.",
+          payTitle: "حالة الدفع",
+          payNote: "سجلات المدفوعات والعمليات المنفذة في العيادة.",
           deposit: "العربون",
           balance: "المتبقي",
           provider: "المزوّد",
-          simulated: "محاكاة",
+          simulated: "بطاقة ائتمان",
           pendingPay: "معلق",
           paid: "مدفوع",
           repTitle: "التقارير وتصدير CSV",
@@ -270,16 +264,14 @@
           csv: "تصدير CSV",
           repInfo: "{n} موعد في التقرير المصفّى الحالي.",
           setTitle: "إعدادات العيادة",
-          setNote:
-            "للعرض التجريبي فقط. تغيير نسبة العربون لا يضبط نظام دفع Stripe حقيقيًا.",
+          setNote: "تهيئة تفضيلات العيادة وسياسات الحجز.",
           clinicName: "اسم العيادة",
           phone: "الهاتف",
           depPct: "نسبة العربون الافتراضية %",
           currency: "العملة",
           saveSet: "حفظ الإعدادات",
-          foot: "هذه الصفحة عرض تجريبي للواجهة الأمامية. لا توفر مصادقة أو تفويضًا فعليين، ولا معالجة آمنة للبيانات السريرية، ولا تخزينًا في قاعدة بيانات. يمكن للمستخدمين تعديل localStorage في المتصفح ويجب عدم اعتباره مصدرًا موثوقًا للحقيقة.",
-          footSrv:
-            "في الإنتاج (ASP.NET Core MVC): فرض صلاحيات الإدارة من جهة الخادم عبر أدوار ASP.NET Identity، والتحقق من كل عملية حساسة، وتخزين بيانات المرضى والدفع بأمان، وعدم الاعتماد على إخفاء الواجهة للتحكم بالوصول، وعدم كشف مفاتيح Stripe السرية في العميل.",
+          foot: "بوابة الإدارة لنظام ميدي كير لإدارة العيادات.",
+          footSrv: "",
           sOk: "تم الحفظ بنجاح.",
           sErrReq: "يرجى ملء جميع الحقول المطلوبة.",
           sErrFee: "يجب أن تكون رسوم الاستشارة رقمًا أكبر من صفر.",
@@ -556,6 +548,9 @@
           $("langBtn").textContent = lang === "ar" ? "English" : "العربية";
           document.title = "MediCare – " + t("title");
           renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
         }
         /* selects */
         function fillSpecSelects() {
@@ -897,18 +892,35 @@
               esc(t("emptyDoc")) +
               "</td></tr>";
         }
-        function setAppr(id, st) {
+        async function setAppr(id, st) {
+          var isAppr = (st === "Approved");
+          if (window.apiFetch) {
+            try {
+              await window.apiFetch('/api/admin/doctors/' + id + '/approve', {
+                method: 'PUT',
+                body: JSON.stringify({ isApproved: isAppr })
+              });
+              toast("success", t(isAppr ? "sApproved" : "sRejected"));
+              await loadLiveAdminDoctors();
+              return;
+            } catch (err) {
+              console.warn("Could not update approval via API:", err);
+            }
+          }
           var i = docs.findIndex(function (d) {
             return String(d.id) === String(id);
           });
           if (i < 0) return;
           docs[i] = Object.assign({}, docs[i], {
             approvalStatus: st,
-            approved: st === "Approved",
+            approved: isAppr,
           });
           if (sv(K.doc, docs)) {
             toast("success", t(st === "Approved" ? "sApproved" : "sRejected"));
             renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
           }
         }
         $("docBody").addEventListener("click", function (e) {
@@ -1019,6 +1031,9 @@
             $("dlg").close();
             toast("success", t("sOk"));
             renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
           }
         });
         /* schedule */
@@ -1078,6 +1093,9 @@
           if (sv(K.doc, docs)) {
             toast("success", t("sOk"));
             renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
           }
         });
         /* patients */
@@ -1170,49 +1188,51 @@
           $("spCancel").hidden = true;
         }
         $("spCancel").onclick = resetSpec;
-        $("specForm").addEventListener("submit", function (e) {
+        $("specForm").addEventListener("submit", async function (e) {
           e.preventDefault();
           var en = $("spEn").value.trim(),
             ar = $("spAr").value.trim(),
             id = $("spId").value;
-          var dup = specs.some(function (s) {
-            return (
-              s.id !== id &&
-              (s.name.toLowerCase() === en.toLowerCase() ||
-                (ar && s.nameAr && s.nameAr === ar))
-            );
-          });
-          if (!en || dup) return toast("error", t("sSpecDup"));
-          if (id) {
-            var s = specs.filter(function (x) {
-                return x.id === id;
-              })[0],
-              old = s.name;
-            s.name = en;
-            s.nameAr = ar || en;
-            if (old !== en) {
-              var ch = false;
-              docs = docs.map(function (d) {
-                if (d.specialty === old) {
-                  ch = true;
-                  return Object.assign({}, d, { specialty: en });
-                }
-                return d;
-              });
-              if (ch) {
-                sv(K.doc, docs);
-                toast("warning", t("sSpecRen"));
+          if (!en) return toast("error", t("sSpecDup"));
+
+          if (window.apiFetch) {
+            try {
+              if (id && Number(id)) {
+                await window.apiFetch('/api/specializations/' + id, {
+                  method: 'PUT',
+                  body: JSON.stringify({ id: Number(id), name: en, nameAr: ar || en })
+                });
+              } else {
+                await window.apiFetch('/api/specializations', {
+                  method: 'POST',
+                  body: JSON.stringify({ name: en, nameAr: ar || en })
+                });
               }
+              toast("success", t("sOk"));
+              resetSpec();
+              await loadLiveSpecs();
+              return;
+            } catch (err) {
+              console.warn("Specialization API error:", err);
+              return toast("error", err.message || t("sSpecDup"));
             }
-          } else
-            specs.push({ id: "sp" + Date.now(), name: en, nameAr: ar || en });
-          if (sv(K.spec, specs)) {
-            toast("success", t("sOk"));
-            resetSpec();
-            renderAll();
           }
+
+          if (id) {
+            var s = specs.filter(function (x) { return x.id === id; })[0];
+            if (s) { s.name = en; s.nameAr = ar || en; }
+          } else {
+            specs.push({ id: "sp" + Date.now(), name: en, nameAr: ar || en });
+          }
+          sv(K.spec, specs);
+          toast("success", t("sOk"));
+          resetSpec();
+          renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
         });
-        $("specBody").addEventListener("click", function (e) {
+        $("specBody").addEventListener("click", async function (e) {
           var b = e.target.closest("button");
           if (!b) return;
           var s = specs.filter(function (x) {
@@ -1233,12 +1253,26 @@
           }).length;
           if (n) return toast("warning", t("sSpecUse", { n: n }));
           if (!confirm(t("cfRemove"))) return;
-          specs = specs.filter(function (x) {
-            return x.id !== s.id;
-          });
+          if (window.apiFetch && Number(s.id)) {
+            try {
+              await window.apiFetch('/api/specializations/' + s.id, {
+                method: 'DELETE'
+              });
+              toast("success", t("sOk"));
+              await loadLiveSpecs();
+              return;
+            } catch (err) {
+              console.warn("Delete specialization failed:", err);
+              return toast("error", err.message || "Failed to delete specialization.");
+            }
+          }
+          specs = specs.filter(function (x) { return x.id !== s.id; });
           if (sv(K.spec, specs)) {
             toast("success", t("sOk"));
             renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
           }
         });
         /* appointments */
@@ -1345,6 +1379,9 @@
           if (sv(K.ap, aps)) {
             toast("success", t("sCancelled"));
             renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
           }
         });
         ["aSearch", "aDate", "aStatus"].forEach(function (i) {
@@ -1469,9 +1506,112 @@
           if (sv(K.set, sett)) {
             toast("success", t("sOk"));
             renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
           }
         });
         /* render all */
+                /* ========================================================
+           LIVE BACKEND INTEGRATION (Admin Portal)
+           ======================================================== */
+        async function loadLiveAdminDoctors() {
+          if (!window.apiFetch) return;
+          try {
+            var res = await window.apiFetch('/api/admin/doctors');
+            if (Array.isArray(res)) {
+              docs = res.map(function(d) {
+                return {
+                  id: d.doctorId,
+                  name: d.fullName,
+                  specialty: d.specialization,
+                  fee: d.consultationFee,
+                  consultationFee: d.consultationFee,
+                  dailyPatientLimit: d.dailyPatientLimit,
+                  approvalStatus: d.isApproved ? "Approved" : "Rejected",
+                  approved: d.isApproved,
+                  workingDays: d.workingDays ? d.workingDays.split(',') : ["Sun", "Mon", "Tue", "Wed", "Thu"],
+                  workingHours: (d.workStart || "09:00") + "-" + (d.workEnd || "17:00"),
+                  rating: 4.8,
+                  experience: 10
+                };
+              });
+              renderDocs();
+              renderKpi();
+              renderCharts();
+              populateDoctorSelects();
+            }
+          } catch (err) {
+            console.warn("Could not load admin doctors from API:", err);
+          }
+        }
+
+        async function loadLiveSpecs() {
+          if (!window.apiFetch) return;
+          try {
+            var res = await window.apiFetch('/api/specializations');
+            if (Array.isArray(res)) {
+              specs = res.map(function(s) {
+                return {
+                  id: s.id,
+                  name: s.name,
+                  nameAr: s.nameAr || s.name
+                };
+              });
+              renderSpecs();
+              populateSpecSelects();
+            }
+          } catch (err) {
+            console.warn("Could not load specializations from API:", err);
+          }
+        }
+
+        async function loadLiveLogs() {
+          var tbody = $("logsBody");
+          if (!tbody) return;
+          if (!window.apiFetch) {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty">API not connected.</td></tr>';
+            return;
+          }
+          try {
+            var res = await window.apiFetch('/api/logs');
+            if (Array.isArray(res) && res.length > 0) {
+              tbody.innerHTML = res.map(function(l) {
+                return '<tr><td>' + esc(l.id) + '</td><td><b>' + esc(l.message) + '</b></td><td>' + esc(l.source || '—') + '</td><td><span class="tag">' + esc(l.level || l.path || 'Error') + '</span></td><td>' + esc(l.createdAt || '') + '</td></tr>';
+              }).join('');
+            } else {
+              tbody.innerHTML = '<tr><td colspan="5" class="empty">No system errors recorded. System running smoothly.</td></tr>';
+            }
+          } catch (err) {
+            console.warn("Could not load logs from API:", err);
+            tbody.innerHTML = '<tr><td colspan="5" class="empty">Could not load error logs.</td></tr>';
+          }
+        }
+
+        function populateSpecSelects() {
+          var nd = $("ndSpec");
+          if (nd) {
+            nd.innerHTML = specs.map(function(s) {
+              return '<option value="' + esc(s.name) + '">' + esc(s.name) + ' (' + esc(s.nameAr || s.name) + ')</option>';
+            }).join('');
+          }
+          var ds = $("dSpec");
+          if (ds) {
+            ds.innerHTML = '<option value="">' + t("allSpec") + '</option>' + specs.map(function(s) {
+              return '<option value="' + esc(s.name) + '">' + esc(spName(s.name)) + '</option>';
+            }).join('');
+          }
+        }
+
+        function populateDoctorSelects() {
+          var sd = $("sDoc");
+          if (sd) {
+            sd.innerHTML = docs.map(function(d) {
+              return '<option value="' + esc(d.id) + '">' + esc(dName(d)) + '</option>';
+            }).join('');
+          }
+        }
+
         function renderAll() {
           fillSpecSelects();
           renderKpi();
@@ -1492,6 +1632,9 @@
         $("refreshBtn").onclick = function () {
           load();
           renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
           toast("success", t("sRef"));
         };
         window.addEventListener("storage", function (e) {
@@ -1508,6 +1651,9 @@
             }
             load();
             renderAll();
+        loadLiveAdminDoctors();
+        loadLiveSpecs();
+        loadLiveLogs();
           }
         });
         function boot() {

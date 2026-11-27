@@ -13,6 +13,7 @@
  
     <meta name="theme-color" content="#1769aa" />
     <script src="js/theme.js"></script>
+    <script src="js/api.js"></script>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/login.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
@@ -100,7 +101,7 @@
  
         <div id="formMessage" aria-live="polite" aria-atomic="true"></div>
  
-        <form id="loginForm" novalidate autocomplete="on">
+        <form id="loginForm" method="POST" autocomplete="on">
           <div class="field">
             <label for="email" data-i18n="emailLabel">Email address</label>
             <div class="input-wrap">
@@ -146,7 +147,7 @@
           <span data-i18n="noAccount">Don't have an account?</span>
           <a href="register.html" data-i18n="createAccount">Create Account</a>
         </p>
-        <p class="demo-note" data-i18n="demoNote">Demo prototype: sign-in is simulated in your browser and is not secure authentication.</p>
+
       </div>
     </section>
   </main>

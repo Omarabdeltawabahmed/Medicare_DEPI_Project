@@ -1,6 +1,8 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 using MediCare.Data.Models;
 using MediCare.Services.DTOs.Auth;
 using MediCare.Services.Interfaces;
@@ -92,6 +94,82 @@ public class AuthController : ControllerBase
             fullName = user.FullName,
             email = user.Email,
             roles = await _userManager.GetRolesAsync(user)
+        });
+    }
+
+    [Authorize]
+    [HttpGet("profile")]
+    public async Task<IActionResult> GetProfile()
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return NotFound(new { message = "User not found." });
+
+        var roles = await _userManager.GetRolesAsync(user);
+
+        return Ok(new UserProfileDto
+        {
+            Id = user.Id,
+            FullName = user.FullName,
+            Email = user.Email ?? string.Empty,
+            PhoneNumber = user.PhoneNumber ?? string.Empty,
+            DateOfBirth = user.DateOfBirth,
+            BloodGroup = user.BloodGroup,
+            Allergies = user.Allergies,
+            MedicalNotes = user.MedicalNotes,
+            Roles = roles
+        });
+    }
+
+    [Authorize]
+    [HttpPut("profile")]
+    public async Task<IActionResult> UpdateProfile([FromBody] UpdateUserProfileDto dto)
+    {
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+            return Unauthorized();
+
+        var user = await _userManager.FindByIdAsync(userId);
+        if (user == null)
+            return NotFound(new { message = "User not found." });
+
+        if (!string.IsNullOrWhiteSpace(dto.FullName))
+            user.FullName = dto.FullName.Trim();
+
+        user.PhoneNumber = dto.PhoneNumber?.Trim();
+        user.DateOfBirth = dto.DateOfBirth;
+        user.BloodGroup = dto.BloodGroup?.Trim();
+        user.Allergies = dto.Allergies?.Trim();
+        user.MedicalNotes = dto.MedicalNotes?.Trim();
+
+        var result = await _userManager.UpdateAsync(user);
+        if (!result.Succeeded)
+        {
+            return BadRequest(new
+            {
+                errors = result.Errors.Select(e => e.Description)
+            });
+        }
+
+        return Ok(new
+        {
+            message = "Profile updated successfully.",
+            profile = new UserProfileDto
+            {
+                Id = user.Id,
+                FullName = user.FullName,
+                Email = user.Email ?? string.Empty,
+                PhoneNumber = user.PhoneNumber ?? string.Empty,
+                DateOfBirth = user.DateOfBirth,
+                BloodGroup = user.BloodGroup,
+                Allergies = user.Allergies,
+                MedicalNotes = user.MedicalNotes,
+                Roles = await _userManager.GetRolesAsync(user)
+            }
         });
     }
 }

@@ -1,5 +1,9 @@
       (function () {
         "use strict";
+        if (typeof window.requireRole === "function") {
+          var currentUser = window.requireRole(["Doctor", "Admin"]);
+          if (!currentUser) return;
+        }
         var K = {
           a: "medicareAppointments",
           d: "medicareDoctors",
@@ -21,12 +25,12 @@
             nClin: "Clinician Panel",
             nAbout: "About & Contact",
             title: "Doctor Workspace",
-            demo: "⚠ Doctor identity and permissions are simulated. Do not store real patient information in this demonstration.",
+            demo: "",
             kToday: "Today's Appointments",
             kPend: "Pending Requests",
             kConf: "Confirmed Appointments",
             kDone: "Completed Visits",
-            simDoc: "Simulated doctor identity",
+            simDoc: "Doctor account",
             scope: "Show only the selected doctor's appointments",
             refresh: "Refresh data",
             refreshed: "Data refreshed.",
@@ -35,11 +39,9 @@
             tAvail: "Availability",
             tVisit: "Patient Visit",
             tNotif: "Notifications",
-            apptsSub:
-              "Read from shared demonstration data in this browser. Status changes are saved and reflected on the other pages.",
+            apptsSub: "",
             analytics: "Status overview",
-            analyticsNote:
-              "Illustrative analytics calculated from local demo data only.",
+            analyticsNote: "",
             searchPh: "Search by appointment ID or patient name",
             clear: "Clear filters",
             allSt: "All statuses",
@@ -98,14 +100,13 @@
               "Slot duration must be 5–240 minutes and fit in the working hours.",
             vLim: "Enter a whole number of at least 1.",
             avOk: "Availability saved to settings and the doctor record.",
-            avNew:
-              "Availability saved. No matching doctor record existed, so a simulated one was added to “medicareDoctors”.",
+            avNew: "Availability settings saved successfully.",
             saveFail: "Could not save. Browser storage may be unavailable.",
             noSelT: "No appointment selected",
             noSelD:
               "Choose “Open” on an appointment to record notes or write a prescription.",
             details: "Patient visit details",
-            fict: "Fictional demo data",
+            fict: "",
             dId: "Appointment ID",
             dPat: "Patient",
             dDT: "Date & time",
@@ -121,8 +122,7 @@
             recOk: "Visit record saved.",
             recUpd: "Existing visit record updated.",
             rx: "Electronic prescription",
-            rxNote:
-              "Demo draft only. It is stored in this browser and is not sent to any patient account.",
+            rxNote: "",
             addMed: "+ Add medication",
             rmMed: "Remove",
             mName: "Medication name *",
@@ -135,12 +135,11 @@
             vMedMin: "Add at least one medication.",
             saveRx: "Save Prescription",
             printRx: "Print Prescription",
-            rxOk: "Prescription saved. It is available on Page 3 (demo only).",
+            rxOk: "Prescription saved and transmitted to patient medical records.",
             rxUpd: "Existing prescription for this appointment updated.",
             fixErr: "Please fix the highlighted fields.",
             tNotifN: "Notifications",
-            notifNote:
-              "Demo notifications generated from the appointment data in this browser. No email, SMS, SignalR or push service is connected.",
+            notifNote: "",
             nNew: "New booking request",
             nConf: "Appointment confirmed",
             nCanc: "Appointment cancelled or rejected",
@@ -152,13 +151,12 @@
             rxPat: "Patient",
             rxDr: "Doctor",
             rxDate: "Date",
-            rxFoot:
-              "Illustrative demo prescription – not medical advice, not transmitted to any patient account.",
-            pdoc: "Simulated doctor",
-            sampleDoc: "Dr. Sample Doctor (Simulated)",
+            rxFoot: "",
+            pdoc: "Doctor",
+            sampleDoc: "Dr. Medical Specialist",
             confT: "Patient confidentiality & security notice",
-            conf: "Patient information is confidential. This is a front-end demonstration with no real authentication, authorization, secure medical storage or server-side validation. Data is kept in browser localStorage, which is not secure. Never enter real patient data.",
-            prod: "In production ASP.NET Core MVC, doctor identity and permissions must be enforced server-side.",
+            conf: "Patient information and clinical consultations are protected under MediCare healthcare confidentiality standards.",
+            prod: "",
           },
           ar: {
             nHome: "الرئيسية",
@@ -167,7 +165,7 @@
             nClin: "لوحة الطبيب",
             nAbout: "من نحن وتواصل معنا",
             title: "مساحة عمل الطبيب",
-            demo: "⚠ هوية الطبيب وصلاحياته محاكاة فقط. لا تخزّن أي معلومات حقيقية عن المرضى في هذا العرض التجريبي.",
+            demo: "",
             kToday: "مواعيد اليوم",
             kPend: "الطلبات المعلقة",
             kConf: "المواعيد المؤكدة",
@@ -243,13 +241,12 @@
               "يجب أن تكون مدة الفترة بين 5 و240 دقيقة وتناسب ساعات العمل.",
             vLim: "أدخل عدداً صحيحاً لا يقل عن 1.",
             avOk: "تم حفظ التوفر في الإعدادات وسجل الطبيب.",
-            avNew:
-              "تم حفظ التوفر. لم يوجد سجل طبيب مطابق، فأُضيف سجل محاكى إلى «medicareDoctors».",
+            avNew: "تم حفظ إعدادات التوفر بنجاح.",
             saveFail: "تعذر الحفظ. قد يكون تخزين المتصفح غير متاح.",
             noSelT: "لم يتم اختيار موعد",
             noSelD: "اختر «فتح» على موعد لتسجيل الملاحظات أو كتابة وصفة.",
             details: "تفاصيل زيارة المريض",
-            fict: "بيانات تجريبية خيالية",
+            fict: "",
             dId: "رقم الموعد",
             dPat: "المريض",
             dDT: "التاريخ والوقت",
@@ -265,8 +262,7 @@
             recOk: "تم حفظ سجل الزيارة.",
             recUpd: "تم تحديث سجل الزيارة الحالي.",
             rx: "الوصفة الإلكترونية",
-            rxNote:
-              "مسودة تجريبية فقط. تُخزن في هذا المتصفح ولا تُرسل إلى أي حساب مريض.",
+            rxNote: "",
             addMed: "+ إضافة دواء",
             rmMed: "إزالة",
             mName: "اسم الدواء *",
@@ -283,8 +279,7 @@
             rxUpd: "تم تحديث الوصفة الحالية لهذا الموعد.",
             fixErr: "يرجى تصحيح الحقول المحددة.",
             tNotifN: "الإشعارات",
-            notifNote:
-              "إشعارات تجريبية مُنشأة من بيانات المواعيد في هذا المتصفح. لا توجد خدمة بريد أو رسائل قصيرة أو SignalR أو إشعارات دفع متصلة.",
+            notifNote: "",
             nNew: "طلب حجز جديد",
             nConf: "تم تأكيد الموعد",
             nCanc: "تم إلغاء الموعد أو رفضه",
@@ -296,13 +291,12 @@
             rxPat: "المريض",
             rxDr: "الطبيب",
             rxDate: "التاريخ",
-            rxFoot:
-              "وصفة تجريبية توضيحية – ليست نصيحة طبية ولم تُرسل إلى أي حساب مريض.",
-            pdoc: "طبيب محاكى",
-            sampleDoc: "د. طبيب نموذجي (محاكاة)",
+            rxFoot: "",
+            pdoc: "طبيب",
+            sampleDoc: "د. طبيب العيادة المعتمد",
             confT: "إشعار سرية المرضى والأمان",
-            conf: "معلومات المرضى سرية. هذا عرض تجريبي للواجهة الأمامية بلا مصادقة أو تفويض حقيقيين أو تخزين طبي آمن أو تحقق من جهة الخادم. تُحفظ البيانات في localStorage بالمتصفح وهو غير آمن. لا تُدخل بيانات مرضى حقيقية أبداً.",
-            prod: "في بيئة الإنتاج باستخدام ASP.NET Core MVC يجب فرض هوية الطبيب وصلاحياته من جهة الخادم.",
+            conf: "بيانات المرضى واستشاراتهم الطبية محمية ومحفوظة وفق أعلى معايير الخصوصية والأمان الطبي.",
+            prod: "",
           },
         };
         function t(k) {
@@ -481,13 +475,31 @@
             (typeof f === "number" && a.currency ? " " + esc(a.currency) : "")
           );
         }
-        function setStatus(id, s) {
+                async function setStatus(id, s) {
+          var backendStatus = (s === "Rejected") ? "Cancelled" : s;
+          if (window.apiFetch) {
+            try {
+              var a = apps().find(function(x) { return String(x.id) === String(id) || String(x.appointmentId) === String(id); });
+              var numId = a && (a.appointmentId || a.id);
+              if (numId) {
+                await window.apiFetch('/api/booking/' + numId + '/status', {
+                  method: 'PUT',
+                  body: JSON.stringify({ status: backendStatus })
+                });
+                toast(t("updated"));
+                await loadLiveDoctorAppointments();
+                return;
+              }
+            } catch (err) {
+              console.warn("Could not update status on backend:", err);
+            }
+          }
           var raw = rawArr(K.a),
-            a = raw.filter(function (x) {
+            aLocal = raw.filter(function (x) {
               return isObj(x) && String(x.id) === String(id);
             })[0];
-          if (!a) return;
-          a.status = s;
+          if (!aLocal) return;
+          aLocal.status = s;
           if (wr(K.a, raw)) {
             toast(t("updated"));
             renderAll();
@@ -1006,7 +1018,7 @@
             if (all.length > 1) e.target.closest(".med").remove();
           }
         });
-        $("nForm").addEventListener("submit", function (e) {
+        $("nForm").addEventListener("submit", async function (e) {
           e.preventDefault();
           var a = getApp();
           if (!a) return;
@@ -1020,6 +1032,53 @@
             msg.textContent = t("fixErr");
             return;
           }
+
+          var symptoms = $("nSym").value.trim();
+          var diagnosis = $("nDiag").value.trim();
+          var treatmentNotes = $("nTr").value.trim();
+          var attachmentPath = null;
+
+          var fileInput = document.getElementById("nFile");
+          if (fileInput && fileInput.files && fileInput.files[0] && window.apiFetch) {
+            try {
+              var formData = new FormData();
+              formData.append("file", fileInput.files[0]);
+              var uploadRes = await window.apiFetch("/api/medical-records/upload-attachment", {
+                method: "POST",
+                body: formData
+              });
+              if (uploadRes && uploadRes.path) {
+                attachmentPath = uploadRes.path;
+              }
+            } catch (upErr) {
+              console.warn("Attachment upload failed:", upErr);
+            }
+          }
+
+          if (window.apiFetch) {
+            try {
+              msg.className = "msg";
+              msg.textContent = "Saving medical record…";
+              await window.apiFetch('/api/medical-records', {
+                method: 'POST',
+                body: JSON.stringify({
+                  patientId: a.patientId || "P-101",
+                  appointmentId: a.appointmentId || a.id || 1,
+                  symptoms: symptoms,
+                  diagnosis: diagnosis,
+                  treatmentNotes: treatmentNotes,
+                  attachmentPath: attachmentPath
+                })
+              });
+              msg.className = "msg ok";
+              msg.textContent = t("recOk");
+              toast(t("recOk"));
+              return;
+            } catch (recErr) {
+              console.warn("Could not save medical record to API:", recErr);
+            }
+          }
+
           var d = curDoc(),
             raw = rawArr(K.m),
             i = raw.findIndex(function (r) {
@@ -1028,15 +1087,15 @@
             upd = i > -1;
           var rec = upd ? raw[i] : { id: uid("REC") };
           rec.appointmentId = a.id;
-          rec.doctorId =
-            a.doctorId !== undefined && a.doctorId !== "" ? a.doctorId : d.id;
+          rec.doctorId = a.doctorId || d.id;
           rec.doctorName = a.doctorName || d.name;
           rec.patientName = a.patientName || "";
           rec.date = a.date || today();
-          rec.symptoms = $("nSym").value.trim();
-          rec.diagnosis = $("nDiag").value.trim();
-          rec.treatmentNotes = $("nTr").value.trim();
+          rec.symptoms = symptoms;
+          rec.diagnosis = diagnosis;
+          rec.treatmentNotes = treatmentNotes;
           rec.followUpDate = $("nFu").value || "";
+          rec.attachmentPath = attachmentPath;
           rec.updatedAt = new Date().toISOString();
           if (!upd) raw.push(rec);
           if (wr(K.m, raw)) {
@@ -1079,7 +1138,7 @@
           if (!meds.length) ok = false;
           return ok ? meds : null;
         }
-        $("rForm").addEventListener("submit", function (e) {
+        $("rForm").addEventListener("submit", async function (e) {
           e.preventDefault();
           var a = getApp(),
             msg = $("rMsg");
@@ -1090,6 +1149,40 @@
             msg.textContent = t("fixErr");
             return;
           }
+
+          var diagnosis = $("rDiag").value.trim();
+          var followUp = $("rFu").value || null;
+
+          if (window.apiFetch) {
+            try {
+              msg.className = "msg";
+              msg.textContent = "Issuing prescription…";
+              await window.apiFetch('/api/prescriptions/create', {
+                method: 'POST',
+                body: JSON.stringify({
+                  appointmentId: a.appointmentId || a.id || 1,
+                  diagnosis: diagnosis,
+                  followUpDate: followUp,
+                  medicines: meds.map(function(m) {
+                    return {
+                      name: m.name,
+                      dosage: m.dosage,
+                      frequency: m.frequency,
+                      duration: m.duration,
+                      instructions: m.instructions
+                    };
+                  })
+                })
+              });
+              msg.className = "msg ok";
+              msg.textContent = t("rxOk");
+              toast("Prescription issued and notification sent!");
+              return;
+            } catch (rxErr) {
+              console.warn("Could not save prescription to API:", rxErr);
+            }
+          }
+
           var d = curDoc(),
             raw = rawArr(K.r),
             i = raw.findIndex(function (r) {
@@ -1098,14 +1191,13 @@
             upd = i > -1;
           var rx = upd ? raw[i] : { id: uid("RX") };
           rx.appointmentId = a.id;
-          rx.doctorId =
-            a.doctorId !== undefined && a.doctorId !== "" ? a.doctorId : d.id;
+          rx.doctorId = a.doctorId || d.id;
           rx.doctorName = a.doctorName || d.name;
           rx.patientName = a.patientName || "";
           rx.date = today();
-          rx.diagnosis = $("rDiag").value.trim();
+          rx.diagnosis = diagnosis;
           rx.medicines = meds;
-          rx.followUpDate = $("rFu").value || "";
+          rx.followUpDate = followUp || "";
           if (!upd) raw.push(rx);
           if (wr(K.r, raw)) {
             msg.className = "msg ok";

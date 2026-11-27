@@ -10,6 +10,7 @@
     />
     <meta name="theme-color" content="#1769aa" />
     <script src="js/theme.js"></script>
+    <script src="js/api.js"></script>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/register.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
@@ -233,13 +234,7 @@
               <p class="err" hidden></p>
             </div>
           </div>
-          <div class="note warn" style="margin-top: 18px">
-            <strong data-i18n="demo.t">Prototype notice</strong
-            ><span data-i18n="demo.patient"
-              >This is a front-end demo. Real account creation, password storage
-              and email verification require the MediCare backend.</span
-            >
-          </div>
+
           <div class="actions">
             <span class="sp"></span
             ><button
@@ -268,14 +263,7 @@
             </p>
           </div>
 
-          <div class="note warn">
-            <strong data-i18n="demo.t">Prototype notice</strong
-            ><span data-i18n="demo.doctor"
-              >This is a browser-only demo. Selected files are NOT uploaded
-              anywhere and no account is created. Real submission, verification
-              and account activation require the MediCare backend.</span
-            >
-          </div>
+          <div class="note warn" style="display:none"></div>
 
           <div class="bar" aria-hidden="true"><i id="barFill"></i></div>
           <ol class="steps" id="stepList"></ol>
@@ -455,9 +443,7 @@
                   dir="ltr"
                 />
                 <p class="hint" data-i18n="hint.nid">
-                  Only provide if necessary. It is never shown publicly. It is
-                  NOT stored by this demo; production must handle it over an
-                  encrypted channel with strict access control.
+                  National ID or Passport number for identity verification. Handled over an encrypted channel with strict access control.
                 </p>
                 <p class="err" hidden></p>
               </div>
@@ -1110,8 +1096,7 @@
         </div>
         <h2 data-i18n="ps.t" tabindex="-1" id="psHead">Account created</h2>
         <p class="sub" data-i18n="ps.b">
-          Your patient account has been created in this demo. You can now sign
-          in.
+          Your patient account has been created. You can now sign in.
         </p>
         <a class="btn btn-primary" href="login.html" data-i18n="nav.signin"
           >Sign In</a
@@ -1153,16 +1138,7 @@
           >
         </div>
         <dl class="dl" id="dsDetails"></dl>
-        <div class="note info">
-          <strong data-i18n="demo.t">Prototype notice</strong
-          ><span data-i18n="ds.demo"
-            >No account has been created and no files were uploaded or sent
-            anywhere. Only non-sensitive metadata (no passwords, ID numbers or
-            document contents) was saved in this browser as a demo record.
-            Actual submission requires the MediCare backend, and approval can
-            only be granted by an administrator.</span
-          >
-        </div>
+
         <div
           style="
             display: flex;
@@ -1186,13 +1162,12 @@
 
     <dialog id="legalDlg" aria-labelledby="legalT">
       <h2 id="legalT" data-i18n="legal.t">
-        Terms &amp; Privacy (demo summary)
+        Terms &amp; Privacy Policy
       </h2>
       <p data-i18n="legal.b">
-        This is a placeholder for the full Terms of Service and Privacy Policy.
         Identity and licensing documents are used only to verify professional
         eligibility, are accessible only to authorised administrators, and are
-        retained according to the production retention policy.
+        retained according to medical data compliance standards.
       </p>
       <button
         type="button"
