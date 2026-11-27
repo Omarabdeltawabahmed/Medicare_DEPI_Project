@@ -1,6 +1,0 @@
-@Medicare_DEPI_HostAddress = http://localhost:5100
-
-GET {{Medicare_DEPI_HostAddress}}/weatherforecast/
-Accept: application/json
-
-###
