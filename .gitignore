@@ -33,6 +33,8 @@ Logs/
 *.suo
 *.user
 *.useroptions
+secrets.json
+*.secrets.json
 
 ## Build results
 [Dd]ebug/
