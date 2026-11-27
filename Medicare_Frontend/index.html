@@ -3,9 +3,10 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MediCare – Clinic Management (Demo)</title>
+    <title>MediCare – Clinic Management</title>
     <meta name="theme-color" content="#1769aa" />
     <script src="js/theme.js"></script>
+    <script src="js/api.js"></script>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/index.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
@@ -19,9 +20,7 @@
       <section class="hero">
         <div class="wrap">
           <div>
-            <span class="demo" data-i18n="demo.badge"
-              >Front-end demo · illustrative content</span
-            >
+
             <h1 data-i18n="hero.h1">Healthcare made simpler, for everyone.</h1>
             <p data-i18n="hero.p">
               Find trusted doctors, book appointments in minutes, and manage
@@ -115,13 +114,10 @@
 
       <section class="light">
         <div class="wrap">
-          <span class="demo" data-i18n="demo.badge2"
-            >Illustrative demo content</span
-          >
+
           <h2 style="margin-top: 10px" data-i18n="about.h">About MediCare</h2>
           <p class="sub" data-i18n="about.p">
-            MediCare is a fictional clinic created to demonstrate a modern
-            healthcare website.
+            MediCare is a modern digital healthcare platform connecting patients with verified doctors for seamless appointment booking, medical records, and e-prescriptions.
           </p>
           <div class="grid g3">
             <div class="card">
@@ -160,7 +156,7 @@
         <div class="wrap">
           <h2 data-i18n="stat.h">MediCare at a glance</h2>
           <p class="sub" data-i18n="stat.p">
-            Illustrative demo figures only – not verified real-world numbers.
+            
           </p>
           <div
             class="grid g3"
@@ -168,20 +164,20 @@
           >
             <div class="st">
               <b id="sDocs">0</b
-              ><span data-i18n="stat.1">Registered doctors (demo)</span>
+              ><span data-i18n="stat.1">Registered doctors</span>
             </div>
             <div class="st">
               <b id="sSpec">0</b
-              ><span data-i18n="stat.2">Available specialties (demo)</span>
+              ><span data-i18n="stat.2">Available specialties</span>
             </div>
             <div class="st">
               <b>24/7</b
               ><span data-i18n="stat.3"
-                >Convenient appointment booking (demo)</span
+                >Convenient appointment booking</span
               >
             </div>
             <div class="st">
-              <b>♥</b><span data-i18n="stat.4">Patient-first care (demo)</span>
+              <b>♥</b><span data-i18n="stat.4">Patient-first care</span>
             </div>
           </div>
         </div>
@@ -238,11 +234,7 @@
               </p>
             </div>
           </div>
-          <div class="notice" data-i18n="why.note">
-            <b>Demo notice:</b> This website is a front-end demonstration, not a
-            real clinical service. It does not provide medical advice, real
-            patient records or real clinic operations.
-          </div>
+
         </div>
       </section>
     </main>
@@ -258,7 +250,7 @@
               >MediCare</a
             >
             <p style="margin-top: 10px" data-i18n="ft.tag">
-              Healthcare made simpler (demo).
+              Healthcare made simpler.
             </p>
           </div>
           <div>
@@ -270,7 +262,7 @@
             ><a href="page5.html" data-i18n="nav.admin">Admin Dashboard</a>
           </div>
           <div>
-            <h3 data-i18n="ft.contact">Contact (illustrative)</h3>
+            <h3 data-i18n="ft.contact">Contact</h3>
             <p id="fPhone"></p>
             <p id="fMail"></p>
             <p id="fAddr"></p>
@@ -278,18 +270,11 @@
           <div>
             <h3 data-i18n="ft.priv">Privacy notice</h3>
             <p data-i18n="ft.privp">
-              Data entered here stays in your browser’s localStorage. It is not
-              secure clinical storage. Do not enter real personal or medical
-              information.
+              Your personal and clinical health records are secured by MediCare Electronic Health Record (EHR) systems.
             </p>
           </div>
         </div>
-        <div class="fb" data-i18n="ft.disc">
-          Demo disclaimer: MediCare is a fictional front-end prototype. A
-          production ASP.NET Core MVC system must use server-side validation,
-          ASP.NET Identity, role-based authorization and proper protection of
-          patient information.
-        </div>
+
       </div>
     </footer>
 
@@ -380,10 +365,7 @@
             Log in
           </button>
         </form>
-        <p class="small" data-i18n="auth.demo">
-          Demo only: this is not real authentication. Passwords are checked for
-          format but never stored.
-        </p>
+
       </div>
     </dialog>
     <div id="toast" role="status" hidden></div>

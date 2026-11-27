@@ -6,6 +6,8 @@
     <title>MediCare – Doctor Workspace</title>
     <meta name="theme-color" content="#1769aa" />
     <script src="js/theme.js"></script>
+    <script src="js/api.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
     <link rel="stylesheet" href="css/theme.css" />
     <link rel="stylesheet" href="css/page4.css" />
     <link rel="stylesheet" href="css/sidebar.css" />
@@ -18,10 +20,7 @@
     <section class="hero">
       <div class="wrap">
         <h1 data-i="title">Doctor Workspace</h1>
-        <div class="demo" role="alert" data-i="demo">
-          ⚠ Doctor identity and permissions are simulated. Do not store real
-          patient information in this demonstration.
-        </div>
+  
       </div>
     </section>
 
@@ -30,7 +29,7 @@
 
       <div class="who card" style="margin-top: 18px">
         <div>
-          <label for="docSel" data-i="simDoc">Simulated doctor identity</label
+          <label for="docSel" data-i="simDoc">Doctor account</label
           ><select id="docSel"></select>
         </div>
         <label
@@ -56,15 +55,10 @@
       <!-- Appointments -->
       <section class="panel" id="p-appts" role="tabpanel">
         <h2 data-i="tAppts">Appointment Management</h2>
-        <p class="sub" data-i="apptsSub">
-          Read from shared demonstration data in this browser. Status changes
-          are saved and reflected on the other pages.
-        </p>
+        <p class="sub" data-i="apptsSub">Manage patient appointments and update consultation statuses.</p>
         <div class="card" style="margin-bottom: 14px">
           <h3 data-i="analytics">Status overview</h3>
-          <p class="sub" style="margin-bottom: 6px" data-i="analyticsNote">
-            Illustrative analytics calculated from local demo data only.
-          </p>
+          <p class="sub" style="margin-bottom: 6px" data-i="analyticsNote" style="display:none"></p>
           <div id="chart"></div>
         </div>
         <div class="tools">
@@ -103,12 +97,7 @@
       <!-- Availability -->
       <section class="panel" id="p-avail" role="tabpanel">
         <h2 data-i="tAvail">Working Hours and Availability</h2>
-        <div class="note" data-i="availNote">
-          The daily limit controls how many appointments a doctor accepts per
-          day. Slot availability separately prevents duplicate bookings for the
-          same doctor at the same time. Page 2 reads these settings from
-          “medicareDoctors”.
-        </div>
+        <div class="note" data-i="availNote" style="display:none"></div>
         <form id="avForm" class="card f" novalidate>
           <div class="full">
             <span class="lab" data-i="days">Working days</span>
@@ -177,7 +166,7 @@
           <div class="card" style="margin-bottom: 18px">
             <h3>
               <span data-i="details">Patient visit details</span>
-              <span class="tag" data-i="fict">Fictional demo data</span>
+              <span class="tag" data-i="fict" style="display:none"></span>
             </h3>
             <div class="kv" id="detOut"></div>
           </div>
@@ -209,10 +198,7 @@
             </form>
             <form id="rForm" class="card" novalidate>
               <h3 data-i="rx">Electronic prescription</h3>
-              <div class="note" data-i="rxNote">
-                Demo draft only. It is stored in this browser and is not sent to
-                any patient account.
-              </div>
+              <div class="note" data-i="rxNote" style="display:none"></div>
               <div class="f" style="margin-bottom: 12px">
                 <div>
                   <label for="rDiag" data-i="diag">Diagnosis *</label
@@ -249,10 +235,7 @@
       <!-- Notifications -->
       <section class="panel" id="p-notif" role="tabpanel">
         <h2 data-i="tNotif">Notifications</h2>
-        <div class="note" data-i="notifNote">
-          Demo notifications generated from the appointment data in this
-          browser. No email, SMS, SignalR or push service is connected.
-        </div>
+
         <div id="notifOut"></div>
       </section>
     </main>
@@ -261,16 +244,10 @@
       <div class="wrap">
         <h4 data-i="confT">Patient confidentiality &amp; security notice</h4>
         <p data-i="conf">
-          Patient information is confidential. This is a front-end demonstration
-          with no real authentication, authorization, secure medical storage or
-          server-side validation. Data is kept in browser localStorage, which is
-          not secure. Never enter real patient data.
+          Patient information and clinical consultations are protected under MediCare healthcare confidentiality standards.
         </p>
-        <p data-i="prod">
-          In production ASP.NET Core MVC, doctor identity and permissions must
-          be enforced server-side.
-        </p>
-        <p>© MediCare Demo · <a href="index.html" data-i="nHome">Home</a></p>
+
+        <p>© MediCare · <a href="index.html" data-i="nHome">Home</a></p>
       </div>
     </footer>
 

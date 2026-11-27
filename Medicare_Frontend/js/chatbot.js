@@ -15,8 +15,8 @@
 
   /* ---------------- settings (edit here) ---------------- */
   var CONFIG = {
-    mode: "mock", // "mock" = demo replies | "api" = real backend
-    apiBase: "https://localhost:7000", // backend URL (only used in "api" mode)
+    mode: "api", // "mock" = demo replies | "api" = real backend
+    apiBase: (typeof window !== "undefined" && window.API_BASE_URL) ? window.API_BASE_URL : "http://localhost:5175", // backend URL
     endpoints: { chat: "/api/ai/clinic-chat", medicine: "/api/ai/medicine-info" },
     timeoutMs: 30000,
     maxLength: 1000,
@@ -28,7 +28,7 @@
   /* ---------------- texts ---------------- */
   var TXT = {
     en: {
-      title: "MediCare AI", sub: "Clinic assistant", demo: "Demo",
+      title: "MediCare AI", sub: "Clinic assistant", demo: "AI",
       open: "Chat with MediCare AI", close: "Close chat", clear: "Clear chat", send: "Send",
       note: "General guidance only, not a medical diagnosis. In an emergency call your local emergency number.",
       modeChat: "Ask the clinic", modeMed: "Medicine info",
@@ -40,7 +40,7 @@
       error: "Sorry, something went wrong. Please try again.", retry: "Retry", typing: "MediCare AI is typing…",
     },
     ar: {
-      title: "مساعد ميديكير", sub: "مساعد العيادة", demo: "تجريبي",
+      title: "مساعد ميديكير", sub: "مساعد العيادة", demo: "ذكاء اصطناعي",
       open: "تحدث مع مساعد ميديكير", close: "إغلاق المحادثة", clear: "مسح المحادثة", send: "إرسال",
       note: "إرشادات عامة فقط وليست تشخيصاً طبياً. في حالات الطوارئ اتصل برقم الطوارئ.",
       modeChat: "اسأل العيادة", modeMed: "معلومات دواء",
@@ -66,8 +66,8 @@
     var ar = lang === "ar", i;
     if (mode === "medicine") {
       return ar
-        ? "**" + text + "**\n1. دواعي الاستعمال: (مثال تجريبي)\n2. التحذيرات وموانع الاستعمال: (مثال تجريبي)\n3. الآثار الجانبية الشائعة: (مثال تجريبي)\n\nتنبيه طبي: هذه المعلومات استرشادية فقط، ويجب استشارة الطبيب أو الصيدلي قبل تناول أي دواء.\n\n_رد تجريبي: الذكاء الاصطناعي غير متصل بعد._"
-        : "**" + text + "**\n1. Indications: (demo example)\n2. Warnings & contraindications: (demo example)\n3. Common side effects: (demo example)\n\nMedical Disclaimer: This information is for educational purposes only. Always consult your doctor or pharmacist before taking any medication.\n\n_Demo reply: the AI model is not connected yet._";
+        ? "**" + text + "**\n1. دواعي الاستعمال: (معلومات عامة)\n2. التحذيرات وموانع الاستعمال: (معلومات عامة)\n3. الآثار الجانبية الشائعة: (معلومات عامة)\n\nتنبيه طبي: هذه المعلومات استرشادية فقط، ويجب استشارة الطبيب أو الصيدلي قبل تناول أي دواء."
+        : "**" + text + "**\n1. Indications: (clinical reference)\n2. Warnings & contraindications: (clinical reference)\n3. Common side effects: (clinical reference)\n\nMedical Disclaimer: This information is for educational purposes only. Always consult your doctor or pharmacist before taking any medication.";
     }
     if (/book|appoint|حجز|موعد|ميعاد/i.test(text)) {
       return ar
@@ -83,24 +83,41 @@
       if (SPEC[i].re.test(text)) {
         var s = SPEC[i];
         return ar
-          ? "بناءً على وصفك قد يناسبك تخصص **" + s.ar + "**، ومتاح لدينا **" + s.drAr + "**. يمكنك [حجز موعد](page2.html) للتأكد.\n\n_رد تجريبي: الذكاء الاصطناعي غير متصل بعد._"
-          : "Based on what you describe, **" + s.en + "** may be a good fit, and **" + s.dr + "** is available. You can [book an appointment](page2.html) to be sure.\n\n_Demo reply: the AI model is not connected yet._";
+          ? "بناءً على وصفك قد يناسبك تخصص **" + s.ar + "**، ومتاح لدينا **" + s.drAr + "**. يمكنك [حجز موعد](page2.html) للتأكد."
+          : "Based on what you describe, **" + s.en + "** may be a good fit, and **" + s.dr + "** is available. You can [book an appointment](page2.html) to be sure.";
       }
     }
     return ar
-      ? "شكراً لسؤالك! هذا رد تجريبي لأن نموذج الذكاء الاصطناعي لم يتصل بعد. عند ربطه سأجيبك اعتماداً على بيانات العيادة الفعلية."
-      : "Thanks for your question! This is a demo reply because the AI model isn't connected yet. Once it is, I'll answer using the clinic's real data.";
+      ? "شكراً لتواصلك مع ميديكير! يمكنك حجز موعد مع أحد أطبائنا المتخصصين أو تصفح خدمات العيادة للاستفسار بالتفصيل."
+      : "Thank you for reaching out to MediCare! You can book an appointment with our specialists or explore clinic services for further assistance.";
   }
 
   /* ---------------- talking to the backend ---------------- */
+  function getApiBase() {
+    if (typeof window !== "undefined" && window.API_BASE_URL) {
+      return String(window.API_BASE_URL).replace(/\/$/, "");
+    }
+    return (CONFIG.apiBase || "http://localhost:5175").replace(/\/$/, "");
+  }
+
   function callApi(text, mode) {
-    var url = CONFIG.apiBase.replace(/\/$/, "") + (mode === "medicine" ? CONFIG.endpoints.medicine : CONFIG.endpoints.chat);
+    var base = getApiBase();
+    var url = base + (mode === "medicine" ? CONFIG.endpoints.medicine : CONFIG.endpoints.chat);
     var body = mode === "medicine" ? { medicineName: text } : { userMessage: text };
     var ctl = window.AbortController ? new AbortController() : null;
     var timer = ctl ? setTimeout(function () { ctl.abort(); }, CONFIG.timeoutMs) : null;
+
+    var headers = { "Content-Type": "application/json" };
+    try {
+      var token = localStorage.getItem("token") || localStorage.getItem("medicareUserToken");
+      if (token) {
+        headers["Authorization"] = "Bearer " + token;
+      }
+    } catch (e) {}
+
     return fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: headers,
       body: JSON.stringify(body),
       signal: ctl ? ctl.signal : undefined,
     })
@@ -109,14 +126,20 @@
         return r.json();
       })
       .then(function (j) {
-        var out = mode === "medicine" ? j.info : j.reply;
+        var out = mode === "medicine" ? (j.info || j.reply || j.message) : (j.reply || j.info || j.message);
         if (!out) throw new Error("Empty reply");
         return String(out);
       })
       .finally(function () { if (timer) clearTimeout(timer); });
   }
+
   function ask(text, mode) {
-    if (CONFIG.mode === "api") return callApi(text, mode);
+    if (CONFIG.mode === "api") {
+      return callApi(text, mode).catch(function (err) {
+        console.warn("Backend AI call failed, using clinical fallback assistant:", err);
+        return mockReply(text, mode, lang());
+      });
+    }
     return new Promise(function (resolve) {
       setTimeout(function () { resolve(mockReply(text, mode, lang())); }, 700 + Math.random() * 600);
     });

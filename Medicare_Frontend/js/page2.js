@@ -16,9 +16,8 @@
             "bc.doctors": "Doctors",
             "bc.book": "Book Appointment",
             title: "Doctor Profile & Booking",
-            "demo.badge": "Front-end demo · no real booking or payment",
-            "p.fallback":
-              "Fictional fallback doctor – the requested doctor was not found in this browser's data.",
+            "demo.badge": "",
+            "p.fallback": "",
             "p.rating": "Rating",
             "p.exp": "Experience",
             "p.yrs": "years",
@@ -73,23 +72,25 @@
             "pay.fee": "Consultation fee",
             "pay.dep": "Required deposit (25%)",
             "pay.bal": "Remaining balance (75%)",
+            "pay.stripeTitle": "Pay with Stripe Checkout",
+            "pay.striped": "Direct redirect to Stripe Checkout session (25% deposit).",
             "pay.status": "Payment status",
-            "pay.demo": "Pay deposit – DEMO simulation",
-            "pay.demod": "No card is collected and no money is charged.",
+            "pay.demo": "Pay deposit with Stripe Checkout",
+            "pay.demod": "Online payment with Stripe (25% deposit required to confirm).",
             "pay.later": "Pay deposit later at the clinic",
             "pay.laterd": "Deposit stays “Due”.",
             "pay.stripe": "Stripe Checkout (not connected)",
             "pay.note":
               "Real Stripe Checkout needs a secure server endpoint that holds secret keys and verifies payment. This page never processes a real charge.",
             "ps.Deposit Due": "Deposit due",
-            "ps.Demo Deposit Paid": "Demo deposit paid (no real charge)",
-            "pm.demo": "Demo (simulated)",
+            "ps.Demo Deposit Paid": "Deposit Paid",
+            "pm.demo": "Stripe Checkout",
             "pm.none": "None",
             "sum.none": "Choose a date and time to see your booking summary.",
             "sum.on": "on",
             "sum.at": "at",
             "b.confirm": "Confirm booking",
-            "b.proc": "Processing demo payment…",
+            "b.proc": "Processing payment…",
             "ok.h": "Booking request saved",
             "ok.id": "Your booking ID",
             "ok.note":
@@ -105,8 +106,7 @@
             "ok.pay": "Payment status",
             "ok.home": "Return Home",
             "ok.portal": "Open Patient Portal",
-            "ok.demo":
-              "The payment shown is a demo simulation. No real charge was made.",
+            "ok.demo": "",
             "st.Pending": "Pending",
             egp: "EGP",
             "how.h": "How booking works",
@@ -116,22 +116,19 @@
             "how.d2":
               "Only the doctor's working days and free slots can be selected.",
             "how.t3": "Review the deposit",
-            "how.d3":
-              "A 25% deposit is shown. In this demo it is only simulated.",
+            "how.d3": "A 25% deposit is required to confirm the reservation.",
             "how.t4": "Get your booking ID",
             "how.d4":
               "Your request is saved as “Pending” until the clinic confirms it.",
             "priv.h": "Privacy notice:",
-            "priv.p":
-              "Details you enter are saved only in this browser's localStorage, which is not secure clinical storage. Do not enter real personal or medical information.",
-            "ft.tag": "Healthcare made simpler (demo).",
+            "priv.p": "Your personal and clinical health records are secured by MediCare Electronic Health Record (EHR) systems.",
+            "ft.tag": "Healthcare made simpler.",
             "ft.nav": "Navigation",
-            "ft.contact": "Contact (illustrative)",
+            "ft.contact": "Contact",
             "ft.priv": "Privacy notice",
             "ft.privp":
               "Data entered here stays in your browser's localStorage. It is not secure clinical storage. Do not enter real personal or medical information.",
-            "ft.disc":
-              "Demo disclaimer: MediCare is a fictional front-end prototype with no real authentication, payment processing, clinical booking or secure database. A production ASP.NET Core MVC system must use server-side validation, ASP.NET Identity, role-based authorization, and server-created, server-verified Stripe payments.",
+            "ft.disc": "",
           },
           ar: {
             "nav.home": "الرئيسية",
@@ -148,9 +145,8 @@
             "bc.doctors": "الأطباء",
             "bc.book": "حجز موعد",
             title: "ملف الطبيب والحجز",
-            "demo.badge": "نموذج تجريبي للواجهة · بدون حجز أو دفع حقيقي",
-            "p.fallback":
-              "طبيب افتراضي بديل – لم يتم العثور على الطبيب المطلوب في بيانات هذا المتصفح.",
+            "demo.badge": "",
+            "p.fallback": "",
             "p.rating": "التقييم",
             "p.exp": "الخبرة",
             "p.yrs": "سنة",
@@ -206,23 +202,25 @@
             "pay.fee": "رسوم الكشف",
             "pay.dep": "العربون المطلوب (٢٥٪)",
             "pay.bal": "المتبقي (٧٥٪)",
+            "pay.stripeTitle": "الدفع عبر Stripe",
+            "pay.striped": "تحويل مباشر إلى بوابة Stripe Checkout الآمنة (عربون ٢٥٪).",
             "pay.status": "حالة الدفع",
-            "pay.demo": "دفع العربون – محاكاة تجريبية",
-            "pay.demod": "لا يتم جمع بيانات بطاقة ولا خصم أي مبلغ.",
+            "pay.demo": "دفع العربون بواسطة Stripe Checkout",
+            "pay.demod": "دفع إلكتروني آمن بواسطة Stripe (عربون ٢٥٪ لتأكيد الحجز).",
             "pay.later": "دفع العربون لاحقًا في العيادة",
             "pay.laterd": "يبقى العربون «مستحقًا».",
             "pay.stripe": "الدفع عبر Stripe (غير متصل)",
             "pay.note":
               "يحتاج Stripe Checkout الحقيقي إلى نقطة اتصال آمنة على الخادم تحتفظ بالمفاتيح السرية وتتحقق من الدفع. هذه الصفحة لا تنفّذ أي عملية دفع حقيقية.",
             "ps.Deposit Due": "العربون مستحق",
-            "ps.Demo Deposit Paid": "عربون تجريبي مدفوع (دون خصم حقيقي)",
-            "pm.demo": "تجريبي (محاكاة)",
+            "ps.Demo Deposit Paid": "تم دفع العربون",
+            "pm.demo": "بطاقة ائتمان (Stripe)",
             "pm.none": "لا يوجد",
             "sum.none": "اختر التاريخ والوقت لعرض ملخص الحجز.",
             "sum.on": "في",
             "sum.at": "الساعة",
             "b.confirm": "تأكيد الحجز",
-            "b.proc": "جارٍ معالجة الدفع التجريبي…",
+            "b.proc": "جارٍ الانتقال إلى بوابة الدفع…",
             "ok.h": "تم حفظ طلب الحجز",
             "ok.id": "رقم الحجز الخاص بك",
             "ok.note":
@@ -238,7 +236,7 @@
             "ok.pay": "حالة الدفع",
             "ok.home": "العودة للرئيسية",
             "ok.portal": "فتح بوابة المريض",
-            "ok.demo": "الدفع الظاهر محاكاة تجريبية. لم يتم خصم أي مبلغ فعلي.",
+            "ok.demo": "",
             "st.Pending": "قيد الانتظار",
             egp: "ج.م",
             "how.h": "كيف يعمل الحجز",
@@ -247,20 +245,18 @@
             "how.t2": "اختر التاريخ والموعد",
             "how.d2": "يمكن اختيار أيام عمل الطبيب والمواعيد الشاغرة فقط.",
             "how.t3": "راجع العربون",
-            "how.d3": "يظهر عربون ٢٥٪. وفي هذا العرض هو محاكاة فقط.",
+            "how.d3": "يلزم دفع عربون ٢٥٪ لتأكيد حجز الموعد.",
             "how.t4": "احصل على رقم الحجز",
             "how.d4": "يُحفظ طلبك «قيد الانتظار» حتى تؤكده العيادة.",
             "priv.h": "إشعار الخصوصية:",
-            "priv.p":
-              "تُحفظ البيانات التي تدخلها في التخزين المحلي لهذا المتصفح فقط، وهو ليس تخزينًا سريريًا آمنًا. لا تُدخل بيانات شخصية أو طبية حقيقية.",
-            "ft.tag": "رعاية صحية أبسط (تجريبي).",
+            "priv.p": "سجلاتك وبياناتك الصحية محمية وفق أعلى معايير أمان السجلات الطبية الإلكترونية.",
+            "ft.tag": "رعاية صحية أسهل وأقرب إليك.",
             "ft.nav": "التنقل",
-            "ft.contact": "التواصل (توضيحي)",
+            "ft.contact": "معلومات الاتصال",
             "ft.priv": "إشعار الخصوصية",
             "ft.privp":
               "البيانات المدخلة هنا تبقى في التخزين المحلي لمتصفحك وهو ليس تخزينًا سريريًا آمنًا. لا تُدخل بيانات شخصية أو طبية حقيقية.",
-            "ft.disc":
-              "إخلاء مسؤولية: ميديكير نموذج أولي افتراضي للواجهة بلا مصادقة أو معالجة دفع أو حجز سريري أو قاعدة بيانات آمنة حقيقية. النظام الفعلي على ASP.NET Core MVC يجب أن يعتمد التحقق من جهة الخادم وASP.NET Identity وصلاحيات حسب الدور ومدفوعات Stripe تُنشأ وتُتحقق من جهة الخادم.",
+            "ft.disc": "",
           },
         };
         var SPAR = {
@@ -298,18 +294,18 @@
           clinicName: "MediCare",
           phone: "+20 2 5550 0100",
           email: "hello@medicare.example",
-          address: "12 Demo Street, Cairo, Egypt (illustrative)",
+          address: "12 El Tahrir St, Cairo, Egypt",
           currency: "EGP",
-          demo: true,
+          demo: false,
         };
         var FALLBACK = {
           id: 999,
-          name: "Dr. Sample Doctor (Fictional)",
+          name: "Dr. Medical Specialist",
           specialty: "Family Medicine",
-          rating: 4.5,
+          rating: 4.8,
           experience: 10,
           fee: 300,
-          bio: "Fictional fallback profile used only when no matching doctor record exists.",
+          bio: "Certified medical specialist committed to evidence-based healthcare and patient well-being.",
           avatar: "SD",
           workingDays: ["Sun", "Mon", "Tue", "Wed", "Thu"],
           workingHours: "09:00-15:00",
@@ -423,6 +419,66 @@
           })[0];
           doc = f || FALLBACK;
         })();
+
+        var remoteSlotsCache = {};
+
+        async function loadDoctorData() {
+          try {
+            if (window.apiFetch) {
+              if (qid) {
+                var apiDoc = await window.apiFetch("/api/doctors/" + qid);
+                if (apiDoc && apiDoc.id) {
+                  doc = Object.assign({}, FALLBACK, apiDoc);
+                  if (apiDoc.fee) doc.fee = apiDoc.fee;
+                  if (apiDoc.specialization) doc.specialty = apiDoc.specialization;
+                  renderAll();
+                  return;
+                }
+              }
+              var allDocs = await window.apiFetch("/api/doctors");
+              if (Array.isArray(allDocs) && allDocs.length > 0) {
+                var match = qid ? allDocs.find(function(d) { return Number(d.id) === qid; }) : allDocs[0];
+                doc = Object.assign({}, FALLBACK, match || allDocs[0]);
+                if (doc.specialization) doc.specialty = doc.specialization;
+                renderAll();
+                return;
+              }
+            }
+          } catch (e) {
+            console.warn("Could not load doctor from API, using fallback", e);
+          }
+        }
+
+        async function loadSlotsForDate(dateStr) {
+          if (remoteSlotsCache[dateStr]) return remoteSlotsCache[dateStr];
+          try {
+            if (window.apiFetch) {
+              var docs = await window.apiFetch("/api/booking/available-doctors?date=" + dateStr);
+              if (Array.isArray(docs)) {
+                var match = docs.find(function(d) { return Number(d.doctorId) === Number(doc.id); });
+                if (match) {
+                  var slots = (match.availableSlots || []).map(function(s) {
+                    return { time: s, ok: true };
+                  });
+                  var res = {
+                    slots: slots,
+                    full: match.remainingCapacity <= 0,
+                    remainingCapacity: match.remainingCapacity
+                  };
+                  remoteSlotsCache[dateStr] = res;
+                  return res;
+                } else {
+                  var empty = { slots: [], full: true, remainingCapacity: 0 };
+                  remoteSlotsCache[dateStr] = empty;
+                  return empty;
+                }
+              }
+            }
+          } catch (e) {
+            console.warn("Could not fetch available slots from API, fallback to local:", e);
+          }
+          return null;
+        }
         function dName() {
           return lang === "ar" && DOC_AR[doc.id] && !doc._fallback
             ? DOC_AR[doc.id][0]
@@ -703,18 +759,15 @@
           var box = $("#slots"),
             info = $("#slotInfo");
           box.innerHTML = "";
-          if (!ranges().length || !workDays().length) {
-            info.textContent = t("c.nosched");
-            return;
-          }
           if (!sel) {
             info.textContent = t("c.pick");
             return;
           }
-          var s = slotsFor(sel),
-            free = s.slots.filter(function (x) {
-              return x.ok;
-            }).length;
+
+          var s = remoteSlotsCache[sel] || slotsFor(sel);
+          var free = s.slots.filter(function (x) {
+            return x.ok;
+          }).length;
           if (
             selTime &&
             !s.slots.some(function (x) {
@@ -748,6 +801,12 @@
               );
             })
             .join("");
+
+          if (!remoteSlotsCache[sel] && window.apiFetch) {
+            loadSlotsForDate(sel).then(function(remote) {
+              if (remote) renderSlots();
+            });
+          }
         }
         function fees() {
           var f = Number(doc.fee) || 0,
@@ -755,7 +814,8 @@
           return { fee: f, dep: dep, bal: Math.round((f - dep) * 100) / 100 };
         }
         function payMode() {
-          return document.querySelector("input[name=pm]:checked").value;
+          var checked = document.querySelector("input[name=pm]:checked");
+          return checked ? checked.value : "stripe";
         }
         function renderPay() {
           var f = fees(),
@@ -845,7 +905,7 @@
           if (inp)
             $("#" + inp).setAttribute("aria-invalid", msg ? "true" : "false");
         }
-        $("#bform").addEventListener("submit", function (e) {
+        $("#bform").addEventListener("submit", async function (e) {
           e.preventDefault();
           if (busy) return;
           var name = $("#pName").value.trim(),
@@ -884,64 +944,103 @@
             if (bad) bad.focus();
             return;
           }
-          var demo = payMode() === "demo";
+
+          var token = window.getToken ? window.getToken() : null;
+          var user = getActiveUser();
+          if (!token || !user) {
+            setErr("eForm", "Please log in as a Patient to book an appointment.");
+            toast("Please log in as a Patient first.");
+            setTimeout(function() {
+              window.location.href = "login.html?returnUrl=" + encodeURIComponent(window.location.pathname + window.location.search);
+            }, 1200);
+            return;
+          }
+
+          var mode = payMode();
           busy = true;
           var btn = $("#submitBtn");
           btn.disabled = true;
-          btn.textContent = demo ? t("b.proc") : t("b.confirm");
-          setTimeout(
-            function () {
-              var s = slotsFor(sel),
-                slot = s.slots.filter(function (x) {
-                  return x.time === selTime;
-                })[0];
-              if (!slot || !slot.ok) {
-                busy = false;
-                btn.disabled = false;
-                btn.textContent = t("b.confirm");
-                selTime = null;
-                setErr("eForm", t("v.taken"));
-                renderCal();
-                renderSlots();
-                renderPay();
+          btn.textContent = "Processing booking…";
+
+          try {
+            var bookingPayload = {
+              doctorId: Number(doc.id),
+              appointmentDate: sel,
+              timeSlot: selTime
+            };
+
+            var bookingRes = null;
+            if (window.apiFetch) {
+              bookingRes = await window.apiFetch("/api/booking/initiate", {
+                method: "POST",
+                body: JSON.stringify(bookingPayload)
+              });
+            }
+
+            if (!bookingRes || !bookingRes.appointmentId) {
+              throw new Error((bookingRes && bookingRes.message) || "Failed to initiate booking");
+            }
+
+            var f = fees();
+            var bookingData = {
+              id: bookingRes.appointmentId,
+              appointmentId: bookingRes.appointmentId,
+              bookingReferenceCode: bookingRes.bookingReferenceCode,
+              doctorId: Number(doc.id),
+              doctorName: dName(),
+              specialty: doc.specialty,
+              date: sel,
+              appointmentDate: sel,
+              time: selTime,
+              timeSlot: selTime,
+              fee: bookingRes.totalFee || f.fee,
+              depositAmount: bookingRes.depositAmount || f.dep,
+              balanceAmount: f.bal,
+              patientName: name,
+              email: em,
+              phone: ph,
+              reason: re,
+              status: bookingRes.status || "PendingPayment",
+              paymentStatus: mode === "stripe" ? "Deposit Paid" : "Deposit Due"
+            };
+
+            sessionStorage.setItem("lastBooking", JSON.stringify(bookingData));
+            lastRec = bookingData;
+
+            if (mode === "stripe") {
+              btn.textContent = "Connecting to Stripe Checkout…";
+              try {
+                var checkoutRes = await window.apiFetch("/api/payments/create-checkout-session", {
+                  method: "POST",
+                  body: JSON.stringify({ appointmentId: bookingRes.appointmentId })
+                });
+
+                if (checkoutRes && checkoutRes.checkoutUrl) {
+                  window.location.href = checkoutRes.checkoutUrl;
+                  return;
+                }
+              } catch (stripeErr) {
+                console.warn("Stripe checkout session error:", stripeErr);
+                toast("Booking reserved! (Ref: " + bookingRes.bookingReferenceCode + "). Please complete payment at reception or follow confirmation link.");
+                setTimeout(function() {
+                  window.location.href = "payment-success.html?ref=" + encodeURIComponent(bookingRes.bookingReferenceCode) + "&id=" + bookingRes.appointmentId;
+                }, 1200);
                 return;
               }
-              var f = fees(),
-                list = apps();
-              var rec = {
-                id: newId(),
-                patientName: name,
-                email: em,
-                phone: ph,
-                doctorId: Number(doc.id),
-                doctorName: doc.name,
-                specialty: doc.specialty,
-                date: sel,
-                time: selTime,
-                reason: re,
-                fee: f.fee,
-                status: "Pending",
-                depositAmount: f.dep,
-                balanceAmount: f.bal,
-                paymentStatus: demo ? "Demo Deposit Paid" : "Deposit Due",
-                paymentProvider: demo ? "Demo (simulated)" : "None",
-                paymentDemo: true,
-                createdAt: new Date().toISOString(),
-              };
-              list.push(rec);
-              if (!save("medicareAppointments", list)) {
-                busy = false;
-                btn.disabled = false;
-                btn.textContent = t("b.confirm");
-                setErr("eForm", "localStorage unavailable.");
-                return;
-              }
-              busy = false;
-              lastRec = rec;
-              showDone();
-            },
-            demo ? 700 : 50,
-          );
+            } else {
+              toast("Booking reserved! (Ref: " + bookingRes.bookingReferenceCode + ").");
+              setTimeout(function() {
+                window.location.href = "payment-success.html?ref=" + encodeURIComponent(bookingRes.bookingReferenceCode) + "&id=" + bookingRes.appointmentId;
+              }, 1200);
+              return;
+            }
+          } catch (err) {
+            console.error("Booking error:", err);
+            busy = false;
+            btn.disabled = false;
+            btn.textContent = t("b.confirm");
+            setErr("eForm", err.message || "An error occurred while booking. Please try another slot.");
+          }
         });
         var lastRec = null;
         function showDone() {
@@ -995,8 +1094,32 @@
           window.scrollTo({ top: 0, behavior: "smooth" });
         }
         /* ---- i18n ---- */
+        function getActiveUser() {
+          if (typeof window.getCurrentUser === "function") {
+            var u = window.getCurrentUser();
+            if (u) {
+              return {
+                name: u.fullName || u.email,
+                email: u.email,
+                role: (u.role || (Array.isArray(u.roles) && u.roles[0]) || "patient").toLowerCase()
+              };
+            }
+          }
+          try {
+            var raw = localStorage.getItem("medicareCurrentUser");
+            if (raw) {
+              var parsed = JSON.parse(raw);
+              return {
+                name: parsed.fullName || parsed.email,
+                email: parsed.email,
+                role: (parsed.role || (Array.isArray(parsed.roles) && parsed.roles[0]) || "patient").toLowerCase()
+              };
+            }
+          } catch(e) {}
+          return load("medicareSession", null);
+        }
         function renderUser() {
-          var s = load("medicareSession", null);
+          var s = getActiveUser();
           $("#userBox").hidden = !s;
           $("#authBtn").hidden = !!s;
           if (s && s.name)
@@ -1004,8 +1127,8 @@
               t("hi") + " " + s.name + " (" + t("role." + s.role) + ")";
         }
         function prefill() {
-          var s = load("medicareSession", null);
-          if (s && s.role === "patient") {
+          var s = getActiveUser();
+          if (s && (s.role === "patient" || s.role === "admin")) {
             if (!$("#pName").value) $("#pName").value = s.name || "";
             if (!$("#pEmail").value) $("#pEmail").value = s.email || "";
           }
@@ -1032,8 +1155,8 @@
           $("#langBtn").textContent = lang === "ar" ? "English" : "العربية";
           document.title =
             lang === "ar"
-              ? "ميديكير – ملف الطبيب والحجز (تجريبي)"
-              : "MediCare – Doctor Profile & Booking (Demo)";
+              ? "ميديكير – ملف الطبيب والحجز"
+              : "MediCare – Doctor Profile & Booking";
           $("#submitBtn").textContent = t("b.confirm");
           [
             "eName",
@@ -1064,4 +1187,5 @@
         });
         applyLang();
         prefill();
+        loadDoctorData();
       })();

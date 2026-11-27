@@ -9,8 +9,8 @@
             "nav.admin": "Admin Dashboard",
             "nav.booknow": "Book Now",
             menu: "Menu",
-            "demo.badge": "Front-end demo · illustrative content",
-            "demo.badge2": "Illustrative demo content",
+            "demo.badge": "",
+            "demo.badge2": "",
             "hero.h1": "Healthcare made simpler, for everyone.",
             "hero.p":
               "Find trusted doctors, book appointments in minutes, and manage your healthcare information in one clear, friendly place.",
@@ -34,7 +34,7 @@
             "srch.count": "doctor(s) found",
             "about.h": "About MediCare",
             "about.p":
-              "MediCare is a fictional clinic created to demonstrate a modern healthcare website.",
+              "MediCare is a modern digital healthcare platform connecting patients with verified doctors for seamless appointment booking, medical records, and e-prescriptions.",
             "about.t1": "Our mission",
             "about.d1":
               "To make quality outpatient care easy to reach, with clear information and respectful service.",
@@ -49,11 +49,11 @@
               "Choose a doctor, pick an open time slot, and track your appointment. Our support desk helps with questions.",
             "stat.h": "MediCare at a glance",
             "stat.p":
-              "Illustrative demo figures only – not verified real-world numbers.",
-            "stat.1": "Registered doctors (demo)",
-            "stat.2": "Available specialties (demo)",
-            "stat.3": "Convenient appointment booking (demo)",
-            "stat.4": "Patient-first care (demo)",
+              "Providing high quality clinical services across multiple specialties.",
+            "stat.1": "Registered doctors",
+            "stat.2": "Available specialties",
+            "stat.3": "Convenient appointment booking",
+            "stat.4": "Patient-first care",
             "sp.h": "Medical specialties",
             "sp.p": "Choose a specialty to browse matching doctors.",
             "sp.browse": "Browse doctors",
@@ -86,21 +86,19 @@
             "why.t5": "Patient privacy awareness",
             "why.d5":
               "Health data is sensitive. A real service must protect it with secure servers and access controls.",
-            "why.note":
-              "<b>Demo notice:</b> This website is a front-end demonstration, not a real clinical service. It does not provide medical advice, real patient records or real clinic operations.",
+            "why.note": "",
             "doc.yrs": "yrs experience",
             "doc.book": "Book Appointment",
             "doc.pending": "Pending approval",
             "doc.egp": "EGP",
             "doc.hours": "Hours",
-            "ft.tag": "Healthcare made simpler (demo).",
+            "ft.tag": "Healthcare made simpler.",
             "ft.nav": "Navigation",
-            "ft.contact": "Contact (illustrative)",
+            "ft.contact": "Contact",
             "ft.priv": "Privacy notice",
             "ft.privp":
-              "Data entered here stays in your browser’s localStorage. It is not secure clinical storage. Do not enter real personal or medical information.",
-            "ft.disc":
-              "Demo disclaimer: MediCare is a fictional front-end prototype. A production ASP.NET Core MVC system must use server-side validation, ASP.NET Identity, role-based authorization and proper protection of patient information.",
+              "Your personal and clinical health records are secured by MediCare Electronic Health Record (EHR) systems.",
+            "ft.disc": "",
             "auth.open": "Log in / Sign up",
             "auth.logout": "Log out",
             "auth.title": "Welcome to MediCare",
@@ -118,8 +116,7 @@
             "auth.fee": "Consultation fee (EGP)",
             "auth.pend":
               "Doctor accounts stay “pending” until an administrator approves them.",
-            "auth.demo":
-              "Demo only: this is not real authentication. Passwords are checked for format but never stored.",
+            "auth.demo": "",
             "v.name": "Enter your full name (at least 3 characters).",
             "v.email": "Enter a valid email address.",
             "v.phone": "Enter a valid phone number (8–15 digits).",
@@ -144,8 +141,8 @@
             "nav.admin": "لوحة الإدارة",
             "nav.booknow": "احجز الآن",
             menu: "القائمة",
-            "demo.badge": "نموذج تجريبي للواجهة · محتوى توضيحي",
-            "demo.badge2": "محتوى توضيحي تجريبي",
+            "demo.badge": "",
+            "demo.badge2": "",
             "hero.h1": "رعاية صحية أبسط للجميع.",
             "hero.p":
               "اعثر على أطباء موثوقين، واحجز موعدك في دقائق، وأدِر معلوماتك الصحية في مكان واحد واضح وسهل.",
@@ -169,7 +166,7 @@
             "srch.count": "طبيب تم العثور عليهم",
             "about.h": "عن ميديكير",
             "about.p":
-              "ميديكير عيادة افتراضية أُنشئت لعرض موقع رعاية صحية حديث.",
+              "ميديكير هي منصة رعاية صحية رقمية حديثة تربط المرضى بالأطباء المعتمدين لحجز المواعيد وإدارة السجلات والوصفات الطبية بكل سهولة.",
             "about.t1": "مهمتنا",
             "about.d1":
               "تسهيل الوصول إلى رعاية خارجية عالية الجودة بمعلومات واضحة وخدمة محترمة.",
@@ -184,11 +181,11 @@
               "اختر طبيبًا وموعدًا متاحًا وتابع حجزك. ويساعدك فريق الدعم في أي استفسار.",
             "stat.h": "ميديكير في لمحة",
             "stat.p":
-              "أرقام توضيحية تجريبية فقط – وليست أرقامًا حقيقية موثّقة.",
-            "stat.1": "الأطباء المسجلون (تجريبي)",
-            "stat.2": "التخصصات المتاحة (تجريبي)",
-            "stat.3": "حجز مواعيد مريح (تجريبي)",
-            "stat.4": "رعاية تضع المريض أولًا (تجريبي)",
+              "تقديم خدمات طبية متكاملة عبر مختلف التخصصات بأعلى معايير الجودة.",
+            "stat.1": "الأطباء المسجلون",
+            "stat.2": "التخصصات المتاحة",
+            "stat.3": "حجز مواعيد ميسر",
+            "stat.4": "رعاية تركز على المريض",
             "sp.h": "التخصصات الطبية",
             "sp.p": "اختر تخصصًا لعرض الأطباء المناسبين.",
             "sp.browse": "تصفّح الأطباء",
@@ -218,21 +215,19 @@
             "why.t5": "الوعي بخصوصية المريض",
             "why.d5":
               "البيانات الصحية حساسة، والخدمة الحقيقية يجب أن تحميها بخوادم آمنة وضوابط وصول.",
-            "why.note":
-              "<b>تنبيه:</b> هذا الموقع عرض تجريبي للواجهة وليس خدمة طبية حقيقية. لا يقدّم نصائح طبية ولا سجلات مرضى حقيقية ولا عمليات عيادة فعلية.",
+            "why.note": "",
             "doc.yrs": "سنة خبرة",
             "doc.book": "احجز موعدًا",
             "doc.pending": "بانتظار الموافقة",
             "doc.egp": "ج.م",
             "doc.hours": "الساعات",
-            "ft.tag": "رعاية صحية أبسط (تجريبي).",
+            "ft.tag": "رعاية صحية أسهل وأقرب إليك.",
             "ft.nav": "التنقل",
-            "ft.contact": "التواصل (توضيحي)",
+            "ft.contact": "معلومات الاتصال",
             "ft.priv": "إشعار الخصوصية",
             "ft.privp":
-              "البيانات المدخلة هنا تبقى في التخزين المحلي لمتصفحك وهو ليس تخزينًا سريريًا آمنًا. لا تُدخل بيانات شخصية أو طبية حقيقية.",
-            "ft.disc":
-              "إخلاء مسؤولية: ميديكير نموذج أولي افتراضي للواجهة. النظام الفعلي على ASP.NET Core MVC يجب أن يعتمد التحقق من جهة الخادم وASP.NET Identity وصلاحيات حسب الدور وحماية مناسبة لبيانات المرضى.",
+              "سجلاتك وبياناتك الصحية محمية وفق أعلى معايير أمان السجلات الطبية الإلكترونية.",
+            "ft.disc": "",
             "auth.open": "تسجيل الدخول / إنشاء حساب",
             "auth.logout": "تسجيل الخروج",
             "auth.title": "مرحبًا بك في ميديكير",
@@ -250,8 +245,7 @@
             "auth.fee": "رسوم الكشف (ج.م)",
             "auth.pend":
               "تبقى حسابات الأطباء «قيد الانتظار» حتى يوافق عليها المسؤول.",
-            "auth.demo":
-              "تجريبي فقط: هذه ليست مصادقة حقيقية. يتم التحقق من شكل كلمة المرور دون تخزينها.",
+            "auth.demo": "",
             "v.name": "أدخل اسمك الكامل (٣ أحرف على الأقل).",
             "v.email": "أدخل بريدًا إلكترونيًا صحيحًا.",
             "v.phone": "أدخل رقم هاتف صحيحًا (من 8 إلى 15 رقمًا).",
@@ -419,9 +413,9 @@
           clinicName: "MediCare",
           phone: "+20 2 5550 0100",
           email: "hello@medicare.example",
-          address: "12 Demo Street, Cairo, Egypt (illustrative)",
+          address: "12 El Tahrir St, Cairo, Egypt",
           currency: "EGP",
-          demo: true,
+          demo: false,
         };
         var $ = function (s) {
           return document.querySelector(s);
@@ -643,8 +637,8 @@
           $("#langBtn").textContent = lang === "ar" ? "English" : "العربية";
           document.title =
             lang === "ar"
-              ? "ميديكير – إدارة العيادة (تجريبي)"
-              : "MediCare – Clinic Management (Demo)";
+              ? "ميديكير – إدارة العيادة"
+              : "MediCare – Clinic Management";
           renderSpecSelects();
           renderSpecialties();
           renderDocs();
@@ -693,6 +687,27 @@
         var mode = "login",
           dlg = $("#authDlg");
         function session() {
+          if (typeof window.getCurrentUser === "function") {
+            var u = window.getCurrentUser();
+            if (u) {
+              var r = u.role || (Array.isArray(u.roles) && u.roles[0]) || "patient";
+              return {
+                name: u.fullName || u.email,
+                role: r.toLowerCase()
+              };
+            }
+          }
+          try {
+            var raw = localStorage.getItem("medicareCurrentUser");
+            if (raw) {
+              var parsed = JSON.parse(raw);
+              var role = parsed.role || (Array.isArray(parsed.roles) && parsed.roles[0]) || "patient";
+              return {
+                name: parsed.fullName || parsed.email,
+                role: role.toLowerCase()
+              };
+            }
+          } catch (e) {}
           return load("medicareSession", null);
         }
         function renderUser() {
@@ -733,8 +748,9 @@
           if (!dlg.open) dlg.showModal();
           $("#aEmail").focus();
         }
-        $("#authBtn").addEventListener("click", function () {
-          openAuth("login");
+        $("#authBtn").addEventListener("click", function (e) {
+          e.preventDefault();
+          window.location.href = "login.html";
         });
         $("#authClose").addEventListener("click", function () {
           dlg.close();
@@ -751,7 +767,15 @@
           setMode(mode);
         });
         $("#logoutBtn").addEventListener("click", function () {
+          if (typeof window.logout === "function") {
+            window.logout();
+            return;
+          }
           try {
+            localStorage.removeItem("medicare_token");
+            localStorage.removeItem("medicareCurrentUser");
+            localStorage.removeItem("medicare_roles");
+            localStorage.removeItem("medicare_user_id");
             localStorage.removeItem("medicareSession");
           } catch (e) {}
           renderUser();

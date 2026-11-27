@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MediCare – Payment Cancelled</title>
+    <meta name="theme-color" content="#1769aa" />
+    <script src="js/theme.js"></script>
+    <script src="js/api.js"></script>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/sidebar.css" />
+    <style>
+      body {
+        margin: 0;
+        font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+        background: var(--bg-body, #f4f7fb);
+        color: var(--text-primary, #1e293b);
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+      }
+      .center-wrap {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 16px;
+      }
+      .confirm-card {
+        background: var(--bg-card, #ffffff);
+        border: 1px solid var(--border-color, #e2e8f0);
+        border-radius: 16px;
+        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.01);
+        max-width: 500px;
+        width: 100%;
+        padding: 36px 32px;
+        text-align: center;
+      }
+      .icon-circle {
+        width: 72px;
+        height: 72px;
+        border-radius: 50%;
+        background: #fffbeb;
+        color: #f59e0b;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+      }
+      .icon-circle svg {
+        width: 38px;
+        height: 38px;
+      }
+      h1 {
+        font-size: 1.6rem;
+        margin: 0 0 8px;
+        font-weight: 700;
+        color: var(--text-primary, #0f172a);
+      }
+      .subtext {
+        font-size: 0.95rem;
+        color: var(--text-secondary, #64748b);
+        margin: 0 0 24px;
+        line-height: 1.5;
+      }
+      .btn-row {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .btn-primary {
+        background: #0284c7;
+        color: #ffffff;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 600;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        transition: background 0.2s;
+      }
+      .btn-primary:hover {
+        background: #0369a1;
+      }
+      .btn-secondary {
+        background: transparent;
+        color: var(--text-primary, #1e293b);
+        border: 1px solid var(--border-color, #cbd5e1);
+        text-decoration: none;
+        padding: 10px 18px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: background 0.2s;
+      }
+      .btn-secondary:hover {
+        background: var(--bg-subtle, #f8fafc);
+      }
+      .note-box {
+        margin-top: 24px;
+        padding: 12px;
+        border-radius: 8px;
+        background: #fef2f2;
+        color: #991b1b;
+        font-size: 0.85rem;
+        line-height: 1.4;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="js/sidebar.js"></script>
+
+    <div class="center-wrap">
+      <div class="confirm-card">
+        <div class="icon-circle">
+          <svg fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z" />
+          </svg>
+        </div>
+
+        <h1>Payment Cancelled</h1>
+        <p class="subtext">
+          Your payment checkout session was cancelled or interrupted. No charge was completed and the appointment reservation has not been confirmed.
+        </p>
+
+        <div class="btn-row">
+          <a href="page2.html" class="btn-primary">Try Booking Again</a>
+          <a href="index.html" class="btn-secondary">Return Home</a>
+        </div>
+
+        <div class="note-box">
+          You can select an alternative time slot or try again at any time. If you encountered any technical difficulty, please contact our clinic support.
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

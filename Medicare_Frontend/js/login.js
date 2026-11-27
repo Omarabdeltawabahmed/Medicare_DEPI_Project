@@ -64,7 +64,7 @@
         loggingIn: 'Signing in…',
         noAccount: "Don't have an account?",
         createAccount: 'Create Account',
-        demoNote: 'Demo prototype: sign-in is simulated in your browser and is not secure authentication.',
+        demoNote: '',
         errEmailRequired: 'Enter your email address.',
         errEmailInvalid: 'Enter a valid email address, for example name@example.com.',
         errPasswordRequired: 'Enter your password.',
@@ -84,7 +84,7 @@
         forgotTitle: 'Reset your password',
         forgotLead: 'Enter the email address linked to your account.',
         forgotSubmit: 'Continue',
-        forgotInfo: 'Real password recovery needs a connected backend and email service. This demo has not sent any email and cannot reset your password.',
+        forgotInfo: 'Please contact the clinic administration or enter your verified email to receive password reset instructions.',
         roleLabelPatient: 'Patient',
         roleLabelDoctor: 'Doctor',
         roleLabelAdmin: 'Admin',
@@ -125,7 +125,7 @@
         loggingIn: 'جارٍ تسجيل الدخول…',
         noAccount: 'ليس لديك حساب؟',
         createAccount: 'إنشاء حساب',
-        demoNote: 'نسخة تجريبية: تسجيل الدخول محاكى داخل المتصفح وليس مصادقة آمنة.',
+        demoNote: '',
         errEmailRequired: 'أدخل بريدك الإلكتروني.',
         errEmailInvalid: 'أدخل بريدًا إلكترونيًا صحيحًا، مثل name@example.com.',
         errPasswordRequired: 'أدخل كلمة المرور.',
@@ -145,7 +145,7 @@
         forgotTitle: 'إعادة تعيين كلمة المرور',
         forgotLead: 'أدخل البريد الإلكتروني المرتبط بحسابك.',
         forgotSubmit: 'متابعة',
-        forgotInfo: 'استعادة كلمة المرور الفعلية تتطلب خادمًا خلفيًا وخدمة بريد إلكتروني متصلة. هذه النسخة التجريبية لم ترسل أي بريد ولا يمكنها إعادة تعيين كلمة المرور.',
+        forgotInfo: 'يرجى التواصل مع إدارة العيادة أو إدخال بريدك الإلكتروني المعتمد لاستلام تعليمات إعادة تعيين كلمة المرور.',
         roleLabelPatient: 'مريض',
         roleLabelDoctor: 'طبيب',
         roleLabelAdmin: 'مسؤول',
@@ -400,51 +400,68 @@
       if (value === 'admin') return 'Admin';
       return null;
     }
- 
-    // Returns a Promise resolving to { status, user? }
-    // status: 'ok' | 'no-accounts' | 'invalid' | 'invalid-role'
-    function authenticate(email, password) {
-      return new Promise(function (resolve) {
-        window.setTimeout(function () {
-          var accounts = readAccounts();
-          if (!accounts.length) {
-            resolve({ status: 'no-accounts' });
-            return;
+    // Real API authentication against MediCare backend
+    async function authenticate(email, password) {
+      try {
+        var response = await window.apiFetch('/api/auth/login', {
+          method: 'POST',
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        });
+
+        if (response && response.token) {
+          var role = 'Patient';
+          if (Array.isArray(response.roles) && response.roles.length > 0) {
+            role = normalizeRole(response.roles[0]) || response.roles[0];
           }
-          var normalizedEmail = email.trim().toLowerCase();
-          var match = null;
-          for (var i = 0; i < accounts.length; i++) {
-            var acc = accounts[i];
-            if (acc && typeof acc.email === 'string' && acc.email.trim().toLowerCase() === normalizedEmail &&
-                typeof acc.password === 'string' && acc.password === password) {
-              match = acc;
-              break;
-            }
-          }
-          if (!match) {
-            resolve({ status: 'invalid' });
-            return;
-          }
-          var role = normalizeRole(match.role);
-          if (!role) {
-            resolve({ status: 'invalid-role' });
-            return;
-          }
-          // Minimal, non-sensitive session data. Never includes the password.
-          resolve({
-            status: 'ok',
-            user: {
-              id: match.id,
-              fullName: match.fullName,
-              email: match.email,
+
+          var user = {
+            id: response.userId,
+            fullName: response.fullName,
+            email: response.email,
+            role: role,
+            roles: response.roles
+          };
+
+          if (window.saveAuthSession) {
+            window.saveAuthSession({
+              token: response.token,
+              userId: response.userId,
+              fullName: response.fullName,
+              email: response.email,
+              roles: response.roles,
               role: role
-            }
-          });
-        }, FAKE_DELAY_MS);
-      });
+            });
+          }
+
+          return {
+            status: 'ok',
+            user: user
+          };
+        }
+
+        return { status: 'invalid' };
+      } catch (err) {
+        if (err.status === 401 || err.status === 400) {
+          return { status: 'invalid' };
+        }
+        return { status: 'error', message: err.message };
+      }
     }
- 
+
     function saveSession(user) {
+      if (window.saveAuthSession) {
+        return window.saveAuthSession({
+          token: window.getToken ? window.getToken() : null,
+          userId: user.id,
+          fullName: user.fullName,
+          email: user.email,
+          roles: user.roles || [user.role],
+          role: user.role
+        });
+      }
       var session = {
         id: user.id,
         fullName: user.fullName,
@@ -454,7 +471,7 @@
       };
       return safeSet(STORAGE.currentUser, JSON.stringify(session));
     }
- 
+
     function readSession() {
       var raw = safeGet(STORAGE.currentUser);
       if (!raw) return null;
@@ -467,70 +484,72 @@
       } catch (e) { /* ignore */ }
       return null;
     }
- 
+
     function redirectForRole(role) {
-      var target = ROLE_ROUTES[role];
-      if (target) window.location.href = target;
+      var target = ROLE_ROUTES[role] || 'page3.html';
+      window.location.href = target;
     }
- 
+
     /* ==========================================================
        LOGIN SUBMIT
        ========================================================== */
     function handleLoginSubmit(event) {
-      event.preventDefault();
-      if (state.submitting) return;
- 
+      if (event) {
+        if (typeof event.preventDefault === 'function') event.preventDefault();
+        if (typeof event.stopPropagation === 'function') event.stopPropagation();
+      }
+      if (state.submitting) return false;
+
       clearFormMessage();
- 
-      var email = els.email.value.trim();
-      var password = els.password.value; // never logged or displayed
- 
+
+      var email = els.email ? els.email.value.trim() : '';
+      var password = els.password ? els.password.value : '';
+
       var check = validateLoginFields(email, password);
       if (!check.valid) {
         setFormMessage('error', 'errFixFields');
         if (check.firstInvalid) check.firstInvalid.focus();
-        return;
+        return false;
       }
- 
+
       state.submitting = true;
       updateSubmitState();
- 
+
       authenticate(email, password).then(function (result) {
         if (result.status === 'ok') {
-          var saved = saveSession(result.user);
-          if (!saved) {
-            state.submitting = false;
-            updateSubmitState();
-            setFormMessage('error', 'errStorage');
-            return;
+          saveSession(result.user);
+          if (els.remember && els.remember.checked) {
+            safeSet(STORAGE.rememberedEmail, result.user.email);
+          } else {
+            safeRemove(STORAGE.rememberedEmail);
           }
-          if (els.remember.checked) safeSet(STORAGE.rememberedEmail, result.user.email);
-          else safeRemove(STORAGE.rememberedEmail);
- 
-          els.password.value = '';
+
           setFormMessage('success', 'successLogin');
-          // Keep the button disabled to block double submissions during redirect.
-          window.setTimeout(function () { redirectForRole(result.user.role); }, REDIRECT_DELAY_MS);
+          window.setTimeout(function () {
+            redirectForRole(result.user.role);
+          }, REDIRECT_DELAY_MS);
           return;
         }
- 
+
         state.submitting = false;
         updateSubmitState();
- 
-        if (result.status === 'no-accounts') {
-          setFormMessage('error', 'errNoAccounts', { linkKey: 'errNoAccountsLink', afterKey: 'errNoAccountsAfter', href: 'register.html' });
-        } else if (result.status === 'invalid-role') {
-          setFormMessage('error', 'errInvalidRole');
+
+        if (result.status === 'error') {
+          setFormMessage('error', result.message || 'errStorage');
         } else {
           setFormMessage('error', 'errInvalidCreds');
-          els.password.value = '';
-          els.password.focus();
+          if (els.password) {
+            els.password.value = '';
+            els.password.focus();
+          }
         }
-      }).catch(function () {
+      }).catch(function (err) {
         state.submitting = false;
         updateSubmitState();
-        setFormMessage('error', 'errStorage');
+        setFormMessage('error', (err && err.message) ? err.message : 'errStorage');
       });
+
+      return false;
     }
  
     /* ==========================================================
@@ -664,7 +683,14 @@
       }
  
       // Form
-      els.form.addEventListener('submit', handleLoginSubmit);
+      if (els.form) {
+        els.form.addEventListener('submit', handleLoginSubmit);
+      }
+      if (els.submitBtn) {
+        els.submitBtn.addEventListener('click', function (e) {
+          handleLoginSubmit(e);
+        });
+      }
       els.email.addEventListener('input', function () { if (state.fieldErrors.email) setFieldError('email', null); });
       els.password.addEventListener('input', function () { if (state.fieldErrors.password) setFieldError('password', null); });
       els.forgotEmail.addEventListener('input', function () { if (state.fieldErrors.forgotEmail) setFieldError('forgotEmail', null); });

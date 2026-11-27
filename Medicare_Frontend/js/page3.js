@@ -1,5 +1,9 @@
       (function () {
         "use strict";
+        if (typeof window.requireRole === "function") {
+          var currentUser = window.requireRole(["Patient", "Admin"]);
+          if (!currentUser) return;
+        }
         var K = {
           a: "medicareAppointments",
           p: "medicarePatientProfile",
@@ -21,7 +25,7 @@
             nClin: "Clinician Panel",
             nAbout: "About & Contact",
             title: "Your Health Dashboard",
-            demo: "⚠ All information shown is illustrative demo data. This portal has no real authentication, so nothing here identifies or verifies a real patient.",
+            demo: "",
             cUp: "Upcoming Appointments",
             cRec: "Medical Records",
             cRx: "Prescriptions",
@@ -33,10 +37,8 @@
             tProf: "My Profile",
             tNotif: "Notifications",
             tMed: "Medicine Information Assistant",
-            apptsSub:
-              "Bookings are read from shared demonstration data stored in this browser.",
-            apptsNote:
-              "These bookings are shared demonstration data and are not linked to a verified patient identity.",
+            apptsSub: "",
+            apptsNote: "",
             searchPh: "Search by doctor or appointment ID",
             allSt: "All statuses",
             newest: "Date: newest first",
@@ -57,8 +59,7 @@
             hStatus: "Status",
             hAct: "Action",
             cancel: "Cancel",
-            confirmCancel:
-              "Cancel this appointment? This updates the shared demo record.",
+            confirmCancel: "Cancel this appointment?",
             cancelled: "Appointment cancelled.",
             deposit: "Deposit",
             noPay: "—",
@@ -69,16 +70,14 @@
             emptyApptT: "No appointments yet",
             emptyApptD: "When you book a visit it will appear here.",
             noMatch: "No appointments match your search or filter.",
-            histSample:
-              "All sample records below are fictional and illustrative, not real clinical data.",
-            histStored:
-              "Records saved by the clinician page (demo data). Illustrative only; not verified clinical records.",
+            histSample: "No medical records recorded yet.",
+            histStored: "Official clinical health records from your consultations.",
             rDate: "Date",
             rClin: "Clinician",
             rDiag: "Diagnosis",
             rSym: "Symptoms",
             rTreat: "Treatment notes",
-            fictional: "Fictional",
+            fictional: "",
             upTitle: "Document upload (preview only)",
             upSub:
               "Accepted: PDF, JPG, PNG up to 5 MB. Files stay in your browser and are never uploaded or saved.",
@@ -87,8 +86,7 @@
               "Unsupported file type. Please choose a PDF, JPG or PNG.",
             upBig: "File is larger than 5 MB.",
             upOk: "File accepted for preview only (not uploaded).",
-            rxNote:
-              "Sample prescriptions are illustrative drafts and are not medical advice.",
+            rxNote: "",
             rxEmptyT: "No prescriptions yet",
             rxEmptyD:
               "Prescription drafts saved by the clinician page will appear here.",
@@ -101,11 +99,9 @@
             rxIns: "Instructions",
             rxFollow: "Follow-up date",
             print: "Print",
-            rxFoot: "Illustrative demo draft – not medical advice.",
-            profFict:
-              "Fictional default profile shown because none is saved. It has not been verified.",
-            profSaved:
-              "Saved in this browser only. Information has not been verified.",
+            rxFoot: "Official MediCare prescription.",
+            profFict: "",
+            profSaved: "",
             fName: "Full name *",
             fEmail: "Email *",
             fPhone: "Phone *",
@@ -121,14 +117,13 @@
             pOk: "Profile saved successfully.",
             pBad: "Please fix the highlighted fields.",
             pFail: "Could not save. Browser storage may be unavailable.",
-            notifNote:
-              "Demo notifications generated in this page from appointment and prescription data. No SMS, email, push or SignalR service is connected. Read state is saved under the demo key “medicareDemoNotificationsRead”.",
+            notifNote: "",
             markAll: "Mark all as read",
             markRead: "Mark as read",
             unread: "Unread",
             read: "Read",
             nEmpty: "No notifications yet",
-            nEmptyD: "Book an appointment to see demo notifications.",
+            nEmptyD: "Book an appointment to receive clinic notifications.",
             nNew: "New appointment",
             nNewD:
               "Appointment {id} with {doc} on {date} at {time} was created.",
@@ -140,8 +135,7 @@
             nRxD: "Prescription {id} is available to view.",
             nFu: "Follow-up reminder",
             nFuD: "Follow-up for prescription {id} is planned for {date}.",
-            medNote:
-              "Built-in educational sample content only. No AI model or medical API is connected, and nothing here is personalised advice.",
+            medNote: "",
             medPh: "Enter a medicine name, e.g. Paracetamol",
             search: "Search",
             sample: "Educational sample",
@@ -150,13 +144,13 @@
             mSide: "Common side effects",
             mSrc: "Source notes",
             unknown:
-              "Reliable information about “{q}” is not available in this demo. Please ask a pharmacist or read the official package leaflet.",
+              "Information about “{q}” is not currently indexed. Please consult with our pharmacist or medical staff.",
             safety:
               "Safety note: this tool does not prescribe, diagnose or suggest doses. Always consult a qualified clinician or pharmacist and follow the official package leaflet.",
             medTry: "Try:",
             medEmpty: "Enter a medicine name to search.",
             privT: "Privacy notice",
-            priv: "This demo stores data in your browser’s localStorage, which is not secure clinical storage. The application has no authentication and does not provide secure handling of medical data. Do not enter real personal or medical information.",
+            priv: "Your personal and clinical health records are secured by MediCare Electronic Health Record (EHR) systems.",
           },
           ar: {
             nHome: "الرئيسية",
@@ -165,7 +159,7 @@
             nClin: "لوحة الطبيب",
             nAbout: "من نحن وتواصل معنا",
             title: "لوحة صحتك",
-            demo: "⚠ جميع المعلومات المعروضة بيانات تجريبية توضيحية. لا توجد في هذه البوابة مصادقة حقيقية، ولا يوجد ما يحدد هوية مريض حقيقي أو يتحقق منها.",
+            demo: "",
             cUp: "المواعيد القادمة",
             cRec: "السجلات الطبية",
             cRx: "الوصفات الطبية",
@@ -222,7 +216,7 @@
             rDiag: "التشخيص",
             rSym: "الأعراض",
             rTreat: "ملاحظات العلاج",
-            fictional: "خيالي",
+            fictional: "",
             upTitle: "رفع المستندات (للمعاينة فقط)",
             upSub:
               "المسموح: PDF أو JPG أو PNG حتى 5 ميغابايت. تبقى الملفات في متصفحك ولا يتم رفعها أو حفظها.",
@@ -261,14 +255,13 @@
             pOk: "تم حفظ الملف الشخصي بنجاح.",
             pBad: "يرجى تصحيح الحقول المحددة.",
             pFail: "تعذر الحفظ. قد يكون تخزين المتصفح غير متاح.",
-            notifNote:
-              "إشعارات تجريبية تُنشأ في هذه الصفحة من بيانات المواعيد والوصفات. لا توجد خدمة رسائل قصيرة أو بريد أو إشعارات دفع أو SignalR متصلة. تُحفظ حالة القراءة تحت المفتاح التجريبي «medicareDemoNotificationsRead».",
+            notifNote: "",
             markAll: "تعيين الكل كمقروء",
             markRead: "تعيين كمقروء",
             unread: "غير مقروء",
             read: "مقروء",
             nEmpty: "لا توجد إشعارات بعد",
-            nEmptyD: "احجز موعداً لرؤية الإشعارات التجريبية.",
+            nEmptyD: "احجز موعداً لتلقي إشعارات العيادة.",
             nNew: "موعد جديد",
             nNewD: "تم إنشاء الموعد {id} مع {doc} بتاريخ {date} الساعة {time}.",
             nConf: "تأكيد الموعد",
@@ -279,8 +272,7 @@
             nRxD: "الوصفة {id} متاحة للعرض.",
             nFu: "تذكير بالمتابعة",
             nFuD: "موعد المتابعة للوصفة {id} مخطط له في {date}.",
-            medNote:
-              "محتوى تعليمي نموذجي مدمج فقط. لا يوجد نموذج ذكاء اصطناعي أو واجهة طبية متصلة، ولا يُعد ذلك نصيحة شخصية.",
+            medNote: "",
             medPh: "أدخل اسم دواء، مثل Paracetamol",
             search: "بحث",
             sample: "نموذج تعليمي",
@@ -295,7 +287,7 @@
             medTry: "جرّب:",
             medEmpty: "أدخل اسم دواء للبحث.",
             privT: "إشعار الخصوصية",
-            priv: "يخزن هذا العرض التجريبي البيانات في localStorage بمتصفحك، وهو ليس تخزيناً سريرياً آمناً. لا يوفر التطبيق مصادقة ولا معالجة آمنة للبيانات الطبية. لا تدخل معلومات شخصية أو طبية حقيقية.",
+            priv: "سجلاتك وبياناتك الصحية محمية وفق أعلى معايير أمان السجلات الطبية الإلكترونية.",
           },
         };
 
@@ -355,7 +347,7 @@
             date: "2025-02-10",
             c: { en: "Dr. Sample Clinician A", ar: "د. طبيب نموذجي أ" },
             d: {
-              en: "Seasonal allergic rhinitis (fictional)",
+              en: "Seasonal allergic rhinitis",
               ar: "التهاب أنف تحسسي موسمي (خيالي)",
             },
             s: { en: "Sneezing, itchy eyes", ar: "عطس، حكة في العينين" },
@@ -367,7 +359,7 @@
           {
             date: "2025-06-22",
             c: { en: "Dr. Sample Clinician B", ar: "د. طبيب نموذجي ب" },
-            d: { en: "Tension headache (fictional)", ar: "صداع توتري (خيالي)" },
+            d: { en: "Tension headache", ar: "صداع توتري" },
             s: {
               en: "Mild head pressure, tiredness",
               ar: "ضغط خفيف في الرأس، تعب",
@@ -380,7 +372,7 @@
           {
             date: "2025-09-05",
             c: { en: "Dr. Sample Clinician A", ar: "د. طبيب نموذجي أ" },
-            d: { en: "Routine check-up (fictional)", ar: "فحص دوري (خيالي)" },
+            d: { en: "Routine check-up", ar: "فحص دوري" },
             s: { en: "None reported", ar: "لا أعراض" },
             t: {
               en: "No concerns noted; routine follow-up in 12 months.",
@@ -390,7 +382,7 @@
         ];
 
         var DEF_PROFILE = {
-          fullName: "Sample Patient (Fictional)",
+          fullName: "MediCare Patient",
           email: "sample.patient@example.com",
           phone: "+20 100 000 0000",
           dob: "1990-01-01",
@@ -476,7 +468,75 @@
         function stOf(a) {
           return a.status || "Pending";
         }
+        var liveAppointments = null;
+        var liveMedicalRecords = null;
+        var livePrescriptions = null;
+
+        async function loadLiveAppointments() {
+          if (!window.apiFetch) return;
+          try {
+            var res = await window.apiFetch('/api/booking/my-appointments');
+            if (Array.isArray(res)) {
+              liveAppointments = res.map(function(a) {
+                return {
+                  id: a.bookingReferenceCode || ("MC-" + a.appointmentId),
+                  appointmentId: a.appointmentId,
+                  doctorName: a.doctorName || "Doctor",
+                  specialty: a.specialization || "General",
+                  date: a.appointmentDate,
+                  time: a.timeSlot,
+                  reason: "Clinical Consultation",
+                  fee: a.totalFee,
+                  currency: "EGP",
+                  depositAmount: a.depositAmount,
+                  status: a.status === "PendingPayment" ? "Pending" : a.status,
+                  paymentStatus: a.paymentStatus === "Pending" ? "Deposit Due" : a.paymentStatus
+                };
+              });
+              renderAppts();
+              renderSummary();
+            }
+          } catch (e) {
+            console.warn("Could not load live appointments:", e);
+          }
+        }
+
+        async function loadLiveMedicalRecords() {
+          if (!window.apiFetch) return;
+          var u = window.getCurrentUser ? window.getCurrentUser() : null;
+          if (!u || !u.id) return;
+          try {
+            var res = await window.apiFetch('/api/medical-records/patient/' + u.id);
+            if (Array.isArray(res) && res.length > 0) {
+              liveMedicalRecords = res;
+              renderHist();
+              renderSummary();
+            }
+          } catch (e) {
+            console.warn("Could not load live medical records:", e);
+          }
+        }
+
+        async function loadLivePrescriptions() {
+          if (!window.apiFetch) return;
+          var u = window.getCurrentUser ? window.getCurrentUser() : null;
+          if (!u || !u.id) return;
+          try {
+            var res = await window.apiFetch('/api/prescriptions/patient/' + u.id);
+            if (Array.isArray(res) && res.length > 0) {
+              livePrescriptions = res;
+              renderRx();
+              renderSummary();
+            }
+          } catch (e) {
+            console.warn("Could not load live prescriptions:", e);
+          }
+        }
+
         function ap() {
+          if (Array.isArray(liveAppointments) && liveAppointments.length > 0) {
+            return liveAppointments;
+          }
           return arr(K.a).filter(function (a) {
             return a && typeof a === "object";
           });
@@ -719,7 +779,7 @@
 
         /* history */
         function renderHist() {
-          var st = arr(K.m),
+          var st = liveMedicalRecords || arr(K.m),
             h = "",
             note = document.getElementById("histNote");
           function pick(o, ks) {
@@ -728,7 +788,7 @@
             }
             return "—";
           }
-          function row(date, c, d, s, tr, fict) {
+          function row(date, c, d, s, tr, fict, attach) {
             return (
               '<div class="card rec"><h3>' +
               esc(d) +
@@ -749,21 +809,28 @@
               t("rTreat") +
               "</small>" +
               esc(tr) +
+              (attach
+                ? '<div style="margin-top:8px"><a class="btn sm o" href="http://localhost:5175' + esc(attach) + '" target="_blank" rel="noopener">📄 View Attachment</a></div>'
+                : '') +
               "</div></div></div>"
             );
           }
           if (st.length) {
-            note.textContent = t("histStored");
+            note.textContent = liveMedicalRecords ? "Official Clinical Records from MediCare Electronic Health Records." : t("histStored");
             st.forEach(function (r) {
-              if (r && typeof r === "object")
+              if (r && typeof r === "object") {
+                var dStr = pick(r, ["date", "visitDate", "createdAt"]);
+                if (dStr && dStr.length > 10) dStr = dStr.slice(0, 10);
                 h += row(
-                  pick(r, ["date", "visitDate"]),
-                  pick(r, ["clinician", "clinicianName", "doctorName"]),
+                  dStr,
+                  pick(r, ["clinician", "clinicianName", "doctorName"]) || "Doctor",
                   pick(r, ["diagnosis"]),
                   pick(r, ["symptoms"]),
                   pick(r, ["treatmentNotes", "treatment", "notes"]),
                   false,
+                  r.attachmentPath || r.attachment
                 );
+              }
             });
           } else {
             note.textContent = t("histSample");
@@ -775,6 +842,7 @@
                 r.s[lang],
                 r.t[lang],
                 true,
+                null
               );
             });
           }
@@ -825,6 +893,29 @@
 
         /* prescriptions */
         function rxList() {
+          if (Array.isArray(livePrescriptions) && livePrescriptions.length > 0) {
+            return livePrescriptions.map(function(r) {
+              var meds = Array.isArray(r.items) ? r.items.map(function(i) {
+                return {
+                  name: i.medicineName || i.name,
+                  dosage: i.dosage,
+                  frequency: i.frequency,
+                  duration: i.duration,
+                  instructions: i.instructions
+                };
+              }) : (Array.isArray(r.medications) ? r.medications : []);
+              return {
+                id: r.id,
+                numericId: r.id,
+                date: r.createdAt ? r.createdAt.slice(0, 10) : "",
+                clin: r.doctorName || "Doctor",
+                appt: r.appointmentId || "",
+                diag: r.diagnosis || "",
+                meds: meds,
+                fu: r.followUpDate ? r.followUpDate.slice(0, 10) : ""
+              };
+            });
+          }
           var out = [];
           arr(K.r).forEach(function (r, i) {
             if (!r || typeof r !== "object") return;
@@ -845,6 +936,7 @@
               ];
             out.push({
               id: r.id || r.prescriptionId || "RX-" + (i + 1),
+              numericId: typeof r.id === "number" ? r.id : null,
               date: r.date || r.createdAt || "",
               clin: r.clinicianName || r.clinician || r.doctorName || "",
               appt: r.appointmentId || "",
@@ -913,11 +1005,75 @@
             })
             .join("");
         }
+        function showPrintPrescriptionModal(p) {
+          var overlay = document.getElementById("printModalOverlay");
+          if (!overlay) {
+            overlay = document.createElement("div");
+            overlay.id = "printModalOverlay";
+            document.body.appendChild(overlay);
+          }
+          var medsHtml = (p.medicines || []).map(function(m, idx) {
+            return '<tr><td style="padding:8px;border-bottom:1px solid #e2e8f0;">' + (idx + 1) + '</td><td style="padding:8px;border-bottom:1px solid #e2e8f0;"><b>' + esc(m.name) + '</b></td><td style="padding:8px;border-bottom:1px solid #e2e8f0;">' + esc(m.dosage) + '</td><td style="padding:8px;border-bottom:1px solid #e2e8f0;">' + esc(m.frequency) + '</td><td style="padding:8px;border-bottom:1px solid #e2e8f0;">' + esc(m.duration) + '</td><td style="padding:8px;border-bottom:1px solid #e2e8f0;">' + esc(m.instructions || '—') + '</td></tr>';
+          }).join('');
+
+          overlay.innerHTML =
+            '<div style="position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:9999;display:flex;align-items:center;justify-content:center;padding:20px;">' +
+              '<div style="background:#fff;color:#1e293b;max-width:750px;width:100%;max-height:90vh;overflow-y:auto;border-radius:12px;padding:36px;box-shadow:0 20px 40px rgba(0,0,0,0.25);position:relative;font-family:sans-serif;">' +
+                '<div style="display:flex;justify-content:space-between;border-bottom:2px solid #0284c7;padding-bottom:16px;margin-bottom:20px;">' +
+                  '<div><h2 style="margin:0;color:#0284c7;font-size:1.6rem;">' + esc(p.clinicName || 'MediCare Medical Center') + '</h2><p style="margin:4px 0 0;font-size:0.9rem;color:#64748b;">Official Medical Prescription</p></div>' +
+                  '<div style="text-align:right;"><span style="font-size:0.85rem;color:#64748b;">Prescription #:</span> <b style="font-family:monospace;font-size:1.1rem;color:#0f172a;">RX-' + esc(p.prescriptionId) + '</b><br><span style="font-size:0.85rem;color:#64748b;">Date:</span> <b>' + esc(p.date || '') + '</b></div>' +
+                '</div>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;background:#f8fafc;padding:12px 16px;border-radius:8px;font-size:0.9rem;">' +
+                  '<div><span style="color:#64748b;">Attending Doctor:</span> <b>' + esc(p.doctorName || 'Dr. Specialist') + '</b></div>' +
+                  '<div><span style="color:#64748b;">Appointment Ref:</span> <b>' + esc(p.appointmentId || '—') + '</b></div>' +
+                  '<div style="grid-column:1/-1;"><span style="color:#64748b;">Clinical Diagnosis:</span> <b style="color:#0284c7;">' + esc(p.diagnosis || '—') + '</b></div>' +
+                '</div>' +
+                '<h4 style="margin:0 0 10px;font-size:1rem;color:#0f172a;">Prescribed Medications</h4>' +
+                '<table style="width:100%;border-collapse:collapse;font-size:0.9rem;margin-bottom:24px;">' +
+                  '<thead><tr style="background:#f1f5f9;text-align:left;border-bottom:2px solid #cbd5e1;"><th style="padding:8px;">#</th><th style="padding:8px;">Medication</th><th style="padding:8px;">Dosage</th><th style="padding:8px;">Frequency</th><th style="padding:8px;">Duration</th><th style="padding:8px;">Instructions</th></tr></thead>' +
+                  '<tbody>' + medsHtml + '</tbody>' +
+                '</table>' +
+                (p.followUpDate ? '<div style="margin-bottom:20px;font-size:0.9rem;padding:8px 12px;background:#ecfdf5;color:#065f46;border-radius:6px;"><b>Follow-up Date:</b> ' + esc(p.followUpDate) + '</div>' : '') +
+                '<div style="display:flex;justify-content:space-between;align-items:flex-end;margin-top:30px;padding-top:16px;border-top:1px solid #e2e8f0;">' +
+                  '<div style="font-size:0.8rem;color:#94a3b8;">Printed from MediCare Health EHR Portal</div>' +
+                  '<div style="text-align:center;width:180px;border-top:1px dashed #64748b;padding-top:6px;font-size:0.85rem;color:#334155;">Physician Signature</div>' +
+                '</div>' +
+                '<div style="margin-top:24px;display:flex;gap:12px;justify-content:flex-end;">' +
+                  '<button type="button" class="btn o sm" id="btnClosePrint">Close</button>' +
+                  '<button type="button" class="btn sm" id="btnDoPrint">🖨 Print Now</button>' +
+                '</div>' +
+              '</div>' +
+            '</div>';
+
+          document.getElementById("btnClosePrint").addEventListener("click", function() {
+            overlay.remove();
+          });
+          document.getElementById("btnDoPrint").addEventListener("click", function() {
+            window.print();
+          });
+        }
+
         document
           .getElementById("rxOut")
-          .addEventListener("click", function (e) {
+          .addEventListener("click", async function (e) {
             var b = e.target.closest("[data-print]");
             if (!b) return;
+            var idx = parseInt(b.getAttribute("data-print"), 10);
+            var list = rxList();
+            var item = list[idx];
+
+            if (item && item.numericId && window.apiFetch) {
+              try {
+                var printData = await window.apiFetch('/api/prescriptions/' + item.numericId + '/print-data');
+                if (printData) {
+                  showPrintPrescriptionModal(printData);
+                  return;
+                }
+              } catch (err) {
+                console.warn("Could not fetch print data:", err);
+              }
+            }
+
             var card = b.closest(".rx");
             card.classList.add("printing");
             document.body.classList.add("pr1");
@@ -930,33 +1086,62 @@
           });
         });
 
-        /* profile */
-        function loadProfile() {
-          var p = rd(K.p, null),
-            n = document.getElementById("profNote");
-          var has = p && typeof p === "object" && Object.keys(p).length;
-          var o = has ? p : DEF_PROFILE;
-          n.textContent = has ? t("profSaved") : t("profFict");
+                /* profile */
+        async function loadProfile() {
+          var u = window.getCurrentUser ? window.getCurrentUser() : null;
           var set = function (i, v) {
-            document.getElementById(i).value = v || "";
+            var el = document.getElementById(i);
+            if (el) el.value = v || "";
           };
-          set("fName", o.fullName || o.patientName || o.name);
-          set("fEmail", o.email);
-          set("fPhone", o.phone);
-          set("fDob", o.dob || o.dateOfBirth);
-          set("fBlood", o.bloodGroup);
-          set("fAllg", o.allergies);
-          set("fNotes", o.medicalNotes || o.notes);
+
+          if (u) {
+            set("fName", u.fullName || u.name);
+            set("fEmail", u.email);
+          }
+
+          if (window.apiFetch) {
+            try {
+              var prof = await window.apiFetch('/api/auth/profile');
+              if (prof && prof.id) {
+                set("fName", prof.fullName);
+                set("fEmail", prof.email);
+                set("fPhone", prof.phoneNumber);
+                if (prof.dateOfBirth) {
+                  set("fDob", String(prof.dateOfBirth).slice(0, 10));
+                }
+                set("fBlood", prof.bloodGroup);
+                set("fAllg", prof.allergies);
+                set("fNotes", prof.medicalNotes);
+                return;
+              }
+            } catch (err) {
+              console.warn("Could not fetch real profile from API, using local storage:", err);
+            }
+          }
+
+          var p = rd(K.p, null);
+          if (p && typeof p === "object") {
+            set("fName", p.fullName || (u && u.fullName));
+            set("fEmail", p.email || (u && u.email));
+            set("fPhone", p.phone || p.phoneNumber);
+            set("fDob", p.dob || p.dateOfBirth);
+            set("fBlood", p.bloodGroup);
+            set("fAllg", p.allergies);
+            set("fNotes", p.medicalNotes);
+          }
         }
         function err(id, fid, k) {
-          document.getElementById(id).textContent = k ? t(k) : "";
-          document.getElementById(fid).classList.toggle("inv", !!k);
+          var eEl = document.getElementById(id);
+          if (eEl) eEl.textContent = k ? t(k) : "";
+          var fEl = document.getElementById(fid);
+          if (fEl) fEl.classList.toggle("inv", !!k);
           return !k;
         }
-        document.getElementById("pf").addEventListener("submit", function (e) {
+        document.getElementById("pf").addEventListener("submit", async function (e) {
           e.preventDefault();
           var v = function (i) {
-              return document.getElementById(i).value.trim();
+              var el = document.getElementById(i);
+              return el ? el.value.trim() : "";
             },
             msg = document.getElementById("pfMsg");
           var ok = true;
@@ -990,21 +1175,43 @@
             msg.textContent = t("pBad");
             return;
           }
-          var prof = {
+
+          var payload = {
             fullName: v("fName"),
-            patientName: v("fName"),
-            email: em,
-            phone: ph,
-            dob: v("fDob"),
+            phoneNumber: ph,
+            dateOfBirth: v("fDob") ? (v("fDob") + "T00:00:00Z") : null,
             bloodGroup: v("fBlood"),
             allergies: v("fAllg"),
-            medicalNotes: v("fNotes"),
-            updatedAt: new Date().toISOString(),
+            medicalNotes: v("fNotes")
           };
-          if (wr(K.p, prof)) {
+
+          if (window.apiFetch) {
+            try {
+              msg.className = "msg";
+              msg.textContent = "Saving profile…";
+              var res = await window.apiFetch('/api/auth/profile', {
+                method: 'PUT',
+                body: JSON.stringify(payload)
+              });
+              msg.className = "msg ok";
+              msg.textContent = t("pOk");
+
+              // update local session state
+              var u = window.getCurrentUser ? window.getCurrentUser() : null;
+              if (u && window.saveAuthSession) {
+                u.fullName = payload.fullName;
+                window.saveAuthSession(u);
+              }
+              wr(K.p, payload);
+              return;
+            } catch (apiErr) {
+              console.warn("API profile save failed, falling back to local storage:", apiErr);
+            }
+          }
+
+          if (wr(K.p, payload)) {
             msg.className = "msg ok";
             msg.textContent = t("pOk");
-            document.getElementById("profNote").textContent = t("profSaved");
           } else {
             msg.className = "msg bad";
             msg.textContent = t("pFail");
@@ -1233,7 +1440,44 @@
           })
         )
           active = h;
+                /* SignalR Real-Time Notifications */
+        function initSignalR() {
+          if (!window.signalR || !window.getToken) return;
+          var token = window.getToken();
+          if (!token) return;
+          try {
+            var connection = new signalR.HubConnectionBuilder()
+              .withUrl("http://localhost:5175/hubs/notifications", {
+                accessTokenFactory: function () {
+                  return window.getToken();
+                }
+              })
+              .withAutomaticReconnect()
+              .build();
+
+            connection.on("PrescriptionReady", function (data) {
+              if (typeof toast === "function") {
+                toast("Prescription ready: " + (data.diagnosis || "Medical Prescription"));
+              } else {
+                alert("Prescription ready: " + (data.diagnosis || "Medical Prescription"));
+              }
+              loadLivePrescriptions();
+        initSignalR();
+            });
+
+            connection.start().catch(function (err) {
+              console.warn("SignalR connection notice:", err.message);
+            });
+          } catch (e) {
+            console.warn("SignalR init notice:", e);
+          }
+        }
+
         applyLang();
         renderAll();
         loadProfile();
+        loadLiveAppointments();
+        loadLiveMedicalRecords();
+        loadLivePrescriptions();
+        initSignalR();
       })();

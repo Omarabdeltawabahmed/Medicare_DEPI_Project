@@ -1,5 +1,4 @@
-﻿
-using Microsoft.AspNetCore.Authorization;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
@@ -7,6 +6,7 @@ using Microsoft.Data.SqlClient;
 using System.Globalization;
 using System.Security.Claims;
 
+using MediCare.Data.Context;
 using MediCare.Data.Models;
 using MediCare.Data.UnitOfWork;
 using MediCare.Services.DTOs.Booking;
@@ -20,13 +20,16 @@ public class BookingController : ControllerBase
 {
     private readonly IUnitOfWork _unitOfWork;
     private readonly IHubContext<NotificationHub> _hubContext;
+    private readonly ApplicationDbContext _context;
 
     public BookingController(
         IUnitOfWork unitOfWork,
-        IHubContext<NotificationHub> hubContext)
+        IHubContext<NotificationHub> hubContext,
+        ApplicationDbContext context)
     {
         _unitOfWork = unitOfWork;
         _hubContext = hubContext;
+        _context = context;
     }
 
     // Expire old pending bookings
@@ -82,8 +85,10 @@ public class BookingController : ControllerBase
 
         await ExpirePendingAppointmentsAsync();
 
-        var doctors = await _unitOfWork.Doctors.FindAsync(
-            d => d.IsApproved);
+        var doctors = await _context.DoctorProfiles
+            .Include(d => d.User)
+            .Where(d => d.IsApproved)
+            .ToListAsync();
 
         var appointments =
             await _unitOfWork.Appointments.FindAsync(a =>
@@ -100,13 +105,15 @@ public class BookingController : ControllerBase
 
         foreach (var doctor in doctors)
         {
-            var workingDays = doctor.WorkingDays
-                .Split(
-                    ',',
-                    StringSplitOptions.RemoveEmptyEntries |
-                    StringSplitOptions.TrimEntries)
-                .Select(d => d.ToUpperInvariant())
-                .ToList();
+            var workingDays = string.IsNullOrWhiteSpace(doctor.WorkingDays)
+                ? new List<string> { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN" }
+                : doctor.WorkingDays
+                    .Split(
+                        ',',
+                        StringSplitOptions.RemoveEmptyEntries |
+                        StringSplitOptions.TrimEntries)
+                    .Select(d => d.ToUpperInvariant())
+                    .ToList();
 
             if (!workingDays.Contains(requestedDay))
                 continue;
@@ -127,10 +134,13 @@ public class BookingController : ControllerBase
 
             var availableSlots = new List<string>();
 
-            var currentSlot = doctor.WorkStart;
+            var workStart = doctor.WorkStart == default ? new TimeOnly(9, 0) : doctor.WorkStart;
+            var workEnd = doctor.WorkEnd == default ? new TimeOnly(17, 0) : doctor.WorkEnd;
+            var slotDuration = doctor.SlotDuration <= 0 ? 30 : doctor.SlotDuration;
 
-            while (currentSlot.AddMinutes(doctor.SlotDuration)
-                   <= doctor.WorkEnd)
+            var currentSlot = workStart;
+
+            while (currentSlot.AddMinutes(slotDuration) <= workEnd)
             {
                 var slot = currentSlot;
 
@@ -141,26 +151,105 @@ public class BookingController : ControllerBase
                 if (!bookedSlots.Contains(slot) && !isPastSlot)
                 {
                     availableSlots.Add(
-                        slot.ToString("HH:mm:ss"));
+                        slot.ToString("HH:mm"));
                 }
 
-                currentSlot = currentSlot.AddMinutes(
-                    doctor.SlotDuration);
+                currentSlot = currentSlot.AddMinutes(slotDuration);
             }
 
             if (availableSlots.Count == 0)
                 continue;
 
+            var remainingCapacity = doctor.DailyPatientLimit.HasValue
+                ? Math.Max(0, doctor.DailyPatientLimit.Value - doctorAppointments.Count)
+                : 999;
+
+            var doctorName = doctor.User != null && !string.IsNullOrWhiteSpace(doctor.User.FullName)
+                ? doctor.User.FullName
+                : $"Dr. {doctor.Specialization}";
+
             result.Add(new AvailableDoctorDto
             {
                 DoctorId = doctor.Id,
+                DoctorName = doctorName,
                 Specialization = doctor.Specialization,
                 ConsultationFee = doctor.ConsultationFee,
+                DailyPatientLimit = doctor.DailyPatientLimit,
+                RemainingCapacity = remainingCapacity,
                 AvailableSlots = availableSlots
             });
         }
 
         return Ok(result);
+    }
+
+    // GET: api/booking/my-appointments
+    [HttpGet("my-appointments")]
+    [Authorize(Roles = "Patient")]
+    public async Task<IActionResult> GetMyAppointments()
+    {
+        var patientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+        if (string.IsNullOrEmpty(patientId))
+        {
+            return Unauthorized();
+        }
+
+        await ExpirePendingAppointmentsAsync();
+
+        var appointments = await _context.Appointments
+            .Include(a => a.Doctor)
+                .ThenInclude(d => d.User)
+            .Where(a => a.PatientId == patientId)
+            .OrderByDescending(a => a.AppointmentDate)
+            .ThenByDescending(a => a.TimeSlot)
+            .Select(a => new
+            {
+                appointmentId = a.Id,
+                bookingReferenceCode = a.BookingReferenceCode,
+                doctorId = a.DoctorId,
+                doctorName = a.Doctor.User != null ? a.Doctor.User.FullName : "Doctor",
+                specialization = a.Doctor.Specialization,
+                appointmentDate = a.AppointmentDate.ToString("yyyy-MM-dd"),
+                timeSlot = a.TimeSlot.ToString("HH:mm"),
+                status = a.Status,
+                paymentStatus = a.PaymentStatus,
+                totalFee = a.TotalFee,
+                depositAmount = a.DepositAmount,
+                expiresAtUtc = a.ExpiresAtUtc
+            })
+            .ToListAsync();
+
+        return Ok(appointments);
+    }
+
+    // PUT: api/booking/{id}/status
+    [HttpPut("{id:int}/status")]
+    [Authorize(Roles = "Doctor,Admin")]
+    public async Task<IActionResult> UpdateAppointmentStatus(
+        int id,
+        [FromBody] UpdateAppointmentStatusDto dto)
+    {
+        var appointment = await _unitOfWork.Appointments.GetByIdAsync(id);
+        if (appointment == null)
+            return NotFound(new { message = "Appointment not found." });
+
+        var allowedStatuses = new[] { "Pending", "PendingPayment", "Confirmed", "Cancelled", "Completed" };
+        if (!allowedStatuses.Contains(dto.Status, StringComparer.OrdinalIgnoreCase))
+        {
+            return BadRequest(new { message = "Invalid status. Allowed values: Pending, Confirmed, Cancelled, Completed." });
+        }
+
+        appointment.Status = dto.Status;
+        _unitOfWork.Appointments.Update(appointment);
+        await _unitOfWork.SaveAsync();
+
+        return Ok(new
+        {
+            message = "Appointment status updated successfully.",
+            appointmentId = appointment.Id,
+            status = appointment.Status
+        });
     }
 
     // POST: api/booking/initiate
@@ -247,13 +336,15 @@ public class BookingController : ControllerBase
             .Substring(0, 3)
             .ToUpperInvariant();
 
-        var workingDays = doctor.WorkingDays
-            .Split(
-                ',',
-                StringSplitOptions.RemoveEmptyEntries |
-                StringSplitOptions.TrimEntries)
-            .Select(d => d.ToUpperInvariant())
-            .ToList();
+        var workingDays = string.IsNullOrWhiteSpace(doctor.WorkingDays)
+            ? new List<string> { "MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN" }
+            : doctor.WorkingDays
+                .Split(
+                    ',',
+                    StringSplitOptions.RemoveEmptyEntries |
+                    StringSplitOptions.TrimEntries)
+                .Select(d => d.ToUpperInvariant())
+                .ToList();
 
         if (!workingDays.Contains(requestedDay))
         {
@@ -263,16 +354,12 @@ public class BookingController : ControllerBase
             });
         }
 
-        if (doctor.SlotDuration <= 0)
-        {
-            return BadRequest(new
-            {
-                message = "Doctor schedule is invalid."
-            });
-        }
+        var workStart = doctor.WorkStart == default ? new TimeOnly(9, 0) : doctor.WorkStart;
+        var workEnd = doctor.WorkEnd == default ? new TimeOnly(17, 0) : doctor.WorkEnd;
+        var slotDuration = doctor.SlotDuration <= 0 ? 30 : doctor.SlotDuration;
 
-        if (timeSlot < doctor.WorkStart ||
-            timeSlot.AddMinutes(doctor.SlotDuration) > doctor.WorkEnd)
+        if (timeSlot < workStart ||
+            timeSlot.AddMinutes(slotDuration) > workEnd)
         {
             return BadRequest(new
             {
@@ -280,11 +367,11 @@ public class BookingController : ControllerBase
             });
         }
 
-        var difference = timeSlot.Ticks - doctor.WorkStart.Ticks;
+        var difference = timeSlot.Ticks - workStart.Ticks;
 
         if (difference < 0 ||
             difference % TimeSpan.FromMinutes(
-                doctor.SlotDuration).Ticks != 0)
+                slotDuration).Ticks != 0)
         {
             return BadRequest(new
             {
