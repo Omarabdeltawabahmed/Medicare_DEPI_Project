@@ -18,8 +18,46 @@ public class GeminiService : IGeminiService
         _configuration = configuration;
     }
 
+    public static bool IsArabic(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return false;
+        return text.Any(c => c >= 0x0600 && c <= 0x06FF);
+    }
+
+    public static string ExtractUserText(string userPrompt)
+    {
+        if (string.IsNullOrWhiteSpace(userPrompt))
+            return string.Empty;
+
+        const string prefix = "What is the medical information for:";
+        if (userPrompt.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
+        {
+            return userPrompt.Substring(prefix.Length).Trim(' ', '?', '.', ':');
+        }
+
+        return userPrompt.Trim();
+    }
+
+    public static bool IsPredominantlyArabic(string text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return false;
+
+        // Remove markdown link URLs like (page2.html) before character analysis
+        var cleanText = Regex.Replace(text, @"\([a-zA-Z0-9_\-\./]+\)", "");
+
+        int arabicCount = cleanText.Count(c => c >= 0x0600 && c <= 0x06FF);
+        int latinCount = cleanText.Count(c => (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z'));
+
+        return arabicCount > latinCount && arabicCount > 0;
+    }
+
     public async Task<string> GenerateTextAsync(string systemPrompt, string userPrompt)
     {
+        var userQuery = ExtractUserText(userPrompt);
+        bool isArabic = IsArabic(userQuery);
+
         var apiKey = _configuration["Gemini:ApiKey"]
             ?? _configuration["GeminiSettings:ApiKey"]
             ?? _configuration["GEMINI_API_KEY"]
@@ -33,7 +71,16 @@ public class GeminiService : IGeminiService
 
         if (hasApiKey)
         {
-            // Try configured model (e.g. gemini-2.5-flash) first; if Google returns 404, fallback to active alternatives
+            // Localize userPrompt if Arabic to avoid English prefix biasing model language
+            var effectiveUserPrompt = isArabic && userPrompt.StartsWith("What is the medical information for:", StringComparison.OrdinalIgnoreCase)
+                ? $"ما هي المعلومات الطبية والدوائية الخاصة بالمستحضر التالي: {userQuery}؟"
+                : userPrompt;
+
+            var effectiveSystemPrompt = isArabic
+                ? systemPrompt + "\n\nCRITICAL LANGUAGE ENFORCEMENT: The user is communicating in ARABIC. Your entire response MUST be 100% in natural, fluent Arabic ONLY. Absolutely DO NOT include any English words, English letters, English headings, or English parenthetical translations anywhere. If this is not a recognized medication or if the query is outside clinic scope, write your polite refusal entirely in Arabic with 😄."
+                : systemPrompt + "\n\nCRITICAL LANGUAGE ENFORCEMENT: The user is communicating in ENGLISH. Your entire response MUST be 100% in English ONLY. Do NOT use Arabic.";
+
+            // Try configured model first; if Google returns 404, fallback to active alternatives
             var modelsToTry = new[] { configuredModel, "gemini-3.5-flash", "gemini-flash-latest" }.Distinct(StringComparer.OrdinalIgnoreCase);
 
             foreach (var model in modelsToTry)
@@ -48,7 +95,7 @@ public class GeminiService : IGeminiService
                         {
                             parts = new[]
                             {
-                                new { text = systemPrompt }
+                                new { text = effectiveSystemPrompt }
                             }
                         },
                         contents = new[]
@@ -57,7 +104,7 @@ public class GeminiService : IGeminiService
                             {
                                 parts = new[]
                                 {
-                                    new { text = userPrompt }
+                                    new { text = effectiveUserPrompt }
                                 }
                             }
                         }
@@ -86,12 +133,34 @@ public class GeminiService : IGeminiService
 
                         if (!string.IsNullOrWhiteSpace(generatedText))
                         {
-                            return generatedText.Trim();
+                            var trimmed = generatedText.Trim();
+
+                            // Enforce strict language matching on model output
+                            if (isArabic)
+                            {
+                                if (IsPredominantlyArabic(trimmed))
+                                {
+                                    // Strip any English parentheticals that may have leaked into Arabic output
+                                    trimmed = Regex.Replace(trimmed, @"\s*\([A-Za-z\s0-9\-_]+\)", "");
+                                    return trimmed;
+                                }
+                                // Model replied in English despite Arabic prompt - use pure Arabic fallback
+                                break;
+                            }
+                            else
+                            {
+                                if (!IsArabic(trimmed))
+                                {
+                                    return trimmed;
+                                }
+                                // Model replied in Arabic to English prompt - use English fallback
+                                break;
+                            }
                         }
                     }
                     else if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
                     {
-                        // Model 404 (e.g. deprecated/retired model) - try next candidate in list
+                        // Model 404 - try next candidate in list
                         continue;
                     }
                     else
@@ -196,7 +265,8 @@ public class GeminiService : IGeminiService
 
     private static string GenerateFallbackResponse(string systemPrompt, string userPrompt)
     {
-        bool isArabic = userPrompt.Any(c => c >= 0x0600 && c <= 0x06FF);
+        var userQuery = ExtractUserText(userPrompt);
+        bool isArabic = IsArabic(userQuery);
         var promptLower = userPrompt.ToLowerInvariant();
         var normalizedPrompt = NormalizeArabic(userPrompt).ToLowerInvariant();
 
@@ -209,12 +279,7 @@ public class GeminiService : IGeminiService
 
         if (isMedicineLookup)
         {
-            var medName = userPrompt;
-            if (medName.StartsWith("What is the medical information for:", StringComparison.OrdinalIgnoreCase))
-            {
-                medName = medName.Substring("What is the medical information for:".Length).Trim(' ', '?', '.', ':');
-            }
-            return GetMedicineFallback(medName);
+            return GetMedicineFallback(userQuery, isArabic);
         }
 
         // -------------------------------------------------------------
@@ -224,7 +289,7 @@ public class GeminiService : IGeminiService
         if (!isWhitelisted)
         {
             return isArabic
-                ? "عذراً منك 😄! أنا مساعد ذكي متخصص حصرياً في الاستشارات الطبية والخدمات الصحية الخاصة بعيادة ميديكير (MediCare)، ولا يمكنني المساعدة في المجالات الخارجة عن النطاق الطبي. يسعدني دائماً الإجابة عن استفساراتك حول التخصصات الطبية، أطباء العيادة، مواعيد العمل، أو مساعدتك في حجز كشف طبي!"
+                ? "عذراً منك 😄! أنا مساعد ذكي متخصص حصرياً في الاستشارات الطبية والخدمات الصحية الخاصة بعيادة ميديكير، ولا يمكنني المساعدة في المجالات الخارجة عن النطاق الطبي. يسعدني دائماً الإجابة عن استفساراتك حول التخصصات الطبية، أطباء العيادة، مواعيد العمل، أو مساعدتك في حجز كشف طبي!"
                 : "Pardon me 😄! I am an AI assistant specialized exclusively in medical inquiries and healthcare services for MediCare Clinic, and I cannot assist with topics outside the medical domain. I would be delighted to help you with our medical specialties, certified doctors, clinic hours, fees, or booking an appointment!";
         }
 
@@ -325,13 +390,12 @@ public class GeminiService : IGeminiService
 
         // 8. General In-Scope Medical Greeting / Inquiry
         return isArabic
-            ? "أهلاً بك في عيادة ميديكير (MediCare)! أنا هنا لمساعدتك في كل ما يتعلق بصحتك، التعرف على أطبائنا واستشاريينا في مختلف التخصصات، الاستفسار عن مواعيد العمل ورسوم الكشف، ومساعدتك في [حجز موعد](page2.html). كيف يمكنني خدمتك اليوم؟"
+            ? "أهلاً بك في عيادة ميديكير! أنا هنا لمساعدتك في كل ما يتعلق بصحتك، التعرف على أطبائنا واستشاريينا في مختلف التخصصات، الاستفسار عن مواعيد العمل ورسوم الكشف، ومساعدتك في [حجز موعد](page2.html). كيف يمكنني خدمتك اليوم؟"
             : "Welcome to MediCare Clinic! I'm here to assist you with medical guidance, information on our certified specialists and clinic departments, schedules and consultation fees, or booking an appointment at [Book Appointment](page2.html). How can I help you today?";
     }
 
-    private static string GetMedicineFallback(string medName)
+    private static string GetMedicineFallback(string medName, bool isArabic)
     {
-        bool isArabic = medName.Any(c => c >= 0x0600 && c <= 0x06FF);
         var rawLower = medName.ToLowerInvariant().Trim();
         var normalized = NormalizeArabic(rawLower);
 
@@ -351,7 +415,7 @@ public class GeminiService : IGeminiService
             || normalized.Contains("باراسيتامول") || normalized.Contains("بانادول") || normalized.Contains("سيتال") || normalized.Contains("ادول"))
         {
             return isArabic
-                ? $@"**{medName} (باراسيتامول)**
+                ? $@"**{medName}**
 1. **دواعي الاستعمال**: خافض للحرارة ومسكن للآلام الخفيفة والمتوسطة مثل الصداع، آلام الأسنان، آلام العضلات، وأعراض نزلات البرد والإنفلونزا.
 2. **التحذيرات وموانع الاستعمال**: لا تتجاوز الجرعة اليومية القصوى الموصى بها (4 جرامات للبالغين)، ويجب الحذر الشديد لدى مرضى القصور الكبدي وتجنب تناوله مع أدوية أخرى تحتوي على الباراسيتامول.
 3. **الآثار الجانبية الشائعة**: جيد التحمل عموماً عند الالتزام بالجرعات الموصوفة؛ نادراً ما قد يسبب طفحاً جلدياً أو ردود فعل تحسسية.
@@ -370,7 +434,7 @@ Medical Disclaimer: This information is for educational purposes only. Always co
             || normalized.Contains("ايبوبروفين") || normalized.Contains("بروفين") || normalized.Contains("ادفيل"))
         {
             return isArabic
-                ? $@"**{medName} (إيبوبروفين)**
+                ? $@"**{medName}**
 1. **دواعي الاستعمال**: مضاد للالتهاب ومسكن للآلام الخفيفة إلى المتوسطة، وخافض للحرارة؛ يُستخدم لالتهاب المفاصل، آلام الأسنان، الصداع، وآلام الدورة الشهرية.
 2. **التحذيرات وموانع الاستعمال**: يُفضل تناوله بعد الطعام لحماية المعدة. يُمنع لمرضى قرحة المعدة النشطة، والقصور الكلوي الشديد، وخلال الثلث الأخير من الحمل.
 3. **الآثار الجانبية الشائعة**: اضطراب المعدة، الغثيان، عسر الهضم، أو الدوار الخفيف.
@@ -389,7 +453,7 @@ Medical Disclaimer: This information is for educational purposes only. Always co
             || normalized.Contains("اوجمنتين") || normalized.Contains("اموكسيسيلين"))
         {
             return isArabic
-                ? $@"**{medName} (أوغمنتين / أموكسيسيلين)**
+                ? $@"**{medName}**
 1. **دواعي الاستعمال**: مضاد حيوي واسع المجال يُستخدم لعلاج العدوى البكتيرية في الجهاز التنفسي، التهاب الجيوب الأنفية، التهاب الأذن الوسطى، والتهابات المسالك البولية والجلد.
 2. **التحذيرات وموانع الاستعمال**: يُمنع تماماً للمرضى الذين يعانون من حساسية تجاه البنسلين. يجب إكمال الجرعة المقررة كاملة حتى لو تحسنت الأعراض منعاً لتطور مقاومة بكتيرية.
 3. **الآثار الجانبية الشائعة**: إسهال خفيف، غثيان، اضطراب في الجهاز الهضمي، أو طفح جلدي.
@@ -408,9 +472,9 @@ Medical Disclaimer: This information is for educational purposes only. Always co
             || normalized.Contains("اوميبرازول") || normalized.Contains("بانتوبرازول") || normalized.Contains("لوسيك") || normalized.Contains("نيكسيوم") || normalized.Contains("كونترولوك"))
         {
             return isArabic
-                ? $@"**{medName} (مثبط مضخة البروتون / أوميبرازول)**
-1. **دواعي الاستعمال**: تقليل إفراز حمض المعدة، علاج ارتجاع المريء (GERD)، قرحة المعدة والاثني عشر، وحماية المعدة مع أدوية المسكنات.
-2. **التحذيرات وموانع الاستعمال**: يُؤخذ عادة صباحاً على معدة فارغة قبل الإفطار بنصف ساعة. الاستخدام طويل الأمد قد يتطلب مراقبة مستويات المغنيسيوم وفيتامين B12.
+                ? $@"**{medName}**
+1. **دواعي الاستعمال**: تقليل إفراز حمض المعدة، علاج ارتجاع المريء، قرحة المعدة والاثني عشر، وحماية المعدة مع أدوية المسكنات.
+2. **التحذيرات وموانع الاستعمال**: يُؤخذ عادة صباحاً على معدة فارغة قبل الإفطار بنصف ساعة. الاستخدام طويل الأمد قد يتطلب مراقبة مستويات المغنيسيوم وفيتامين ب12.
 3. **الآثار الجانبية الشائعة**: صداع، إسهال أو إمساك، ألم خفيف في البطن، أو انتفاخ.
 
 تنبيه طبي: هذه المعلومات استرشادية فقط، ويجب استشارة الطبيب المعالج أو الصيدلي قبل تناول أي دواء."
@@ -427,7 +491,7 @@ Medical Disclaimer: This information is for educational purposes only. Always co
             || normalized.Contains("ميتفورمين") || normalized.Contains("جلوكوفاج") || normalized.Contains("انسولين") || normalized.Contains("اماريل"))
         {
             return isArabic
-                ? $@"**{medName} (ميتفورمين / منظم السكر)**
+                ? $@"**{medName}**
 1. **دواعي الاستعمال**: خفض مستويات السكر في الدم لدى مرضى السكري من النوع الثاني، وتحسين استجابة الجسم للإنسولين، كما يُستخدم في إدارة متلازمة تكيس المبايض.
 2. **التحذيرات وموانع الاستعمال**: يُؤخذ مع الوجبات أو بعدها مباشرة لتقليل الاضطرابات الهضمية. يُمنع في حالات القصور الكلوي الشديد أو الحماض اللاكتيكي.
 3. **الآثار الجانبية الشائعة**: غثيان، طعم معدني في الفم، إسهال خفيف، أو انتفاخ في بداية الاستخدام.
@@ -446,7 +510,7 @@ Medical Disclaimer: This information is for educational purposes only. Always co
             || normalized.Contains("كونكور") || normalized.Contains("بيسوبرولول") || normalized.Contains("املوديبين") || normalized.Contains("لوسارتان"))
         {
             return isArabic
-                ? $@"**{medName} (كونكور / بيسوبرولول)**
+                ? $@"**{medName}**
 1. **دواعي الاستعمال**: علاج ارتفاع ضغط الدم، تنظيم ضربات القلب السريعة، والوقاية من مضاعفات الذبحة الصدرية وقصور القلب المزمن.
 2. **التحذيرات وموانع الاستعمال**: لا توقف الدواء فجأة دون استشارة الطبيب منعاً لارتفاع الضغط الارتدادي. يُمنع في حالات بطء القلب الشديد والربو الحاد.
 3. **الآثار الجانبية الشائعة**: شعور بالتعب، برودة في الأطراف، انخفاض معدل النبض، أو دوار خفيف عند الوقوف.
@@ -461,7 +525,6 @@ Medical Disclaimer: This information is for educational purposes only. Always co
         }
 
         // 7. General Recognized Medication / Active Pharmaceutical Ingredient
-        // Check pharmaceutical suffixes or known drug stems
         bool isPharmaStem = Regex.IsMatch(rawLower, @"(cillin|mycin|cycline|oxacin|olol|pril|sartan|statin|prazole|tidine|dipine|zole|mab|nib|fenac|profen|dopa|stine|xetine|afil|gliflozin|gliptin|triptan|asone|nazole)$")
             || Regex.IsMatch(normalized, @"(سيلين|مايسين|سايكلين|فلوكساسين|ولول|بريل|سارتان|ستاتين|برازول|تيدين|ديبين|زول|فيناك|بروفين|كورت|سون)$")
             || normalized.Contains("دواء") || normalized.Contains("علاج") || normalized.Contains("فيتامين") || rawLower.Contains("vitamin");
