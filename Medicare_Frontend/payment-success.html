@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MediCare – Booking & Payment Confirmed</title>
     <meta name="theme-color" content="#1769aa" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('medicare_token') || sessionStorage.getItem('medicare_token') || localStorage.getItem('medicareToken') || sessionStorage.getItem('medicareToken');
+          var u = localStorage.getItem('medicareCurrentUser') || sessionStorage.getItem('medicareCurrentUser');
+          if (!t || !u) window.location.replace('login.html');
+        } catch (e) {
+          window.location.replace('login.html');
+        }
+      })();
+    </script>
     <script src="js/theme.js"></script>
     <script src="js/api.js"></script>
     <link rel="stylesheet" href="css/theme.css" />
@@ -194,6 +205,68 @@
 
     <script>
       (function() {
+        var I18N = {
+          en: {
+            title: "Booking Confirmed!",
+            sub: "Your appointment deposit has been recorded and your time slot is reserved.",
+            status: "Confirmed / Reserved",
+            lblStatus: "Status",
+            lblDate: "Date & Time",
+            lblDoctor: "Doctor",
+            lblAmount: "Deposit Recorded",
+            btnPortal: "Go to Patient Portal",
+            btnBookAnother: "Book Another",
+            btnHome: "Home",
+            note: "A confirmation record has been saved to your account. You can review all your upcoming visits and clinical records in your Patient Portal."
+          },
+          ar: {
+            title: "تم تأكيد الحجز بنجاح!",
+            sub: "تم تسجيل عربون الموعد وتأكيد حجز الفترة الزمنية الخاصة بك.",
+            status: "مؤكد / محجوز",
+            lblStatus: "الحالة",
+            lblDate: "التاريخ والوقت",
+            lblDoctor: "الطبيب",
+            lblAmount: "العربون المسجل",
+            btnPortal: "الانتقال إلى بوابة المريض",
+            btnBookAnother: "حجز موعد آخر",
+            btnHome: "الرئيسية",
+            note: "تم حفظ سجل التأكيد في حسابك. يمكنك مراجعة جميع مواعيدك وسجلاتك السريرية في بوابة المريض."
+          }
+        };
+
+        function getLang() {
+          if (window.MediLang && typeof window.MediLang.get === "function") return window.MediLang.get();
+          var s = localStorage.getItem("medicareLang") || localStorage.getItem("medicareLanguage");
+          return s === "ar" ? "ar" : "en";
+        }
+
+        function applyTexts() {
+          var lang = getLang();
+          var t = I18N[lang] || I18N.en;
+          var elTitle = document.getElementById("titleText");
+          if (elTitle) elTitle.textContent = t.title;
+          var elSub = document.getElementById("subText");
+          if (elSub) elSub.textContent = t.sub;
+          var elStatus = document.getElementById("valStatus");
+          if (elStatus) elStatus.textContent = t.status;
+          var elLblStatus = document.getElementById("lblStatus");
+          if (elLblStatus) elLblStatus.textContent = t.lblStatus;
+          var elLblDate = document.getElementById("lblDate");
+          if (elLblDate) elLblDate.textContent = t.lblDate;
+          var elLblDoctor = document.getElementById("lblDoctor");
+          if (elLblDoctor) elLblDoctor.textContent = t.lblDoctor;
+          var elLblAmount = document.getElementById("lblAmount");
+          if (elLblAmount) elLblAmount.textContent = t.lblAmount;
+          var elPortal = document.getElementById("btnPortal");
+          if (elPortal) elPortal.textContent = t.btnPortal;
+          var elBook = document.getElementById("btnBookAnother");
+          if (elBook) elBook.textContent = t.btnBookAnother;
+          var elHome = document.getElementById("btnHome");
+          if (elHome) elHome.textContent = t.btnHome;
+          var elNote = document.getElementById("noteBox");
+          if (elNote) elNote.textContent = t.note;
+        }
+
         var params = new URLSearchParams(window.location.search);
         var ref = params.get("ref");
         var id = params.get("id");
@@ -224,6 +297,12 @@
           document.getElementById("valDoctor").textContent = "Specialist Clinic";
           document.getElementById("valAmount").textContent = "25% Deposit";
         }
+
+        applyTexts();
+        window.addEventListener("medicarelangchange", applyTexts);
+        window.addEventListener("storage", function(e) {
+          if (e.key === "medicareLang" || e.key === "medicareLanguage") applyTexts();
+        });
       })();
     </script>
   </body>

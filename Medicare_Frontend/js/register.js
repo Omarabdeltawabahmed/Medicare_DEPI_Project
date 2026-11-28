@@ -24,7 +24,7 @@
         "use strict";
 
         /* ---------- Storage keys (kept separate to avoid auth conflicts) ---------- */
-        const LS_LANG = "medicareLanguage"; // shared language preference
+        const LS_LANG = "medicareLang"; // shared language preference
         const LS_APPS = "medicareDoctorApplications"; // DEMO: pending doctor applications (metadata only)
         const LS_USERS = "medicareUsers"; // DEMO: patient accounts. Align with the project's existing convention if it differs.
         const MAX_MB = 5,
@@ -619,7 +619,9 @@
           ["Other", "أخرى"],
         ];
 
-        let lang = store.raw(LS_LANG) === "ar" ? "ar" : "en";
+        let lang = (window.MediLang && typeof window.MediLang.get === "function")
+          ? window.MediLang.get()
+          : ((store.raw(LS_LANG) || store.raw("medicareLanguage") || "en") === "ar" ? "ar" : "en");
         const t = (k, p) => {
           let s = (T[lang] && T[lang][k]) || T.en[k] || k;
           if (p)
@@ -667,23 +669,37 @@
           });
           sel.value = cur;
         }
-        function setLang(l) {
-          lang = l;
-          store.setRaw(LS_LANG, l);
-          const h = document.documentElement;
-          h.lang = l;
-          h.dir = l === "ar" ? "rtl" : "ltr";
+        function setLang(l, persist) {
+          lang = l === "ar" ? "ar" : "en";
+          if (persist !== false) {
+            if (window.MediLang && typeof window.MediLang.set === "function") {
+              window.MediLang.set(lang);
+            } else {
+              store.setRaw(LS_LANG, lang);
+              store.setRaw("medicareLanguage", lang);
+              const h = document.documentElement;
+              h.lang = lang;
+              h.dir = lang === "ar" ? "rtl" : "ltr";
+            }
+          } else {
+            const h = document.documentElement;
+            h.lang = lang;
+            h.dir = lang === "ar" ? "rtl" : "ltr";
+          }
           document.title = t("page.title");
-          $("#langBtn").textContent = t("lang.switch");
-          $("#langBtn").setAttribute(
-            "aria-label",
-            l === "ar" ? "Switch to English" : "التبديل إلى العربية",
-          );
+          const lb = $("#langBtn");
+          if (lb) {
+            lb.textContent = t("lang.switch");
+            lb.setAttribute(
+              "aria-label",
+              lang === "ar" ? "Switch to English" : "التبديل إلى العربية",
+            );
+          }
           fillSpecialties();
           applyI18n();
           $$(".pw-toggle").forEach((b) => {
             const i = document.getElementById(b.dataset.toggle);
-            b.textContent = t(i.type === "password" ? "show" : "hide");
+            if (i) b.textContent = t(i.type === "password" ? "show" : "hide");
           });
           $$('[data-rule="password"]').forEach(updateMeter);
           refreshUploadTexts();
@@ -1853,11 +1869,20 @@
         $("#d_expiry").min = TODAY;
         $("#d_grad").max = YEAR;
         addWorkplace();
-        $("#langBtn").addEventListener("click", () =>
-          setLang(lang === "ar" ? "en" : "ar"),
-        );
+        window.addEventListener("medicarelangchange", (e) => {
+          const nextLang = (e && e.detail && e.detail.lang) || (window.MediLang ? window.MediLang.get() : "en");
+          setLang(nextLang, false);
+        });
+        window.addEventListener("storage", (e) => {
+          if (e.key === "medicareLang" || e.key === "medicareLanguage") {
+            const nextLang = (window.MediLang ? window.MediLang.get() : store.raw("medicareLang")) === "ar" ? "ar" : "en";
+            if (nextLang !== lang) {
+              setLang(nextLang, false);
+            }
+          }
+        });
         fillSpecialties();
-        setLang(lang);
+        setLang(lang, false);
         goStep(0);
         hideSummary();
         window.scrollTo(0, 0);

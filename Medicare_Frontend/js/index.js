@@ -11,6 +11,7 @@
             menu: "Menu",
             "demo.badge": "",
             "demo.badge2": "",
+            "p.fallback": "",
             "hero.h1": "Healthcare made simpler, for everyone.",
             "hero.p":
               "Find trusted doctors, book appointments in minutes, and manage your healthcare information in one clear, friendly place.",
@@ -107,6 +108,7 @@
             "auth.role": "I am a",
             "auth.patient": "Patient",
             "auth.doctor": "Doctor",
+            "auth.admin": "Administrator",
             "auth.name": "Full name",
             "auth.email": "Email",
             "auth.phone": "Phone",
@@ -143,6 +145,7 @@
             menu: "القائمة",
             "demo.badge": "",
             "demo.badge2": "",
+            "p.fallback": "",
             "hero.h1": "رعاية صحية أبسط للجميع.",
             "hero.p":
               "اعثر على أطباء موثوقين، واحجز موعدك في دقائق، وأدِر معلوماتك الصحية في مكان واحد واضح وسهل.",
@@ -236,6 +239,7 @@
             "auth.role": "أنا",
             "auth.patient": "مريض",
             "auth.doctor": "طبيب",
+            "auth.admin": "مدير النظام",
             "auth.name": "الاسم الكامل",
             "auth.email": "البريد الإلكتروني",
             "auth.phone": "الهاتف",
@@ -455,8 +459,9 @@
         seed();
         var lang = "en";
         try {
-          lang =
-            localStorage.getItem("medicareLanguage") === "ar" ? "ar" : "en";
+          lang = window.MediLang
+            ? window.MediLang.get()
+            : (localStorage.getItem("medicareLang") || localStorage.getItem("medicareLanguage") || "en");
         } catch (e) {}
         function t(k) {
           return (T[lang] && T[lang][k]) || T.en[k] || k;
@@ -628,13 +633,19 @@
             if (/<b>/.test(v)) e.innerHTML = v;
             else e.textContent = v;
           });
+          document.querySelectorAll("[data-i18n='p.fallback'], #fallbackNotice, .fallback-banner, .alert.warn").forEach(function (e) {
+            e.hidden = true;
+            e.style.display = "none";
+          });
           document.querySelectorAll("[data-i18n-ph]").forEach(function (e) {
             e.placeholder = t(e.getAttribute("data-i18n-ph"));
           });
           document.querySelectorAll("[data-i18n-al]").forEach(function (e) {
             e.setAttribute("aria-label", t(e.getAttribute("data-i18n-al")));
           });
-          $("#langBtn").textContent = lang === "ar" ? "English" : "العربية";
+          if ($("#langBtn")) {
+            $("#langBtn").textContent = lang === "ar" ? "English" : "العربية";
+          }
           document.title =
             lang === "ar"
               ? "ميديكير – إدارة العيادة"
@@ -647,12 +658,19 @@
           renderUser();
           setMode(mode);
         }
-        $("#langBtn").addEventListener("click", function () {
-          lang = lang === "ar" ? "en" : "ar";
-          try {
-            localStorage.setItem("medicareLanguage", lang);
-          } catch (e) {}
+        window.addEventListener("medicarelangchange", function (e) {
+          var nextLang = (e && e.detail && e.detail.lang) || (window.MediLang ? window.MediLang.get() : "en");
+          lang = nextLang === "ar" ? "ar" : "en";
           applyLang();
+        });
+        window.addEventListener("storage", function (e) {
+          if (e.key === "medicareLang" || e.key === "medicareLanguage") {
+            var newL = e.newValue === "ar" ? "ar" : "en";
+            if (newL !== lang) {
+              lang = newL;
+              applyLang();
+            }
+          }
         });
         $("#burger").addEventListener("click", function () {
           var o = $("#links").classList.toggle("open");
@@ -714,9 +732,14 @@
           var s = session();
           $("#userBox").hidden = !s;
           $("#authBtn").hidden = !!s;
-          if (s)
-            $("#userName").textContent =
-              t("hi") + " " + s.name + " (" + t("auth." + s.role) + ")";
+          if (s) {
+            if (s.role === "admin") {
+              $("#userName").textContent = lang === "ar" ? "أهلاً، مدير ميديكير" : "Hello, MediCare Admin";
+            } else {
+              $("#userName").textContent =
+                t("hi") + " " + s.name + " (" + t("auth." + s.role) + ")";
+            }
+          }
         }
         function setMode(m) {
           mode = m;

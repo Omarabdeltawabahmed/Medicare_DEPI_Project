@@ -185,7 +185,7 @@ public class BookingController : ControllerBase
 
     // GET: api/booking/my-appointments
     [HttpGet("my-appointments")]
-    [Authorize(Roles = "Patient")]
+    [Authorize(Roles = "Patient,Admin")]
     public async Task<IActionResult> GetMyAppointments()
     {
         var patientId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -197,10 +197,18 @@ public class BookingController : ControllerBase
 
         await ExpirePendingAppointmentsAsync();
 
-        var appointments = await _context.Appointments
+        var query = _context.Appointments
             .Include(a => a.Doctor)
                 .ThenInclude(d => d.User)
-            .Where(a => a.PatientId == patientId)
+            .AsQueryable();
+
+        // Regular patients only see their own appointments; Admins see all clinic appointments
+        if (!User.IsInRole("Admin"))
+        {
+            query = query.Where(a => a.PatientId == patientId);
+        }
+
+        var appointments = await query
             .OrderByDescending(a => a.AppointmentDate)
             .ThenByDescending(a => a.TimeSlot)
             .Select(a => new
@@ -254,7 +262,7 @@ public class BookingController : ControllerBase
 
     // POST: api/booking/initiate
     [HttpPost("initiate")]
-    [Authorize(Roles = "Patient")]
+    [Authorize(Roles = "Patient,Admin")]
     public async Task<IActionResult> InitiateBooking(
         [FromBody] InitiateBookingDto dto)
     {

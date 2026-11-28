@@ -23,7 +23,7 @@ public class DoctorsController : ControllerBase
         _context = context;
     }
 
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = "Doctor,Admin")]
     [HttpPost("profile")]
     public async Task<IActionResult> CreateProfile(
         CreateDoctorProfileDto dto)
@@ -192,7 +192,7 @@ public class DoctorsController : ControllerBase
     }
 
     // GET: api/doctors/my-appointments
-    [Authorize(Roles = "Doctor")]
+    [Authorize(Roles = "Doctor,Admin")]
     [HttpGet("my-appointments")]
     public async Task<IActionResult> GetDoctorAppointments()
     {
@@ -204,7 +204,40 @@ public class DoctorsController : ControllerBase
             .FirstOrDefaultAsync(d => d.UserId == userId);
 
         if (doctorProfile == null)
+        {
+            if (User.IsInRole("Admin"))
+            {
+                var allAppointments = await _context.Appointments
+                    .Include(a => a.Patient)
+                    .OrderByDescending(a => a.AppointmentDate)
+                    .ThenByDescending(a => a.TimeSlot)
+                    .Select(a => new
+                    {
+                        appointmentId = a.Id,
+                        id = a.Id,
+                        bookingReferenceCode = a.BookingReferenceCode,
+                        patientId = a.PatientId,
+                        patientName = a.Patient != null ? a.Patient.FullName : "Patient",
+                        patientEmail = a.Patient != null ? a.Patient.Email : string.Empty,
+                        patientPhone = a.Patient != null ? a.Patient.PhoneNumber : string.Empty,
+                        date = a.AppointmentDate.ToString("yyyy-MM-dd"),
+                        appointmentDate = a.AppointmentDate.ToString("yyyy-MM-dd"),
+                        time = a.TimeSlot.ToString("HH:mm"),
+                        timeSlot = a.TimeSlot.ToString("HH:mm"),
+                        status = a.Status,
+                        paymentStatus = a.PaymentStatus,
+                        totalFee = a.TotalFee,
+                        fee = a.TotalFee,
+                        depositAmount = a.DepositAmount,
+                        reason = "Clinical consultation"
+                    })
+                    .ToListAsync();
+
+                return Ok(allAppointments);
+            }
+
             return NotFound(new { message = "Doctor profile not found." });
+        }
 
         var appointments = await _context.Appointments
             .Include(a => a.Patient)

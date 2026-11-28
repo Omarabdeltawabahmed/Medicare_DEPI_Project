@@ -17,6 +17,13 @@ public class CheckDoctorApprovalFilter : IAsyncActionFilter
 
     public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
     {
+        // Administrators have full access across all operations
+        if (context.HttpContext.User.IsInRole("Admin"))
+        {
+            await next();
+            return;
+        }
+
         var doctorIdObj = context.RouteData.Values["doctorId"] ?? context.HttpContext.Request.Query["doctorId"].FirstOrDefault();
 
         if (doctorIdObj != null && int.TryParse(doctorIdObj.ToString(), out int doctorId))

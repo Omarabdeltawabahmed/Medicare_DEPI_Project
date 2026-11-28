@@ -101,15 +101,16 @@
  
         <div id="formMessage" aria-live="polite" aria-atomic="true"></div>
  
-        <form id="loginForm" method="POST" autocomplete="on">
+        <form id="loginForm" method="post" autocomplete="on">
           <div class="field">
             <label for="email" data-i18n="emailLabel">Email address</label>
             <div class="input-wrap">
               <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>
-              <input type="email" id="email" name="email" inputmode="email" autocomplete="username email"
+              <input type="email" id="email" name="username" value="" inputmode="email" autocomplete="username" list="savedAccountsList"
                      autocapitalize="none" spellcheck="false" required aria-describedby="emailError"
                      placeholder="name@example.com" data-i18n-attr="placeholder:emailPh">
             </div>
+            <datalist id="savedAccountsList"></datalist>
             <p class="field-error" id="emailError" hidden></p>
           </div>
  
@@ -130,8 +131,8 @@
           </div>
  
           <div class="row-between">
-            <label class="check" for="remember">
-              <input type="checkbox" id="remember" name="remember">
+            <label class="check" for="rememberMe">
+              <input type="checkbox" id="rememberMe" name="remember">
               <span data-i18n="remember">Remember me</span>
             </label>
             <button type="button" class="link-btn" id="forgotBtn" aria-haspopup="dialog" data-i18n="forgot">Forgot Password?</button>

@@ -1,15 +1,16 @@
 /* ==========================================================
-   MediCare – theme (light / dark)
-   Load in <head> so the theme is applied before first paint.
-   Choice is remembered in localStorage ("medicareTheme");
-   if nothing is saved it follows the device setting.
+   MediCare – theme (light / dark) & language (en / ar)
+   Load in <head> so theme & RTL/LTR are applied before first paint.
    ========================================================== */
 (function () {
   "use strict";
   var KEY = "medicareTheme";
+  var LANG_KEY = "medicareLang";
+  var LANG_ALT_KEY = "medicareLanguage";
   var root = document.documentElement;
   var mq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
 
+  /* ---------- Theme ---------- */
   function saved() {
     try {
       var v = localStorage.getItem(KEY);
@@ -47,6 +48,54 @@
     },
     toggle: function () {
       this.set(this.get() === "dark" ? "light" : "dark");
+    },
+  };
+
+  /* ---------- Global Language & RTL/LTR Early Init ---------- */
+  function savedLang() {
+    try {
+      var l = localStorage.getItem(LANG_KEY) || localStorage.getItem(LANG_ALT_KEY);
+      return l === "ar" || l === "en" ? l : null;
+    } catch (e) {
+      return null;
+    }
+  }
+  function currentLang() {
+    return savedLang() || "en";
+  }
+  function applyLanguage(l) {
+    l = l === "ar" ? "ar" : "en";
+    root.setAttribute("lang", l);
+    root.setAttribute("dir", l === "ar" ? "rtl" : "ltr");
+    root.lang = l;
+    root.dir = l === "ar" ? "rtl" : "ltr";
+  }
+
+  // Apply language immediately in <head> before page paint
+  applyLanguage(currentLang());
+
+  window.MediLang = {
+    get: function () {
+      var l = root.getAttribute("lang") || root.lang || currentLang();
+      return l === "ar" ? "ar" : "en";
+    },
+    set: function (lang) {
+      lang = lang === "ar" ? "ar" : "en";
+      try {
+        localStorage.setItem(LANG_KEY, lang);
+        localStorage.setItem(LANG_ALT_KEY, lang);
+      } catch (e) {}
+      applyLanguage(lang);
+      window.dispatchEvent(
+        new CustomEvent("medicarelangchange", {
+          detail: { lang: lang, dir: lang === "ar" ? "rtl" : "ltr" },
+        })
+      );
+      return lang;
+    },
+    toggle: function () {
+      var next = this.get() === "ar" ? "en" : "ar";
+      return this.set(next);
     },
   };
 

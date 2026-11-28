@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MediCare – Clinic Management</title>
     <meta name="theme-color" content="#1769aa" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('medicare_token') || sessionStorage.getItem('medicare_token') || localStorage.getItem('medicareToken') || sessionStorage.getItem('medicareToken');
+          var u = localStorage.getItem('medicareCurrentUser') || sessionStorage.getItem('medicareCurrentUser');
+          if (!t || !u) window.location.replace('login.html');
+        } catch (e) {
+          window.location.replace('login.html');
+        }
+      })();
+    </script>
     <script src="js/theme.js"></script>
     <script src="js/api.js"></script>
     <link rel="stylesheet" href="css/theme.css" />
@@ -20,7 +31,7 @@
       <section class="hero">
         <div class="wrap">
           <div>
-
+            <div id="fallbackNotice" class="alert warn fallback-banner" data-i18n="p.fallback" style="display:none" hidden></div>
             <h1 data-i18n="hero.h1">Healthcare made simpler, for everyone.</h1>
             <p data-i18n="hero.p">
               Find trusted doctors, book appointments in minutes, and manage

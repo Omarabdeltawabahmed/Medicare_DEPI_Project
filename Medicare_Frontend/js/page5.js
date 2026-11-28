@@ -5,7 +5,8 @@
           if (!currentUser) return;
         }
         var K = {
-          lang: "medicareLanguage",
+          lang: "medicareLang",
+          langAlt: "medicareLanguage",
           doc: "medicareDoctors",
           spec: "medicareSpecialties",
           ap: "medicareAppointments",
@@ -317,7 +318,9 @@
         };
         var lang = "en";
         try {
-          lang = localStorage.getItem(K.lang) === "ar" ? "ar" : "en";
+          lang = window.MediLang
+            ? window.MediLang.get()
+            : (localStorage.getItem("medicareLang") || localStorage.getItem("medicareLanguage") || "en");
         } catch (e) {}
         function t(k, r) {
           var s = (lang === "ar" ? AR : EN)[k] || EN[k] || k;
@@ -1622,13 +1625,11 @@
           renderAps();
           renderSet();
         }
-        $("langBtn").onclick = function () {
-          lang = lang === "ar" ? "en" : "ar";
-          try {
-            localStorage.setItem(K.lang, lang);
-          } catch (e) {}
+        window.addEventListener("medicarelangchange", function (e) {
+          var nextLang = (e && e.detail && e.detail.lang) || (window.MediLang ? window.MediLang.get() : "en");
+          lang = nextLang === "ar" ? "ar" : "en";
           applyLang();
-        };
+        });
         $("refreshBtn").onclick = function () {
           load();
           renderAll();

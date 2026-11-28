@@ -11,8 +11,9 @@
     var STORAGE = {
       accounts: 'medicarePatientAccounts',
       currentUser: 'medicareCurrentUser',
-      language: 'medicareLanguage',
-      rememberedEmail: 'medicareRememberedEmail'
+      language: 'medicareLang',
+      rememberedEmail: 'medicareRememberedEmail',
+      savedAccounts: 'medicareSavedAccounts'
     };
  
     var ROLE_ROUTES = {
@@ -167,7 +168,7 @@
  
     var $ = function (id) { return document.getElementById(id); };
     var els = {
-      form: $('loginForm'), email: $('email'), password: $('password'), remember: $('remember'),
+      form: $('loginForm'), email: $('email'), password: $('password'), remember: $('rememberMe') || $('remember'),
       emailError: $('emailError'), passwordError: $('passwordError'),
       togglePw: $('togglePw'), submitBtn: $('submitBtn'), submitLabel: $('submitLabel'), spinner: $('spinner'),
       formMessage: $('formMessage'),
@@ -199,17 +200,27 @@
     }
  
     function getSavedLanguage() {
-      var saved = safeGet(STORAGE.language);
+      if (window.MediLang && typeof window.MediLang.get === 'function') {
+        return window.MediLang.get();
+      }
+      var saved = safeGet(STORAGE.language) || safeGet('medicareLanguage');
       return saved === 'ar' || saved === 'en' ? saved : 'en';
     }
  
     function applyLanguage(lang, persist) {
       state.lang = lang === 'ar' ? 'ar' : 'en';
-      var root = document.documentElement;
-      root.lang = state.lang;
-      root.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+      if (persist && window.MediLang && typeof window.MediLang.set === 'function') {
+        window.MediLang.set(state.lang);
+      } else {
+        var root = document.documentElement;
+        root.lang = state.lang;
+        root.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+        if (persist) {
+          safeSet(STORAGE.language, state.lang);
+          safeSet('medicareLanguage', state.lang);
+        }
+      }
       document.title = t('pageTitle');
-      if (persist) safeSet(STORAGE.language, state.lang);
  
       document.querySelectorAll('[data-i18n]').forEach(function (node) {
         node.textContent = t(node.getAttribute('data-i18n'));
@@ -391,6 +402,55 @@
         return [];
       }
     }
+
+    function readSavedAccounts() {
+      var raw = safeGet(STORAGE.savedAccounts);
+      if (!raw) return [];
+      try {
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveAccountCredentials(email, password) {
+      if (!email) return;
+      var accounts = readSavedAccounts();
+      accounts = accounts.filter(function (acc) {
+        return acc && acc.email && acc.email.toLowerCase() !== email.toLowerCase();
+      });
+      accounts.unshift({ email: email, password: password || '' });
+      safeSet(STORAGE.savedAccounts, JSON.stringify(accounts));
+    }
+
+    function populateSavedAccountsDatalist() {
+      var datalist = document.getElementById('savedAccountsList');
+      if (!datalist) return;
+      datalist.innerHTML = '';
+      var accounts = readSavedAccounts();
+      accounts.forEach(function (acc) {
+        if (acc && acc.email) {
+          var opt = document.createElement('option');
+          opt.value = acc.email;
+          datalist.appendChild(opt);
+        }
+      });
+    }
+
+    function autoFillPasswordForEmail(emailVal) {
+      if (!emailVal || !els.password) return;
+      var accounts = readSavedAccounts();
+      var matched = accounts.find(function (acc) {
+        return acc && acc.email && acc.email.toLowerCase() === emailVal.trim().toLowerCase();
+      });
+      if (matched && matched.password) {
+        els.password.value = matched.password;
+        if (state.fieldErrors && state.fieldErrors.password) {
+          setFieldError('password', null);
+        }
+      }
+    }
  
     function normalizeRole(role) {
       if (typeof role !== 'string') return null;
@@ -401,7 +461,7 @@
       return null;
     }
     // Real API authentication against MediCare backend
-    async function authenticate(email, password) {
+    async function authenticate(email, password, isRememberMe) {
       try {
         var response = await window.apiFetch('/api/auth/login', {
           method: 'POST',
@@ -433,7 +493,7 @@
               email: response.email,
               roles: response.roles,
               role: role
-            });
+            }, isRememberMe !== false);
           }
 
           return {
@@ -451,7 +511,8 @@
       }
     }
 
-    function saveSession(user) {
+    function saveSession(user, isRememberMe) {
+      var remember = isRememberMe !== false;
       if (window.saveAuthSession) {
         return window.saveAuthSession({
           token: window.getToken ? window.getToken() : null,
@@ -460,8 +521,14 @@
           email: user.email,
           roles: user.roles || [user.role],
           role: user.role
-        });
+        }, remember);
       }
+      var storage = remember ? window.localStorage : window.sessionStorage;
+      var altStorage = remember ? window.sessionStorage : window.localStorage;
+      try {
+        altStorage.removeItem(STORAGE.currentUser);
+      } catch (e) { /* ignore */ }
+
       var session = {
         id: user.id,
         fullName: user.fullName,
@@ -469,11 +536,19 @@
         role: user.role,
         signedInAt: new Date().toISOString()
       };
-      return safeSet(STORAGE.currentUser, JSON.stringify(session));
+      try {
+        storage.setItem(STORAGE.currentUser, JSON.stringify(session));
+        return true;
+      } catch (e) {
+        return false;
+      }
     }
 
     function readSession() {
-      var raw = safeGet(STORAGE.currentUser);
+      var raw = null;
+      try {
+        raw = window.localStorage.getItem(STORAGE.currentUser) || window.sessionStorage.getItem(STORAGE.currentUser);
+      } catch (e) { /* ignore */ }
       if (!raw) return null;
       try {
         var s = JSON.parse(raw);
@@ -494,11 +569,10 @@
        LOGIN SUBMIT
        ========================================================== */
     function handleLoginSubmit(event) {
-      if (event) {
-        if (typeof event.preventDefault === 'function') event.preventDefault();
-        if (typeof event.stopPropagation === 'function') event.stopPropagation();
+      if (state.submitting) {
+        if (event && typeof event.preventDefault === 'function') event.preventDefault();
+        return false;
       }
-      if (state.submitting) return false;
 
       clearFormMessage();
 
@@ -507,19 +581,47 @@
 
       var check = validateLoginFields(email, password);
       if (!check.valid) {
+        if (event && typeof event.preventDefault === 'function') event.preventDefault();
         setFormMessage('error', 'errFixFields');
         if (check.firstInvalid) check.firstInvalid.focus();
         return false;
       }
 
+      // Prevent default page reload AFTER validating
+      if (event) {
+        if (typeof event.preventDefault === 'function') event.preventDefault();
+        if (typeof event.stopPropagation === 'function') event.stopPropagation();
+      }
+
       state.submitting = true;
       updateSubmitState();
 
-      authenticate(email, password).then(function (result) {
+      var remEl = els.remember || $('rememberMe') || $('remember');
+      var isRememberMe = !!(remEl && remEl.checked);
+
+      authenticate(email, password, isRememberMe).then(function (result) {
         if (result.status === 'ok') {
-          saveSession(result.user);
-          if (els.remember && els.remember.checked) {
-            safeSet(STORAGE.rememberedEmail, result.user.email);
+          saveSession(result.user, isRememberMe);
+
+          // 1. Browser Password Credential store (triggers save/update prompt & autofill)
+          if (window.PasswordCredential && navigator.credentials && typeof navigator.credentials.store === 'function') {
+            try {
+              var cred = new window.PasswordCredential({
+                id: email,
+                password: password,
+                name: (result.user && result.user.fullName) ? result.user.fullName : email
+              });
+              navigator.credentials.store(cred).catch(function () { /* ignore non-secure context or user dismiss */ });
+            } catch (credErr) {
+              /* ignore unsupported environments */
+            }
+          }
+
+          // 2. Remember me & saved accounts persistence
+          if (isRememberMe) {
+            safeSet(STORAGE.rememberedEmail, email);
+            saveAccountCredentials(email, password);
+            populateSavedAccountsDatalist();
           } else {
             safeRemove(STORAGE.rememberedEmail);
           }
@@ -581,6 +683,15 @@
  
     function handleSignOut() {
       safeRemove(STORAGE.currentUser);
+      try {
+        window.sessionStorage.removeItem(STORAGE.currentUser);
+        if (window.AUTH_STORAGE_KEYS) {
+          Object.values(window.AUTH_STORAGE_KEYS).forEach(function (k) {
+            window.localStorage.removeItem(k);
+            window.sessionStorage.removeItem(k);
+          });
+        }
+      } catch (e) { /* ignore */ }
       renderSessionNotice();
       els.email.focus();
     }
@@ -669,29 +780,53 @@
     function init() {
       // Language
       applyLanguage(getSavedLanguage(), false);
-      document.querySelectorAll('.lang-switch button').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          applyLanguage(btn.getAttribute('data-lang'), true);
-        });
+
+      window.addEventListener('medicarelangchange', function (e) {
+        var l = (e && e.detail && e.detail.lang) || getSavedLanguage();
+        applyLanguage(l, false);
+      });
+      window.addEventListener('storage', function (e) {
+        if (e.key === 'medicareLang' || e.key === 'medicareLanguage') {
+          var l = getSavedLanguage();
+          if (l !== state.lang) {
+            applyLanguage(l, false);
+          }
+        }
       });
  
-      // Remembered email (non-sensitive convenience)
-      var remembered = safeGet(STORAGE.rememberedEmail);
-      if (remembered) {
-        els.email.value = remembered;
-        els.remember.checked = true;
+      // Ensure email and password fields open completely empty on load
+      safeRemove(STORAGE.rememberedEmail);
+      try {
+        window.localStorage.removeItem('medicareRememberedEmail');
+      } catch (e) { /* ignore */ }
+      if (els.email) {
+        els.email.value = '';
       }
- 
+      if (els.password) {
+        els.password.value = '';
+      }
+
+      // Populate datalist with previously saved accounts for instant dropdown
+      populateSavedAccountsDatalist();
+
       // Form
       if (els.form) {
         els.form.addEventListener('submit', handleLoginSubmit);
+      } else if (els.submitBtn) {
+        els.submitBtn.addEventListener('click', handleLoginSubmit);
       }
-      if (els.submitBtn) {
-        els.submitBtn.addEventListener('click', function (e) {
-          handleLoginSubmit(e);
-        });
-      }
-      els.email.addEventListener('input', function () { if (state.fieldErrors.email) setFieldError('email', null); });
+      els.email.addEventListener('input', function () {
+        if (state.fieldErrors.email) setFieldError('email', null);
+        autoFillPasswordForEmail(els.email.value);
+      });
+      els.email.addEventListener('change', function () {
+        autoFillPasswordForEmail(els.email.value);
+      });
+      els.password.addEventListener('focus', function () {
+        if (!els.password.value) {
+          autoFillPasswordForEmail(els.email.value);
+        }
+      });
       els.password.addEventListener('input', function () { if (state.fieldErrors.password) setFieldError('password', null); });
       els.forgotEmail.addEventListener('input', function () { if (state.fieldErrors.forgotEmail) setFieldError('forgotEmail', null); });
       els.togglePw.addEventListener('click', togglePasswordVisibility);

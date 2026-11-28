@@ -62,34 +62,129 @@
     { re: /bone|knee|back|joint|fracture|عظام|ركبة|ظهر|مفصل|كسر/i, en: "Orthopedics", ar: "العظام", dr: "Dr. Youssef Adel", drAr: "د. يوسف عادل" },
     { re: /fever|cold|flu|cough|headache|stomach|general|حمى|برد|سعال|صداع|معدة|عام/i, en: "Family Medicine", ar: "طب الأسرة", dr: "Dr. Nadine Hassan", drAr: "د. نادين حسن" },
   ];
+  var MEDICAL_WHITELIST_RE = new RegExp(
+    "(?<!\\p{L})(" +
+    // English Greetings
+    "hi|hello|hey|welcome|greetings|how are you|who are you|help|thanks|thank you|" +
+    // English Clinic & Operations
+    "clinic|hospital|center|medicare|hour|hours|open|opening|close|closing|time|schedule|fee|fees|cost|price|deposit|pay|payment|card|stripe|address|location|phone|contact|" +
+    // English Booking & Appointments
+    "book|booking|appoint|appointment|schedule|reserve|reservation|slot|" +
+    // English Doctors & Staff
+    "doctor|doctors|dr|specialist|specialists|physician|consultant|staff|nurse|surgeon|consultation|" +
+    // English Specialties
+    "specialty|specialties|specialization|cardiology|dentistry|dermatology|pediatrics|orthopedics|family medicine|internal medicine|" +
+    // English Symptoms & Conditions
+    "symptom|symptoms|pain|ache|hurt|hurts|sore|sick|ill|illness|disease|infection|fever|temperature|cough|cold|flu|headache|migraine|chest|stomach|belly|nausea|vomit|diarrhea|rash|itch|allergy|blood pressure|hypertension|diabetes|sugar|dizziness|dizzy|fatigue|tired|swelling|breath|breathing|asthma|wound|injury|burn|" +
+    // English Anatomy & Body Parts
+    "heart|cardio|tooth|teeth|dental|gum|gums|skin|acne|bone|bones|knee|back|joint|joints|spine|muscle|child|children|pediatric|baby|infant|kid|kids|eye|ear|throat|nose|" +
+    // English Treatments & Medicine
+    "medicine|medication|drug|drugs|pill|pills|tablet|tablets|capsule|capsules|syrup|dose|dosage|prescription|treatment|remedy|cure|therapy|vaccine|injection|antibiotic|antibiotics|painkiller|painkillers|test|analysis|scan|x-ray|ultrasound|lab|health|healthy|healthcare|medical|care|" +
+    // Arabic Greetings
+    "مرحبا|مرحباً|أهلا|اهلا|أهلاً|اهلاً|سلام|السلام عليكم|صباح الخير|مساء الخير|من أنت|من انت|كيف حالك|شكرا|شكراً|مساعدة|" +
+    // Arabic Clinic, Booking & Operations
+    "عيادة|مستشفى|مركز|ميديكير|ساعة|ساعات|دوام|أوقات|اوقات|ساعات العمل|رسوم|تكلفة|سعر|أسعار|اسعار|عربون|دفع|سداد|عنوان|مكان|موقع|تواصل|هاتف|حجز|احجز|موعد|ميعاد|مواعيد|تأكيد الحجز|" +
+    // Arabic Doctors & Specialties
+    "طبيب|دكتور|دكتورة|أطباء|اطباء|دكاترة|استشاري|أخصائي|اخصائي|كشف|استشارة|تخصص|تخصصات|قسم|أقسام|اقسام|" +
+    // Arabic Symptoms, Conditions & Body Parts
+    "ألم|الم|وجع|تعب|مريض|مرض|أمراض|امراض|أعراض|اعراض|إصابة|اصابة|صداع|حمى|سخونة|حرارة|كحة|سعال|برد|انفلونزا|زكام|مغص|معدة|بطن|غثيان|قيء|إسهال|اسهال|حساسية|حكة|طفح|ضغط|سكر|صدر|ضيق تنفس|تنفس|ربو|قلب|نبض|سن|أسنان|اسنان|ضرس|لثة|جلد|حبوب|عظام|ركبة|ظهر|مفصل|مفاصل|عمود فقري|عضل|عضلات|دوخة|إرهاق|ارهاق|ورم|انتفاخ|عين|أذن|اذن|حلق|أنف|انف|طفل|أطفال|اطفال|رضيع|" +
+    // Arabic Treatments, Medicine & Healthcare
+    "دواء|علاج|أدوية|ادوية|حبوب|كبسول|شراب|جرعة|روشتة|وصفة طبية|مضاد|مسكن|لقاح|تطعيم|حقنة|تحليل|فحص|أشعة|اشعة|سونار|مختبر|معمل|صحة|صحي|صحية|رعاية|طبي|طبية" +
+    ")(?![\\p{L}])",
+    "iu"
+  );
+
+  function isMedicalOrClinicQuery(text) {
+    if (!text || !text.trim()) return false;
+    return MEDICAL_WHITELIST_RE.test(text);
+  }
+
   function mockReply(text, mode, lang) {
     var ar = lang === "ar", i;
+    var t = (text || "").trim();
+    var tLow = t.toLowerCase();
+
+    // Rule 1: Medicine lookup (/api/ai/medicine-info)
+    // Always treat every query as a medical lookup and return structured guidance. Never reject.
     if (mode === "medicine") {
+      var isParacetamol = /paracetamol|panadol|باراسيتامول|بانادول/i.test(t);
+      var isIbuprofen = /ibuprofen|brufen|إيبوبروفين|بروفين/i.test(t);
+      var isAmoxicillin = /amoxicillin|augmentin|أموكسيسيلين|أوجمنتين/i.test(t);
+
+      if (isParacetamol) {
+        return ar
+          ? "**" + t + " (باراسيتامول)**\n1. **دواعي الاستعمال**: خافض للحرارة ومسكن للآلام الخفيفة والمتوسطة مثل الصداع وآلام الأسنان ونزلات البرد.\n2. **التحذيرات وموانع الاستعمال**: لا تتجاوز 4 جرامات يومياً للبالغين، واستشر الطبيب في حال أمراض الكبد.\n3. **الآثار الجانبية الشائعة**: جيد التحمل بشكل عام، ونادراً ما قد يسبب تفاعلات حساسية.\n\nتنبيه طبي: هذه المعلومات استرشادية فقط، ويجب استشارة الطبيب المعالج أو الصيدلي قبل تناول أي دواء."
+          : "**" + t + " (Paracetamol)**\n1. **Indications**: Relief of mild to moderate pain (headaches, toothache, fever reduction).\n2. **Warnings & Contraindications**: Do not exceed 4g daily for adults. Use caution in hepatic impairment.\n3. **Common Side Effects**: Generally well tolerated; rarely allergic reactions.\n\nMedical Disclaimer: This information is for educational purposes only. Always consult your doctor or pharmacist before taking any medication.";
+      }
+      if (isIbuprofen) {
+        return ar
+          ? "**" + t + " (إيبوبروفين)**\n1. **دواعي الاستعمال**: مضاد للالتهاب ومسكن لآلام العظام والمفاصل والأسنان وخافض للحرارة.\n2. **التحذيرات وموانع الاستعمال**: يؤخذ بعد الطعام. يمنع لمرضى قرحة المعدة النشطة ويستخدم بحذر مع مرضى الضغط والقلب.\n3. **الآثار الجانبية الشائعة**: اضطرابات خفيفة بالجهاز الهضمي وحرقة معدة.\n\nتنبيه طبي: هذه المعلومات استرشادية فقط، ويجب استشارة الطبيب المعالج أو الصيدلي قبل تناول أي دواء."
+          : "**" + t + " (Ibuprofen)**\n1. **Indications**: Non-steroidal anti-inflammatory drug (NSAID) for pain, inflammation, and fever.\n2. **Warnings & Contraindications**: Take with or after meals. Contraindicated in active peptic ulcer.\n3. **Common Side Effects**: Mild stomach upset, heartburn, nausea.\n\nMedical Disclaimer: This information is for educational purposes only. Always consult your doctor or pharmacist before taking any medication.";
+      }
+      if (isAmoxicillin) {
+        return ar
+          ? "**" + t + " (أموكسيسيلين)**\n1. **دواعي الاستعمال**: مضاد حيوي واسع المجال للعدوى البكتيرية في الجهاز التنفسي والأذن والمسالك.\n2. **التحذيرات وموانع الاستعمال**: يمنع لمن يعانون من حساسية البنسلين، ويجب إكمال الكورس العلاجي كاملاً.\n3. **الآثار الجانبية الشائعة**: اضطرابات هضمية، إسهال، غثيان خفيف.\n\nتنبيه طبي: هذه المعلومات استرشادية فقط، ويجب استشارة الطبيب المعالج أو الصيدلي قبل تناول أي دواء."
+          : "**" + t + " (Amoxicillin)**\n1. **Indications**: Broad-spectrum antibiotic for bacterial respiratory, ear, and urinary tract infections.\n2. **Warnings & Contraindications**: Strictly contraindicated in penicillin allergy. Complete full prescribed course.\n3. **Common Side Effects**: Mild nausea, diarrhea, rash.\n\nMedical Disclaimer: This information is for educational purposes only. Always consult your doctor or pharmacist before taking any medication.";
+      }
+
+      // Default structured medication guidance for any requested medicine
       return ar
-        ? "**" + text + "**\n1. دواعي الاستعمال: (معلومات عامة)\n2. التحذيرات وموانع الاستعمال: (معلومات عامة)\n3. الآثار الجانبية الشائعة: (معلومات عامة)\n\nتنبيه طبي: هذه المعلومات استرشادية فقط، ويجب استشارة الطبيب أو الصيدلي قبل تناول أي دواء."
-        : "**" + text + "**\n1. Indications: (clinical reference)\n2. Warnings & contraindications: (clinical reference)\n3. Common side effects: (clinical reference)\n\nMedical Disclaimer: This information is for educational purposes only. Always consult your doctor or pharmacist before taking any medication.";
+        ? "**" + t + "**\n1. **دواعي الاستعمال**: علاج الأعراض المحددة وفق إرشادات الطبيب والنشرة الدوائية المعتمدة.\n2. **التحذيرات وموانع الاستعمال**: استشر الطبيب أو الصيدلي للتحقق من الجرعة المناسبة والتفاعلات الدوائية والتاريخ المرضي.\n3. **الآثار الجانبية الشائعة**: قد تختلف حسب طبيعة المادة الفعالة والجرعة الموصوفة.\n\nتنبيه طبي: هذه المعلومات استرشادية فقط، ويجب استشارة الطبيب المعالج أو الصيدلي قبل تناول أي دواء."
+        : "**" + t + "**\n1. **Indications**: Used according to doctor prescription and the official medication leaflet.\n2. **Warnings & Contraindications**: Consult your doctor or pharmacist regarding proper dosage, contraindications, and drug interactions.\n3. **Common Side Effects**: May vary depending on active ingredients and individual response.\n\nMedical Disclaimer: This information is for educational purposes only. Always consult your doctor or pharmacist before taking any medication.";
     }
-    if (/book|appoint|حجز|موعد|ميعاد/i.test(text)) {
+
+    // Rule 2: Ask the clinic (/api/ai/clinic-chat)
+    // General Medical Whitelist: Any query outside the medical/clinic domain is OUT-OF-SCOPE
+    if (!isMedicalOrClinicQuery(t)) {
       return ar
-        ? "تستطيع حجز موعد بسهولة من صفحة [حجز موعد](page2.html): اختر الطبيب والتاريخ والوقت ثم أكّد الحجز."
-        : "You can book in a few clicks from the [Book Appointment](page2.html) page: choose a doctor, a date and a time, then confirm.";
+        ? "عذراً منك 😄! أنا مساعد ذكي متخصص حصرياً في الاستشارات الطبية والخدمات الصحية الخاصة بعيادة ميديكير (MediCare)، ولا يمكنني المساعدة في المجالات الخارجة عن النطاق الطبي. يسعدني دائماً الإجابة عن استفساراتك حول التخصصات الطبية، أطباء العيادة، مواعيد العمل، أو مساعدتك في حجز كشف طبي!"
+        : "Pardon me 😄! I am an AI assistant specialized exclusively in medical inquiries and healthcare services for MediCare Clinic, and I cannot assist with topics outside the medical domain. I would be delighted to help you with our medical specialties, certified doctors, clinic hours, fees, or booking an appointment!";
     }
-    if (/doctor|available|دكتور|طبيب|أطباء|الأطباء|دكاترة/i.test(text)) {
+
+    // IN-SCOPE: Provide accurate, helpful MediCare clinic and medical guidance
+
+    // 1. Booking & appointments
+    if (/book|appoint|حجز|موعد|ميعاد/i.test(t)) {
       return ar
-        ? "من الأطباء المتاحين:\n- د. أمل سعيد (أمراض القلب)\n- د. كريم النجار (الجلدية)\n- د. ليلى منصور (الأطفال)\n- د. عمر فاروق (الأسنان)\n- د. نادين حسن (طب الأسرة)\n- د. يوسف عادل (العظام)"
-        : "Some of our doctors:\n- Dr. Amal Saeed (Cardiology)\n- Dr. Karim El-Naggar (Dermatology)\n- Dr. Laila Mansour (Pediatrics)\n- Dr. Omar Farouk (Dentistry)\n- Dr. Nadine Hassan (Family Medicine)\n- Dr. Youssef Adel (Orthopedics)";
+        ? "تستطيع حجز موعد بسهولة من صفحة [حجز موعد](page2.html): اختر التخصص والطبيب والتاريخ والوقت المناسب ثم أكّد الحجز. يتم دفع عربون 25% أونلاين والمتبقي في العيادة."
+        : "You can easily schedule a consultation via our [Book Appointment](page2.html) page: select doctor, date and time, then confirm with a 25% online deposit.";
     }
+
+    // 2. Doctors & specialties
+    if (/doctor|available|special|دكتور|طبيب|أطباء|الأطباء|دكاترة|تخصص/i.test(t)) {
+      return ar
+        ? "تضم عيادة ميديكير نخبة من الاستشاريين المعتمدين:\n- د. أمل سعيد / د. سامح محمد (أمراض القلب)\n- د. كريم النجار (الجلدية)\n- د. ليلى منصور (الأطفال)\n- د. عمر فاروق / د. سارة أحمد (الأسنان)\n- د. نادين حسن / د. أحمد خالد (طب الأسرة)\n- د. يوسف عادل (العظام)\n\nيمكنك معرفة المواعيد وحجز كشف من [صفحة الحجز](page2.html)."
+        : "MediCare Clinic features certified specialists:\n- Dr. Amal Saeed / Dr. Sameh Mohamed (Cardiology)\n- Dr. Karim El-Naggar (Dermatology)\n- Dr. Laila Mansour (Pediatrics)\n- Dr. Omar Farouk / Dr. Sara Ahmed (Dentistry)\n- Dr. Nadine Hassan / Dr. Ahmed Khaled (Family Medicine)\n- Dr. Youssef Adel (Orthopedics)\n\nView details and book on our [Book Appointment](page2.html) page.";
+    }
+
+    // 3. Fees & pricing
+    if (/fee|cost|price|deposit|سعر|تكلفة|رسوم|عربون/i.test(t)) {
+      return ar
+        ? "تتراوح رسوم الكشف في عيادة ميديكير بين 300 إلى 500 جنيه مصري حسب التخصص والطبيب المعالج. يتم دفع 25% فقط كعربون لتأكيد الحجز عبر الإنترنت، ويُدفع باقي المبلغ عند الحضور في العيادة. يمكنك الاطلاع على التفاصيل من [صفحة الحجز](page2.html)."
+        : "Consultation fees at MediCare Clinic range between 300 to 500 EGP depending on specialization. A 25% deposit is paid online to secure your appointment, with the remainder paid upon arrival. Details are on our [Book Appointment](page2.html) page.";
+    }
+
+    // 4. Hours & clinic schedule
+    if (/hour|hours|open|schedule|ساعة|ساعات|دوام|أوقات العمل/i.test(t)) {
+      return ar
+        ? "تستقبل عيادة ميديكير مراجعيها يومياً من الساعة 09:00 صباحاً وحتى 08:00 مساءً. يمكنك معرفة أوقات دوام كل طبيب وحجز موعدك من [صفحة الحجز](page2.html)."
+        : "MediCare Clinic is open daily from 09:00 AM to 08:00 PM. Individual doctor consultation hours can be checked on our [Book Appointment](page2.html) page.";
+    }
+
+    // 5. Symptoms & specific specialties
     for (i = 0; i < SPEC.length; i++) {
-      if (SPEC[i].re.test(text)) {
+      if (SPEC[i].re.test(t)) {
         var s = SPEC[i];
         return ar
-          ? "بناءً على وصفك قد يناسبك تخصص **" + s.ar + "**، ومتاح لدينا **" + s.drAr + "**. يمكنك [حجز موعد](page2.html) للتأكد."
-          : "Based on what you describe, **" + s.en + "** may be a good fit, and **" + s.dr + "** is available. You can [book an appointment](page2.html) to be sure.";
+          ? "بناءً على الأعراض قد يناسبك تخصص **" + s.ar + "**، ومتاح لدينا **" + s.drAr + "**. يمكنك [حجز موعد](page2.html) لإجراء الفحص والاطمئنان."
+          : "Based on what you describe, **" + s.en + "** may be a good fit, and **" + s.dr + "** is available. You can [book an appointment](page2.html) for evaluation.";
       }
     }
+
+    // 6. General In-Scope Medical Greeting / Inquiry
     return ar
-      ? "شكراً لتواصلك مع ميديكير! يمكنك حجز موعد مع أحد أطبائنا المتخصصين أو تصفح خدمات العيادة للاستفسار بالتفصيل."
-      : "Thank you for reaching out to MediCare! You can book an appointment with our specialists or explore clinic services for further assistance.";
+      ? "أهلاً بك في عيادة ميديكير (MediCare)! أنا هنا لمساعدتك في كل ما يتعلق بصحتك، التعرف على أطبائنا واستشاريينا في مختلف التخصصات، الاستفسار عن مواعيد العمل ورسوم الكشف، ومساعدتك في [حجز موعد](page2.html). كيف يمكنني خدمتك اليوم؟"
+      : "Welcome to MediCare Clinic! I'm here to assist you with medical guidance, information on our certified specialists and clinic departments, schedules and consultation fees, or booking an appointment at [Book Appointment](page2.html). How can I help you today?";
   }
 
   /* ---------------- talking to the backend ---------------- */
@@ -187,7 +282,12 @@
     } catch (e) {}
   }
   var root = document.documentElement;
-  function lang() { return root.getAttribute("lang") === "ar" ? "ar" : "en"; }
+  function lang() {
+    if (window.MediLang && typeof window.MediLang.get === "function") {
+      return window.MediLang.get();
+    }
+    return root.getAttribute("lang") === "ar" ? "ar" : "en";
+  }
   function t() { return TXT[lang()]; }
 
   /* ---------------- markup ---------------- */
@@ -334,6 +434,7 @@
     if (e.key === "Escape" && state.open && !document.querySelector("dialog[open]") && !root.classList.contains("sb-open")) { setOpen(false); fab.focus(); }
   });
   new MutationObserver(function () { labels(); draw(); }).observe(root, { attributes: true, attributeFilter: ["lang"] });
+  window.addEventListener("medicarelangchange", function () { labels(); draw(); });
 
   labels(); draw();
   if (state.open) setOpen(true);
