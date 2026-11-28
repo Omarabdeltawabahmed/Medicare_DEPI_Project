@@ -18,7 +18,6 @@
             "bc.book": "Book Appointment",
             title: "Doctor Profile & Booking",
             "demo.badge": "",
-            "p.fallback": "",
             "p.rating": "Rating",
             "p.exp": "Experience",
             "p.yrs": "years",
@@ -148,7 +147,6 @@
             "bc.book": "حجز موعد",
             title: "ملف الطبيب والحجز",
             "demo.badge": "",
-            "p.fallback": "",
             "p.rating": "التقييم",
             "p.exp": "الخبرة",
             "p.yrs": "سنة",
@@ -636,11 +634,6 @@
           var lim =
             limit() === Infinity ? t("p.unl") : limit() + " " + t("p.pat");
           $("#profile").innerHTML =
-            (doc._fallback
-              ? '<div class="notice bad" style="margin-bottom:14px">' +
-                esc(t("p.fallback")) +
-                "</div>"
-              : "") +
             '<div class="dh"><div class="av" aria-hidden="true">' +
             esc(doc.avatar || "") +
             '</div><div><h2 style="font-size:1.6rem;margin:0 0 6px">' +

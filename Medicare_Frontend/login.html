@@ -106,10 +106,11 @@
             <label for="email" data-i18n="emailLabel">Email address</label>
             <div class="input-wrap">
               <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>
-              <input type="email" id="email" name="username" value="" inputmode="email" autocomplete="username"
+              <input type="email" id="email" name="username" value="" inputmode="email" autocomplete="username" list="savedAccountsList"
                      autocapitalize="none" spellcheck="false" required aria-describedby="emailError"
                      placeholder="name@example.com" data-i18n-attr="placeholder:emailPh">
             </div>
+            <datalist id="savedAccountsList"></datalist>
             <p class="field-error" id="emailError" hidden></p>
           </div>
  

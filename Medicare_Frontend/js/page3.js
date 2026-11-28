@@ -497,6 +497,8 @@
                 };
               });
               renderAppts();
+              renderTabs();
+              renderNotifs();
               renderSummary();
             }
           } catch (e) {
@@ -526,9 +528,11 @@
           if (!u || !u.id) return;
           try {
             var res = await window.apiFetch('/api/prescriptions/patient/' + u.id);
-            if (Array.isArray(res) && res.length > 0) {
+            if (Array.isArray(res)) {
               livePrescriptions = res;
               renderRx();
+              renderTabs();
+              renderNotifs();
               renderSummary();
             }
           } catch (e) {
@@ -537,8 +541,12 @@
         }
 
         function ap() {
-          if (Array.isArray(liveAppointments) && liveAppointments.length > 0) {
+          if (Array.isArray(liveAppointments)) {
             return liveAppointments;
+          }
+          var u = window.getCurrentUser ? window.getCurrentUser() : null;
+          if (u) {
+            return [];
           }
           return arr(K.a).filter(function (a) {
             return a && typeof a === "object";
@@ -588,6 +596,15 @@
           }).length;
           var h = "";
           TABS.forEach(function (x) {
+            var isNotif = x[0] === "notif";
+            var badgeHtml = "";
+            if (isNotif) {
+              if (un > 0 && active !== "notif") {
+                badgeHtml = '<span class="badge" id="notifBadge">' + un + "</span>";
+              } else {
+                badgeHtml = '<span class="badge" id="notifBadge" style="display:none" hidden></span>';
+              }
+            }
             h +=
               '<button role="tab" type="button" data-tab="' +
               x[0] +
@@ -596,26 +613,28 @@
               '"><span>' +
               t(x[1]) +
               "</span>" +
-              (x[0] === "notif" && un
-                ? '<span class="badge">' + un + "</span>"
-                : "") +
+              badgeHtml +
               "</button>";
           });
           document.getElementById("tabs").innerHTML = h;
           TABS.forEach(function (x) {
-            document
-              .getElementById("p-" + x[0])
-              .classList.toggle("active", active === x[0]);
+            var el = document.getElementById("p-" + x[0]);
+            if (el) el.classList.toggle("active", active === x[0]);
           });
         }
         document.getElementById("tabs").addEventListener("click", function (e) {
           var b = e.target.closest("[data-tab]");
           if (!b) return;
-          active = b.getAttribute("data-tab");
+          var targetTab = b.getAttribute("data-tab");
+          active = targetTab;
           try {
             history.replaceState(null, "", "#" + active);
           } catch (x) {}
-          renderTabs();
+          if (targetTab === "notif") {
+            markAllNotifsAsRead();
+          } else {
+            renderTabs();
+          }
         });
 
         /* summary */
@@ -632,12 +651,15 @@
           var un = notifs().filter(function (n) {
             return !n.read;
           }).length;
-          var rc = arr(K.m).length || SAMPLE_HIST.length;
+          var u = window.getCurrentUser ? window.getCurrentUser() : null;
+          var rc = Array.isArray(liveMedicalRecords)
+            ? liveMedicalRecords.length
+            : (u ? 0 : (arr(K.m).length || SAMPLE_HIST.length));
           var c = [
             [up, "cUp", ""],
             [rc, "cRec", ""],
             [rxList().length, "cRx", ""],
-            [notifs().length, "cNt", un + " " + t("cUnread")],
+            [notifs().length, "cNt", un > 0 ? (un + " " + t("cUnread")) : ""],
           ];
           document.getElementById("summary").innerHTML = c
             .map(function (x) {
@@ -896,7 +918,7 @@
 
         /* prescriptions */
         function rxList() {
-          if (Array.isArray(livePrescriptions) && livePrescriptions.length > 0) {
+          if (Array.isArray(livePrescriptions)) {
             return livePrescriptions.map(function(r) {
               var meds = Array.isArray(r.items) ? r.items.map(function(i) {
                 return {
@@ -918,6 +940,10 @@
                 fu: r.followUpDate ? r.followUpDate.slice(0, 10) : ""
               };
             });
+          }
+          var u = window.getCurrentUser ? window.getCurrentUser() : null;
+          if (u) {
+            return [];
           }
           var out = [];
           arr(K.r).forEach(function (r, i) {
@@ -1222,8 +1248,56 @@
         });
 
         /* notifications */
+        function getReadNotifKey() {
+          var u = window.getCurrentUser ? window.getCurrentUser() : null;
+          return (u && (u.id || u.email)) ? ("medicareNotifsRead_" + (u.id || u.email)) : K.n;
+        }
+
+        function getReadNotifIds() {
+          var key = getReadNotifKey();
+          try {
+            var raw = localStorage.getItem(key);
+            if (raw) {
+              var parsed = JSON.parse(raw);
+              if (Array.isArray(parsed)) return parsed;
+            }
+          } catch(e) {}
+          return arr(K.n);
+        }
+
+        function markAllNotifsAsRead() {
+          var allIds = notifs().map(function (n) { return n.id; });
+          var key = getReadNotifKey();
+          var current = getReadNotifIds();
+          allIds.forEach(function (id) {
+            if (current.indexOf(id) === -1) current.push(id);
+          });
+          try {
+            localStorage.setItem(key, JSON.stringify(current));
+            localStorage.setItem(K.n, JSON.stringify(current));
+          } catch (e) {}
+
+          var badge = document.getElementById("notifBadge");
+          if (badge) {
+            badge.textContent = "";
+            badge.style.display = "none";
+            badge.hidden = true;
+          }
+
+          if (window.apiFetch) {
+            window.apiFetch('/api/notifications/mark-read', {
+              method: 'POST',
+              body: JSON.stringify({ ids: current })
+            }).catch(function () {});
+          }
+
+          renderTabs();
+          renderNotifs();
+          renderSummary();
+        }
+
         function notifs() {
-          var rd0 = arr(K.n),
+          var rd0 = getReadNotifIds(),
             l = [];
           function add(id, tk, dk, o, date) {
             l.push({
@@ -1299,22 +1373,22 @@
           .addEventListener("click", function (e) {
             var b = e.target.closest("[data-read]");
             if (!b) return;
-            var r = arr(K.n),
-              id = b.getAttribute("data-read");
+            var id = b.getAttribute("data-read");
+            var key = getReadNotifKey();
+            var r = getReadNotifIds();
             if (r.indexOf(id) < 0) r.push(id);
-            wr(K.n, r);
-            renderAll();
+            try {
+              localStorage.setItem(key, JSON.stringify(r));
+              localStorage.setItem(K.n, JSON.stringify(r));
+            } catch (x) {}
+            renderTabs();
+            renderNotifs();
+            renderSummary();
           });
         document
           .getElementById("readAll")
           .addEventListener("click", function () {
-            wr(
-              K.n,
-              notifs().map(function (n) {
-                return n.id;
-              }),
-            );
-            renderAll();
+            markAllNotifsAsRead();
           });
 
         /* medicine assistant */
@@ -1443,9 +1517,13 @@
           TABS.some(function (x) {
             return x[0] === h;
           })
-        )
+        ) {
           active = h;
-                /* SignalR Real-Time Notifications */
+          if (active === "notif") {
+            markAllNotifsAsRead();
+          }
+        }
+        /* SignalR Real-Time Notifications */
         function initSignalR() {
           if (!window.signalR || !window.getToken) return;
           var token = window.getToken();
@@ -1467,7 +1545,6 @@
                 alert("Prescription ready: " + (data.diagnosis || "Medical Prescription"));
               }
               loadLivePrescriptions();
-        initSignalR();
             });
 
             connection.start().catch(function (err) {

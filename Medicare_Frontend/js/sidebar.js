@@ -24,21 +24,21 @@
       ? window.getCurrentUser() 
       : (function() {
           try {
-            var raw = localStorage.getItem("medicareCurrentUser");
+            var raw = localStorage.getItem("medicareCurrentUser") || sessionStorage.getItem("medicareCurrentUser");
             return raw ? JSON.parse(raw) : null;
           } catch(e) { return null; }
         })();
 
     var token = (typeof window.getToken === "function") 
       ? window.getToken() 
-      : localStorage.getItem("medicare_token");
+      : (localStorage.getItem("medicare_token") || sessionStorage.getItem("medicare_token") || localStorage.getItem("medicareToken") || sessionStorage.getItem("medicareToken"));
 
     var roles = [];
     if (user) {
       if (user.role) roles.push(user.role);
       if (Array.isArray(user.roles)) roles = roles.concat(user.roles);
     }
-    var rawStoredRoles = localStorage.getItem("medicare_roles") || "";
+    var rawStoredRoles = (localStorage.getItem("medicare_roles") || "") + (sessionStorage.getItem("medicare_roles") || "");
     if (rawStoredRoles && roles.length === 0) {
       try {
         var parsedRoles = JSON.parse(rawStoredRoles);
@@ -54,6 +54,13 @@
     var isPatient = roles.indexOf("Patient") !== -1 || rawStoredRoles.indexOf("Patient") !== -1;
     var isAuthenticated = !!(token && user);
     var userRole = isAdmin ? "Admin" : (isDoctor ? "Doctor" : (isPatient ? "Patient" : (roles[0] || "User")));
+
+    // Strict auth guard: redirect immediately if unauthenticated on protected pages
+    var isPublicPage = page === "login" || page === "register";
+    if (!isPublicPage && !isAuthenticated) {
+      window.location.replace("login.html");
+      return;
+    }
 
     /* ---------- menu items (filtered by role) ---------- */
     var ALL_LINKS = [
@@ -296,15 +303,17 @@
     var logoutBtn = document.getElementById("logoutBtn");
     if (logoutBtn) {
       logoutBtn.addEventListener("click", function () {
-        localStorage.removeItem("medicareSession");
         if (typeof window.logout === "function") {
           window.logout();
         } else {
-          localStorage.removeItem("medicare_token");
-          localStorage.removeItem("medicareCurrentUser");
-          localStorage.removeItem("medicare_roles");
-          localStorage.removeItem("medicare_user_id");
-          window.location.href = "login.html";
+          var keys = ["medicare_token", "medicareToken", "medicareCurrentUser", "medicare_roles", "medicare_user_id", "medicareSession"];
+          keys.forEach(function (k) {
+            try {
+              localStorage.removeItem(k);
+              sessionStorage.removeItem(k);
+            } catch (e) {}
+          });
+          window.location.replace("login.html");
         }
       });
     }
@@ -341,6 +350,39 @@
         if (e.target.closest("a")) setOpen(false);
       });
     }
+
+    /* ---------- guard navigation clicks to protected pages ---------- */
+    document.addEventListener("click", function (e) {
+      var link = e.target.closest("a[href]");
+      if (!link) return;
+      var href = (link.getAttribute("href") || "").trim();
+      if (!href || href.startsWith("#") || href.startsWith("javascript:") || href.startsWith("mailto:") || href.startsWith("tel:")) {
+        return;
+      }
+      var targetBase = href.split("?")[0].split("#")[0].split("/").pop().toLowerCase();
+      var isTargetPublic = targetBase === "login.html" || targetBase === "register.html";
+      if (!isTargetPublic) {
+        var liveToken = (typeof window.getToken === "function") 
+          ? window.getToken() 
+          : (localStorage.getItem("medicare_token") || sessionStorage.getItem("medicare_token") || localStorage.getItem("medicareToken") || sessionStorage.getItem("medicareToken"));
+        var liveUser = (typeof window.getCurrentUser === "function") 
+          ? window.getCurrentUser() 
+          : (function() {
+              try {
+                var raw = localStorage.getItem("medicareCurrentUser") || sessionStorage.getItem("medicareCurrentUser");
+                return raw ? JSON.parse(raw) : null;
+              } catch (err) { return null; }
+            })();
+        if (!liveToken || !liveUser) {
+          e.preventDefault();
+          e.stopPropagation();
+          setOpen(false);
+          if (page !== "login") {
+            window.location.replace("login.html");
+          }
+        }
+      }
+    }, true);
   }
 
   init();

@@ -11,6 +11,7 @@
             menu: "Menu",
             "demo.badge": "",
             "demo.badge2": "",
+            "p.fallback": "",
             "hero.h1": "Healthcare made simpler, for everyone.",
             "hero.p":
               "Find trusted doctors, book appointments in minutes, and manage your healthcare information in one clear, friendly place.",
@@ -144,6 +145,7 @@
             menu: "القائمة",
             "demo.badge": "",
             "demo.badge2": "",
+            "p.fallback": "",
             "hero.h1": "رعاية صحية أبسط للجميع.",
             "hero.p":
               "اعثر على أطباء موثوقين، واحجز موعدك في دقائق، وأدِر معلوماتك الصحية في مكان واحد واضح وسهل.",
@@ -630,6 +632,10 @@
             var v = t(e.getAttribute("data-i18n"));
             if (/<b>/.test(v)) e.innerHTML = v;
             else e.textContent = v;
+          });
+          document.querySelectorAll("[data-i18n='p.fallback'], #fallbackNotice, .fallback-banner, .alert.warn").forEach(function (e) {
+            e.hidden = true;
+            e.style.display = "none";
           });
           document.querySelectorAll("[data-i18n-ph]").forEach(function (e) {
             e.placeholder = t(e.getAttribute("data-i18n-ph"));

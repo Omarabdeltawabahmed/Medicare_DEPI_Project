@@ -12,7 +12,8 @@
       accounts: 'medicarePatientAccounts',
       currentUser: 'medicareCurrentUser',
       language: 'medicareLang',
-      rememberedEmail: 'medicareRememberedEmail'
+      rememberedEmail: 'medicareRememberedEmail',
+      savedAccounts: 'medicareSavedAccounts'
     };
  
     var ROLE_ROUTES = {
@@ -401,6 +402,55 @@
         return [];
       }
     }
+
+    function readSavedAccounts() {
+      var raw = safeGet(STORAGE.savedAccounts);
+      if (!raw) return [];
+      try {
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveAccountCredentials(email, password) {
+      if (!email) return;
+      var accounts = readSavedAccounts();
+      accounts = accounts.filter(function (acc) {
+        return acc && acc.email && acc.email.toLowerCase() !== email.toLowerCase();
+      });
+      accounts.unshift({ email: email, password: password || '' });
+      safeSet(STORAGE.savedAccounts, JSON.stringify(accounts));
+    }
+
+    function populateSavedAccountsDatalist() {
+      var datalist = document.getElementById('savedAccountsList');
+      if (!datalist) return;
+      datalist.innerHTML = '';
+      var accounts = readSavedAccounts();
+      accounts.forEach(function (acc) {
+        if (acc && acc.email) {
+          var opt = document.createElement('option');
+          opt.value = acc.email;
+          datalist.appendChild(opt);
+        }
+      });
+    }
+
+    function autoFillPasswordForEmail(emailVal) {
+      if (!emailVal || !els.password) return;
+      var accounts = readSavedAccounts();
+      var matched = accounts.find(function (acc) {
+        return acc && acc.email && acc.email.toLowerCase() === emailVal.trim().toLowerCase();
+      });
+      if (matched && matched.password) {
+        els.password.value = matched.password;
+        if (state.fieldErrors && state.fieldErrors.password) {
+          setFieldError('password', null);
+        }
+      }
+    }
  
     function normalizeRole(role) {
       if (typeof role !== 'string') return null;
@@ -567,9 +617,11 @@
             }
           }
 
-          // 2. Remember me email persistence
+          // 2. Remember me & saved accounts persistence
           if (isRememberMe) {
             safeSet(STORAGE.rememberedEmail, email);
+            saveAccountCredentials(email, password);
+            populateSavedAccountsDatalist();
           } else {
             safeRemove(STORAGE.rememberedEmail);
           }
@@ -742,8 +794,7 @@
         }
       });
  
-      // Ensure email field opens completely empty on load so native browser
-      // Password Manager displays the saved credentials dropdown on click
+      // Ensure email and password fields open completely empty on load
       safeRemove(STORAGE.rememberedEmail);
       try {
         window.localStorage.removeItem('medicareRememberedEmail');
@@ -751,14 +802,31 @@
       if (els.email) {
         els.email.value = '';
       }
- 
+      if (els.password) {
+        els.password.value = '';
+      }
+
+      // Populate datalist with previously saved accounts for instant dropdown
+      populateSavedAccountsDatalist();
+
       // Form
       if (els.form) {
         els.form.addEventListener('submit', handleLoginSubmit);
       } else if (els.submitBtn) {
         els.submitBtn.addEventListener('click', handleLoginSubmit);
       }
-      els.email.addEventListener('input', function () { if (state.fieldErrors.email) setFieldError('email', null); });
+      els.email.addEventListener('input', function () {
+        if (state.fieldErrors.email) setFieldError('email', null);
+        autoFillPasswordForEmail(els.email.value);
+      });
+      els.email.addEventListener('change', function () {
+        autoFillPasswordForEmail(els.email.value);
+      });
+      els.password.addEventListener('focus', function () {
+        if (!els.password.value) {
+          autoFillPasswordForEmail(els.email.value);
+        }
+      });
       els.password.addEventListener('input', function () { if (state.fieldErrors.password) setFieldError('password', null); });
       els.forgotEmail.addEventListener('input', function () { if (state.fieldErrors.forgotEmail) setFieldError('forgotEmail', null); });
       els.togglePw.addEventListener('click', togglePasswordVisibility);

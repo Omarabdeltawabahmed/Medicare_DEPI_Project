@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MediCare – Doctor Workspace</title>
     <meta name="theme-color" content="#1769aa" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('medicare_token') || sessionStorage.getItem('medicare_token') || localStorage.getItem('medicareToken') || sessionStorage.getItem('medicareToken');
+          var u = localStorage.getItem('medicareCurrentUser') || sessionStorage.getItem('medicareCurrentUser');
+          if (!t || !u) window.location.replace('login.html');
+        } catch (e) {
+          window.location.replace('login.html');
+        }
+      })();
+    </script>
     <script src="js/theme.js"></script>
     <script src="js/api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>

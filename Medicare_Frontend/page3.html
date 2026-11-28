@@ -5,6 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>MediCare – Patient Portal</title>
     <meta name="theme-color" content="#1769aa" />
+    <script>
+      (function () {
+        try {
+          var t = localStorage.getItem('medicare_token') || sessionStorage.getItem('medicare_token') || localStorage.getItem('medicareToken') || sessionStorage.getItem('medicareToken');
+          var u = localStorage.getItem('medicareCurrentUser') || sessionStorage.getItem('medicareCurrentUser');
+          if (!t || !u) window.location.replace('login.html');
+        } catch (e) {
+          window.location.replace('login.html');
+        }
+      })();
+    </script>
     <script src="js/theme.js"></script>
     <script src="js/api.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.0/signalr.min.js"></script>
@@ -32,7 +43,14 @@
           role="tablist"
           id="tabs"
           aria-orientation="vertical"
-        ></aside>
+        >
+          <button role="tab" type="button" data-tab="appts" aria-selected="true"><span data-i="tAppts">My Appointments</span></button>
+          <button role="tab" type="button" data-tab="hist" aria-selected="false"><span data-i="tHist">Medical History</span></button>
+          <button role="tab" type="button" data-tab="rx" aria-selected="false"><span data-i="tRx">Prescriptions</span></button>
+          <button role="tab" type="button" data-tab="prof" aria-selected="false"><span data-i="tProf">My Profile</span></button>
+          <button role="tab" type="button" data-tab="notif" aria-selected="false"><span data-i="tNotif">Notifications</span><span class="badge" id="notifBadge" style="display:none" hidden></span></button>
+          <button role="tab" type="button" data-tab="med" aria-selected="false"><span data-i="tMed">Medicine Assistant</span></button>
+        </aside>
         <div>
           <!-- Appointments -->
           <section class="panel" id="p-appts" role="tabpanel">

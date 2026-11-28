@@ -7,14 +7,60 @@ const API_BASE_URL = "http://localhost:5175";
 
 const AUTH_STORAGE_KEYS = {
   token: "medicare_token",
+  altToken: "medicareToken",
   currentUser: "medicareCurrentUser",
   userRoles: "medicare_roles",
   userId: "medicare_user_id"
 };
 
+function clearAuthSession() {
+  try {
+    const keys = [
+      AUTH_STORAGE_KEYS.token,
+      AUTH_STORAGE_KEYS.altToken,
+      AUTH_STORAGE_KEYS.currentUser,
+      AUTH_STORAGE_KEYS.userRoles,
+      AUTH_STORAGE_KEYS.userId,
+      "medicareSession"
+    ];
+    keys.forEach(k => {
+      localStorage.removeItem(k);
+      sessionStorage.removeItem(k);
+    });
+  } catch (e) { /* ignore */ }
+}
+
+function isTokenExpired(token) {
+  if (!token || typeof token !== "string") return true;
+  try {
+    const parts = token.split(".");
+    if (parts.length === 3) {
+      const payload = JSON.parse(atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")));
+      if (payload && typeof payload.exp === "number") {
+        return payload.exp * 1000 <= Date.now();
+      }
+    }
+  } catch (e) {
+    // Non-standard JWT format or decode error: do not assume expired
+  }
+  return false;
+}
+
 function getToken() {
   try {
-    return localStorage.getItem(AUTH_STORAGE_KEYS.token) || sessionStorage.getItem(AUTH_STORAGE_KEYS.token);
+    const token = (
+      localStorage.getItem(AUTH_STORAGE_KEYS.token) ||
+      sessionStorage.getItem(AUTH_STORAGE_KEYS.token) ||
+      localStorage.getItem(AUTH_STORAGE_KEYS.altToken) ||
+      sessionStorage.getItem(AUTH_STORAGE_KEYS.altToken) ||
+      null
+    );
+    if (!token) return null;
+    if (isTokenExpired(token)) {
+      clearAuthSession();
+      return null;
+    }
+    return token;
   } catch (e) {
     return null;
   }
@@ -36,11 +82,20 @@ function saveAuthSession(authData, rememberMe = true) {
 
   // Clean alternate storage to prevent stale token conflicts
   try {
-    Object.values(AUTH_STORAGE_KEYS).forEach(k => alternateStorage.removeItem(k));
+    const keys = [
+      AUTH_STORAGE_KEYS.token,
+      AUTH_STORAGE_KEYS.altToken,
+      AUTH_STORAGE_KEYS.currentUser,
+      AUTH_STORAGE_KEYS.userRoles,
+      AUTH_STORAGE_KEYS.userId,
+      "medicareSession"
+    ];
+    keys.forEach(k => alternateStorage.removeItem(k));
   } catch (e) { /* ignore */ }
 
   if (authData.token) {
     primaryStorage.setItem(AUTH_STORAGE_KEYS.token, authData.token);
+    primaryStorage.setItem(AUTH_STORAGE_KEYS.altToken, authData.token);
   }
   if (authData.userId) {
     primaryStorage.setItem(AUTH_STORAGE_KEYS.userId, authData.userId);
@@ -65,13 +120,8 @@ function saveAuthSession(authData, rememberMe = true) {
 }
 
 function logout() {
-  try {
-    Object.values(AUTH_STORAGE_KEYS).forEach(k => {
-      localStorage.removeItem(k);
-      sessionStorage.removeItem(k);
-    });
-  } catch (e) { /* ignore */ }
-  window.location.href = "login.html";
+  clearAuthSession();
+  window.location.replace("login.html");
 }
 
 function requireRole(allowedRoles) {
@@ -79,7 +129,7 @@ function requireRole(allowedRoles) {
   const token = getToken();
 
   if (!token || !user) {
-    window.location.href = "login.html";
+    window.location.replace("login.html");
     return null;
   }
 
@@ -95,11 +145,11 @@ function requireRole(allowedRoles) {
   if (!hasAllowedRole) {
     alert("Access Denied: You do not have permission to view this page.");
     if (userRoles.includes("Doctor")) {
-      window.location.href = "page4.html";
+      window.location.replace("page4.html");
     } else if (userRoles.includes("Patient")) {
-      window.location.href = "page3.html";
+      window.location.replace("page3.html");
     } else {
-      window.location.href = "index.html";
+      window.location.replace("login.html");
     }
     return null;
   }
@@ -132,14 +182,9 @@ async function apiFetch(endpoint, options = {}) {
     const response = await fetch(url, config);
 
     if (response.status === 401) {
-      try {
-        Object.values(AUTH_STORAGE_KEYS).forEach(k => {
-          localStorage.removeItem(k);
-          sessionStorage.removeItem(k);
-        });
-      } catch (e) { /* ignore */ }
+      clearAuthSession();
       if (!window.location.pathname.endsWith("login.html") && !window.location.pathname.endsWith("register.html")) {
-        window.location.href = "login.html";
+        window.location.replace("login.html");
       }
       throw new Error("Session expired or unauthorized. Please log in.");
     }
@@ -189,5 +234,33 @@ window.getToken = getToken;
 window.getCurrentUser = getCurrentUser;
 window.saveAuthSession = saveAuthSession;
 window.logout = logout;
+window.clearAuthSession = clearAuthSession;
+window.isTokenExpired = isTokenExpired;
 window.requireRole = requireRole;
 window.apiFetch = apiFetch;
+
+// Immediate execution auth guard: only login.html and register.html are public
+(function enforceAuthGuard() {
+  try {
+    const path = (window.location.pathname || "").toLowerCase();
+    const file = path.split("/").pop() || "";
+    const isPublic = file === "login.html" || file === "register.html" || path.endsWith("/login.html") || path.endsWith("/register.html");
+    if (!isPublic) {
+      const token = getToken();
+      const user = getCurrentUser();
+      if (!token || !user) {
+        clearAuthSession();
+        window.location.replace("login.html");
+      }
+    }
+  } catch (e) {
+    try {
+      const path = (window.location.pathname || "").toLowerCase();
+      const file = path.split("/").pop() || "";
+      const isPublic = file === "login.html" || file === "register.html" || path.endsWith("/login.html") || path.endsWith("/register.html");
+      if (!isPublic) {
+        window.location.replace("login.html");
+      }
+    } catch (_) { /* ignore */ }
+  }
+})();
