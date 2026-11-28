@@ -70,16 +70,21 @@ function requireRole(allowedRoles) {
   }
 
   const userRoles = Array.isArray(user.roles) ? user.roles : (user.role ? [user.role] : []);
+  const isAdmin = userRoles.includes("Admin") || (localStorage.getItem("medicare_roles") || "").includes("Admin");
+  if (isAdmin) {
+    return user; // Full Admin access across all portals
+  }
+
   const hasAllowedRole = allowedRoles.some(r => userRoles.includes(r));
 
   if (!hasAllowedRole) {
     alert("Access Denied: You do not have permission to view this page.");
-    if (userRoles.includes("Admin")) {
-      window.location.href = "page5.html";
-    } else if (userRoles.includes("Doctor")) {
+    if (userRoles.includes("Doctor")) {
       window.location.href = "page4.html";
-    } else {
+    } else if (userRoles.includes("Patient")) {
       window.location.href = "page3.html";
+    } else {
+      window.location.href = "index.html";
     }
     return null;
   }

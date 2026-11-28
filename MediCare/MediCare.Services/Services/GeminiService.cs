@@ -1,6 +1,7 @@
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using Microsoft.Extensions.Configuration;
 using MediCare.Services.Interfaces;
 
@@ -22,12 +23,9 @@ public class GeminiService : IGeminiService
         var apiKey = _configuration["GeminiSettings:ApiKey"];
         var model = _configuration["GeminiSettings:Model"] ?? "gemini-1.5-flash";
 
-        // Google AI Studio Gemini API keys start with "AIzaSy" and are 39 characters long
-        bool isRealGeminiKey = !string.IsNullOrWhiteSpace(apiKey)
-            && apiKey.StartsWith("AIzaSy", StringComparison.Ordinal)
-            && apiKey.Length >= 35;
+        bool hasApiKey = !string.IsNullOrWhiteSpace(apiKey) && apiKey != "YOUR_GEMINI_API_KEY";
 
-        if (isRealGeminiKey)
+        if (hasApiKey)
         {
             try
             {
@@ -60,8 +58,14 @@ public class GeminiService : IGeminiService
                     "application/json"
                 );
 
-                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(15));
-                var response = await _httpClient.PostAsync(endpoint, jsonContent, cts.Token);
+                using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(10));
+                using var request = new HttpRequestMessage(HttpMethod.Post, endpoint)
+                {
+                    Content = jsonContent
+                };
+                request.Headers.TryAddWithoutValidation("x-goog-api-key", apiKey);
+
+                var response = await _httpClient.SendAsync(request, cts.Token);
 
                 if (response.IsSuccessStatusCode)
                 {
@@ -76,24 +80,59 @@ public class GeminiService : IGeminiService
                 }
                 else
                 {
-                    Console.WriteLine($"[GeminiService] API returned status {response.StatusCode}. Using clinical fallback.");
+                    var errorDetails = await response.Content.ReadAsStringAsync(cts.Token);
+                    Console.WriteLine($"[GeminiService] API returned status {response.StatusCode} ({errorDetails}). Using dynamic context fallback.");
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[GeminiService] Network/SSL exception calling Gemini ({ex.Message}). Using clinical fallback.");
+                Console.WriteLine($"[GeminiService] Live call exception ({ex.Message}). Using dynamic context fallback.");
             }
         }
 
-        // Reliable, clinically structured fallback when Gemini is offline, unreachable, or in placeholder mode
+        // Reliable, clinically structured and dynamic topic-aware fallback
         return GenerateFallbackResponse(systemPrompt, userPrompt);
     }
+
+    private static readonly Regex MedicalWhitelistRegex = new(
+        @"\b(" +
+        // English Greetings
+        @"hi|hello|hey|welcome|greetings|how\s+are\s+you|who\s+are\s+you|help|thanks|thank\s+you|" +
+        // English Clinic & Operations
+        @"clinic|hospital|center|medicare|hour|hours|open|opening|close|closing|time|schedule|fee|fees|cost|price|deposit|pay|payment|card|stripe|address|location|phone|contact|" +
+        // English Booking & Appointments
+        @"book|booking|appoint|appointment|schedule|reserve|reservation|slot|" +
+        // English Doctors & Staff
+        @"doctor|doctors|dr|specialist|specialists|physician|consultant|staff|nurse|surgeon|consultation|" +
+        // English Specialties
+        @"specialty|specialties|specialization|cardiology|dentistry|dermatology|pediatrics|orthopedics|family\s+medicine|internal\s+medicine|" +
+        // English Symptoms & Conditions
+        @"symptom|symptoms|pain|ache|hurt|hurts|sore|sick|ill|illness|disease|infection|fever|temperature|cough|cold|flu|headache|migraine|chest|stomach|belly|nausea|vomit|diarrhea|rash|itch|allergy|blood\s+pressure|hypertension|diabetes|sugar|dizziness|dizzy|fatigue|tired|swelling|breath|breathing|asthma|wound|injury|burn|" +
+        // English Anatomy & Body Parts
+        @"heart|cardio|tooth|teeth|dental|gum|gums|skin|acne|bone|bones|knee|back|joint|joints|spine|muscle|child|children|pediatric|baby|infant|kid|kids|eye|ear|throat|nose|" +
+        // English Treatments & Medicine
+        @"medicine|medication|drug|drugs|pill|pills|tablet|tablets|capsule|capsules|syrup|dose|dosage|prescription|treatment|remedy|cure|therapy|vaccine|injection|antibiotic|antibiotics|painkiller|painkillers|test|analysis|scan|x-ray|ultrasound|lab|health|healthy|healthcare|medical|care|" +
+        // Arabic Greetings
+        @"مرحبا|مرحباً|أهلا|اهلا|أهلاً|اهلاً|سلام|السلام\s+عليكم|صباح\s+الخير|مساء\s+الخير|من\s+أنت|من\s+انت|كيف\s+حالك|شكرا|شكراً|مساعدة|" +
+        // Arabic Clinic, Booking & Operations
+        @"عيادة|مستشفى|مركز|ميديكير|ساعة|ساعات|دوام|أوقات|اوقات|ساعات\s+العمل|رسوم|تكلفة|سعر|أسعار|اسعار|عربون|دفع|سداد|عنوان|مكان|موقع|تواصل|هاتف|حجز|احجز|موعد|ميعاد|مواعيد|تأكيد\s+الحجز|" +
+        // Arabic Doctors & Specialties
+        @"طبيب|دكتور|دكتورة|أطباء|اطباء|دكاترة|استشاري|أخصائي|اخصائي|كشف|استشارة|تخصص|تخصصات|قسم|أقسام|اقسام|" +
+        // Arabic Symptoms, Conditions & Body Parts
+        @"ألم|الم|وجع|تعب|مريض|مرض|أمراض|امراض|أعراض|اعراض|إصابة|اصابة|صداع|حمى|سخونة|حرارة|كحة|سعال|برد|انفلونزا|زكام|مغص|معدة|بطن|غثيان|قيء|إسهال|اسهال|حساسية|حكة|طفح|ضغط|سكر|صدر|ضيق\s+تنفس|تنفس|ربو|قلب|نبض|سن|أسنان|اسنان|ضرس|لثة|جلد|حبوب|عظام|ركبة|ظهر|مفصل|مفاصل|عمود\s+فقري|عضل|عضلات|دوخة|إرهاق|ارهاق|ورم|انتفاخ|عين|أذن|اذن|حلق|أنف|انف|طفل|أطفال|اطفال|رضيع|" +
+        // Arabic Treatments, Medicine & Healthcare
+        @"دواء|علاج|أدوية|ادوية|حبوب|كبسول|شراب|جرعة|روشتة|وصفة\s+طبية|مضاد|مسكن|لقاح|تطعيم|حقنة|تحليل|فحص|أشعة|اشعة|سونار|مختبر|معمل|صحة|صحي|صحية|رعاية|طبي|طبية" +
+        @")\b",
+        RegexOptions.IgnoreCase | RegexOptions.Compiled
+    );
 
     private static string GenerateFallbackResponse(string systemPrompt, string userPrompt)
     {
         bool isArabic = userPrompt.Any(c => c >= 0x0600 && c <= 0x06FF);
+        var promptLower = userPrompt.ToLowerInvariant();
 
-        // Case 1: Medicine lookup
+        // Rule 1: Medicine lookup endpoint (/api/ai/medicine-info)
+        // Always treat every query as a medical lookup and return structured medication guidance
         if (userPrompt.StartsWith("What is the medical information for:", StringComparison.OrdinalIgnoreCase)
             || systemPrompt.Contains("requested medicine", StringComparison.OrdinalIgnoreCase)
             || systemPrompt.Contains("التحذيرات وموانع الاستعمال", StringComparison.OrdinalIgnoreCase))
@@ -102,54 +141,96 @@ public class GeminiService : IGeminiService
             return GetMedicineFallback(medName, isArabic);
         }
 
-        // Case 2: Clinic Chat Assistant
-        var promptLower = userPrompt.ToLowerInvariant();
+        // Rule 2: Ask the clinic endpoint (/api/ai/clinic-chat)
+        // General Medical & Clinic Whitelist: Any non-matching query is OUT-OF-SCOPE
+        if (!MedicalWhitelistRegex.IsMatch(userPrompt))
+        {
+            return isArabic
+                ? "عذراً منك 😄! أنا مساعد ذكي متخصص حصرياً في الاستشارات الطبية والخدمات الصحية الخاصة بعيادة ميديكير (MediCare)، ولا يمكنني المساعدة في المجالات الخارجة عن النطاق الطبي. يسعدني دائماً الإجابة عن استفساراتك حول التخصصات الطبية، أطباء العيادة، مواعيد العمل، أو مساعدتك في حجز كشف طبي!"
+                : "Pardon me 😄! I am an AI assistant specialized exclusively in medical inquiries and healthcare services for MediCare Clinic, and I cannot assist with topics outside the medical domain. I would be delighted to help you with our medical specialties, certified doctors, clinic hours, fees, or booking an appointment!";
+        }
 
+        // IN-SCOPE QUERIES: Provide accurate, helpful MediCare clinic and medical guidance
+
+        // 1. Appointments & Booking
         if (promptLower.Contains("حجز") || promptLower.Contains("موعد") || promptLower.Contains("book") || promptLower.Contains("appointment"))
         {
             return isArabic
-                ? "يمكنك حجز موعد بكل سهولة مع أطبائنا المعتمدين عبر زيارة صفحة [حجز موعد](page2.html). اختر التخصص والطبيب والتاريخ والوقت المناسب لتأكيد الحجز."
-                : "You can easily schedule a consultation with our certified doctors via our [Book Appointment](page2.html) page. Select your specialty, doctor, and preferred time slot to confirm.";
+                ? "يمكنك حجز موعد بكل سهولة مع أطبائنا المعتمدين عبر زيارة صفحة [حجز موعد](page2.html). اختر التخصص والطبيب والتاريخ والوقت المناسب لتأكيد الحجز. يتم سداد عربون رمزي (25%) أونلاين عبر بطاقتك الائتمانية، ويُسدد المتبقي في العيادة."
+                : "You can easily schedule a consultation with our certified doctors via our [Book Appointment](page2.html) page. Select your specialty, doctor, and preferred time slot to confirm. A 25% online deposit reserves your slot, with the remainder paid at the clinic.";
         }
 
-        if (promptLower.Contains("طبيب") || promptLower.Contains("دكتور") || promptLower.Contains("doctor") || promptLower.Contains("special"))
+        // 2. Doctors & Specialties
+        if (promptLower.Contains("طبيب") || promptLower.Contains("دكتور") || promptLower.Contains("أطباء") || promptLower.Contains("doctor") || promptLower.Contains("specialist") || promptLower.Contains("specialty") || promptLower.Contains("تخصص"))
         {
             return isArabic
-                ? "تضم عيادة ميديكير نخبة من الأطباء والاستشاريين المعتمدين في تخصصات:\n- أمراض القلب (د. سامح محمد / د. أمل سعيد)\n- طب الأسنان (د. سارة أحمد / د. عمر فاروق)\n- الأمراض الجلدية (د. كريم النجار)\n- طب الأطفال (د. ليلى منصور)\n- طب الأسرة (د. نادين حسن / د. أحمد خالد)\n- جراحة العظام (د. يوسف عادل)\n\nيمكنك الاطلاع على المواعيد المتاحة والحجز مباشرة من [صفحة الحجز](page2.html)."
-                : "MediCare Clinic features certified specialists across our medical departments:\n- Cardiology (Dr. Sameh Mohamed, Dr. Amal Saeed)\n- Dentistry (Dr. Sara Ahmed, Dr. Omar Farouk)\n- Dermatology (Dr. Karim El-Naggar)\n- Pediatrics (Dr. Laila Mansour)\n- Family Medicine (Dr. Nadine Hassan, Dr. Ahmed Khaled)\n- Orthopedics (Dr. Youssef Adel)\n\nYou can view working hours and book directly at our [Book Appointment](page2.html) page.";
+                ? "تضم عيادة ميديكير نخبة متميزة من الأطباء والاستشاريين المعتمدين في تخصصات:\n- أمراض القلب والأوعية الدموية (د. سامح محمد / د. أمل سعيد)\n- طب وجراحة الأسنان (د. سارة أحمد / د. عمر فاروق)\n- الأمراض الجلدية (د. كريم النجار)\n- طب الأطفال وحديثي الولادة (د. ليلى منصور)\n- طب الأسرة والباطنة (د. نادين حسن / د. أحمد خالد)\n- جراحة العظام والمفاصل (د. يوسف عادل)\n\nيمكنك الاطلاع على مواعيد العمل والكشوفات والحجز مباشرة من [صفحة الحجز](page2.html)."
+                : "MediCare Clinic features certified specialists across our medical departments:\n- Cardiology (Dr. Sameh Mohamed, Dr. Amal Saeed)\n- Dentistry (Dr. Sara Ahmed, Dr. Omar Farouk)\n- Dermatology (Dr. Karim El-Naggar)\n- Pediatrics (Dr. Laila Mansour)\n- Family & Internal Medicine (Dr. Nadine Hassan, Dr. Ahmed Khaled)\n- Orthopedics (Dr. Youssef Adel)\n\nYou can review schedules and fees and book directly at our [Book Appointment](page2.html) page.";
         }
 
-        if (promptLower.Contains("قلب") || promptLower.Contains("صدر") || promptLower.Contains("heart") || promptLower.Contains("cardio"))
+        // 3. Consultation Fees & Cost
+        if (promptLower.Contains("سعر") || promptLower.Contains("تكلفة") || promptLower.Contains("رسوم") || promptLower.Contains("عربون") || promptLower.Contains("fee") || promptLower.Contains("cost") || promptLower.Contains("price") || promptLower.Contains("deposit"))
         {
             return isArabic
-                ? "بناءً على الأعراض المذكورة، ننصحك باستشارة استشاري أمراض القلب والأوعية الدموية (د. سامح محمد / د. أمل سعيد) لإجراء الفحوصات اللازمة والاطمئنان. يمكنك [حجز موعد](page2.html) الآن."
+                ? "تتراوح رسوم الكشف في عيادة ميديكير بين 300 إلى 500 جنيه مصري حسب التخصص والطبيب المعالج. يتم دفع 25% فقط كعربون لتأكيد الحجز عبر الإنترنت، ويُدفع باقي المبلغ عند الحضور في العيادة. يمكنك اختيار طبيبك من [صفحة الحجز](page2.html)."
+                : "Consultation fees at MediCare Clinic range between 300 to 500 EGP depending on specialization. A 25% deposit is paid online to secure your appointment, with the remaining balance paid upon clinic arrival. View details on our [Book Appointment](page2.html) page.";
+        }
+
+        // 4. Clinic Hours & Working Times
+        if (promptLower.Contains("ساعة") || promptLower.Contains("ساعات") || promptLower.Contains("دوام") || promptLower.Contains("ساعات العمل") || promptLower.Contains("hours") || promptLower.Contains("open") || promptLower.Contains("schedule"))
+        {
+            return isArabic
+                ? "تستقبل عيادة ميديكير مراجعيها يومياً من الساعة 09:00 صباحاً وحتى 08:00 مساءً. يمكنك معرفة أوقات دوام كل طبيب بالتفصيل وحجز موعدك من [صفحة الحجز](page2.html)."
+                : "MediCare Clinic is open daily from 09:00 AM to 08:00 PM. Individual doctor consultation hours can be checked and reserved on our [Book Appointment](page2.html) page.";
+        }
+
+        // 5. Clinical Symptoms & Recommended Specialties
+        if (promptLower.Contains("قلب") || promptLower.Contains("صدر") || promptLower.Contains("heart") || promptLower.Contains("cardio") || promptLower.Contains("ضغط") || promptLower.Contains("pressure"))
+        {
+            return isArabic
+                ? "بناءً على الأعراض المذكورة، ننصحك باستشارة استشاري أمراض القلب والأوعية الدموية (د. سامح محمد / د. أمل سعيد) لإجراء الفحوصات والاطمئنان. يمكنك [حجز موعد](page2.html) الآن."
                 : "Based on these symptoms, we recommend consulting our Cardiology department (Dr. Sameh Mohamed / Dr. Amal Saeed) for comprehensive evaluation. You can [book an appointment](page2.html) today.";
         }
 
-        if (promptLower.Contains("جلد") || promptLower.Contains("حبوب") || promptLower.Contains("حكة") || promptLower.Contains("skin") || promptLower.Contains("acne"))
+        if (promptLower.Contains("جلد") || promptLower.Contains("حبوب") || promptLower.Contains("حكة") || promptLower.Contains("طفح") || promptLower.Contains("skin") || promptLower.Contains("acne") || promptLower.Contains("rash"))
         {
             return isArabic
                 ? "لهذه الأعراض الجلدية، نوصي بمراجعة أخصائي الأمراض الجلدية (د. كريم النجار) لتحديد العلاج المناسب. يمكنك [حجز موعد](page2.html) مباشرة."
                 : "For skin conditions, we recommend visiting our Dermatology clinic (Dr. Karim El-Naggar) for diagnosis and targeted treatment. You can [book an appointment](page2.html) online.";
         }
 
-        if (promptLower.Contains("سن") || promptLower.Contains("ضرس") || promptLower.Contains("لثة") || promptLower.Contains("tooth") || promptLower.Contains("teeth") || promptLower.Contains("dental"))
+        if (promptLower.Contains("أسنان") || promptLower.Contains("اسنان") || promptLower.Contains("ضرس") || promptLower.Contains("لثة") || promptLower.Contains("tooth") || promptLower.Contains("teeth") || promptLower.Contains("dental") || Regex.IsMatch(promptLower, @"\b(سن)\b"))
         {
             return isArabic
                 ? "لصحة الفم والأسنان، يمكنك حجز كشف في عيادة الأسنان مع (د. سارة أحمد / د. عمر فاروق) لإجراء الفحص وعلاج الألم. يمكنك [حجز موعد](page2.html) في الوقت الذي يناسبك."
                 : "For dental care and oral health, you can schedule a visit with our Dentistry team (Dr. Sara Ahmed / Dr. Omar Farouk). Book your slot at our [Book Appointment](page2.html) page.";
         }
 
-        if (promptLower.Contains("عظام") || promptLower.Contains("ركبة") || promptLower.Contains("ظهر") || promptLower.Contains("bone") || promptLower.Contains("knee") || promptLower.Contains("back"))
+        if (promptLower.Contains("عظام") || promptLower.Contains("ركبة") || promptLower.Contains("مفاصل") || promptLower.Contains("bone") || promptLower.Contains("knee") || promptLower.Contains("joint") || promptLower.Contains("ظهر"))
         {
             return isArabic
                 ? "لآلام المفاصل والعظام، يسعدنا استقبالك في عيادة جراحة العظام مع (د. يوسف عادل) لتقييم الحالة ووصف الخطة العلاجية. يمكنك [حجز موعد](page2.html) الآن."
                 : "For joint and orthopedic concerns, our Orthopedics specialist (Dr. Youssef Adel) is available for clinical evaluation. You can [book an appointment](page2.html) now.";
         }
 
+        if (promptLower.Contains("طفل") || promptLower.Contains("أطفال") || promptLower.Contains("اطفال") || promptLower.Contains("رضيع") || promptLower.Contains("child") || promptLower.Contains("pediatric") || promptLower.Contains("baby"))
+        {
+            return isArabic
+                ? "لصحة ورعاية طفلك، يسعدنا استقبالكم في عيادة طب الأطفال وحديثي الولادة مع (د. ليلى منصور) لمتابعة النمو والتطعيمات والكشف الطبي. يمكنك [حجز موعد](page2.html) بسهولة."
+                : "For child healthcare and wellness, our Pediatrics specialist (Dr. Laila Mansour) provides comprehensive examinations and growth follow-ups. You can [book an appointment](page2.html) anytime.";
+        }
+
+        if (promptLower.Contains("صداع") || promptLower.Contains("headache") || promptLower.Contains("سخونة") || promptLower.Contains("حرارة") || promptLower.Contains("حمى") || promptLower.Contains("fever") || promptLower.Contains("برد") || promptLower.Contains("cold") || promptLower.Contains("flu") || promptLower.Contains("كحة") || promptLower.Contains("cough") || promptLower.Contains("معدة") || promptLower.Contains("stomach") || promptLower.Contains("pain") || promptLower.Contains("ألم") || promptLower.Contains("الم"))
+        {
+            return isArabic
+                ? "لهذه الأعراض العامة، نوصي باستشارة عيادة طب الأسرة والباطنة (د. نادين حسن / د. أحمد خالد) لتقييم حالتك الصحية ووصف العلاج المناسب. يمكنك [حجز موعد](page2.html) الآن."
+                : "For these general symptoms, we recommend consulting our Family & Internal Medicine clinic (Dr. Nadine Hassan / Dr. Ahmed Khaled) for clinical assessment and guidance. You can [book an appointment](page2.html) today.";
+        }
+
+        // 6. General In-Scope Medical Greeting / Inquiry
         return isArabic
-            ? "مرحباً بك في ميديكير! نحن هنا لمساعدتك في الاستفسار عن التخصصات الطبية، مواعيد الأطباء، وإرشادات حجز الكشوفات. لمزيد من المساعدة أو حجز كشف، تفضل بزيارة صفحة [حجز موعد](page2.html). نتمنى لك دوام الصحة والعافية."
-            : "Welcome to MediCare! I am here to help guide you regarding clinic specialties, doctor schedules, and appointment reservations. To book a consultation, please visit our [Book Appointment](page2.html) page. Wishing you good health!";
+            ? "أهلاً بك في عيادة ميديكير (MediCare)! أنا هنا لمساعدتك في كل ما يتعلق بصحتك، التعرف على أطبائنا واستشاريينا في مختلف التخصصات، الاستفسار عن مواعيد العمل ورسوم الكشف، ومساعدتك في [حجز موعد](page2.html). كيف يمكنني خدمتك اليوم؟"
+            : "Welcome to MediCare Clinic! I'm here to assist you with medical guidance, information on our certified specialists and clinic departments, schedules and consultation fees, or booking an appointment at [Book Appointment](page2.html). How can I help you today?";
     }
 
     private static string GetMedicineFallback(string medName, bool isArabic)

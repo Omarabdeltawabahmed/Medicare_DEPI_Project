@@ -11,7 +11,7 @@
     var STORAGE = {
       accounts: 'medicarePatientAccounts',
       currentUser: 'medicareCurrentUser',
-      language: 'medicareLanguage',
+      language: 'medicareLang',
       rememberedEmail: 'medicareRememberedEmail'
     };
  
@@ -199,17 +199,27 @@
     }
  
     function getSavedLanguage() {
-      var saved = safeGet(STORAGE.language);
+      if (window.MediLang && typeof window.MediLang.get === 'function') {
+        return window.MediLang.get();
+      }
+      var saved = safeGet(STORAGE.language) || safeGet('medicareLanguage');
       return saved === 'ar' || saved === 'en' ? saved : 'en';
     }
  
     function applyLanguage(lang, persist) {
       state.lang = lang === 'ar' ? 'ar' : 'en';
-      var root = document.documentElement;
-      root.lang = state.lang;
-      root.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+      if (persist && window.MediLang && typeof window.MediLang.set === 'function') {
+        window.MediLang.set(state.lang);
+      } else {
+        var root = document.documentElement;
+        root.lang = state.lang;
+        root.dir = state.lang === 'ar' ? 'rtl' : 'ltr';
+        if (persist) {
+          safeSet(STORAGE.language, state.lang);
+          safeSet('medicareLanguage', state.lang);
+        }
+      }
       document.title = t('pageTitle');
-      if (persist) safeSet(STORAGE.language, state.lang);
  
       document.querySelectorAll('[data-i18n]').forEach(function (node) {
         node.textContent = t(node.getAttribute('data-i18n'));
@@ -669,10 +679,18 @@
     function init() {
       // Language
       applyLanguage(getSavedLanguage(), false);
-      document.querySelectorAll('.lang-switch button').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          applyLanguage(btn.getAttribute('data-lang'), true);
-        });
+
+      window.addEventListener('medicarelangchange', function (e) {
+        var l = (e && e.detail && e.detail.lang) || getSavedLanguage();
+        applyLanguage(l, false);
+      });
+      window.addEventListener('storage', function (e) {
+        if (e.key === 'medicareLang' || e.key === 'medicareLanguage') {
+          var l = getSavedLanguage();
+          if (l !== state.lang) {
+            applyLanguage(l, false);
+          }
+        }
       });
  
       // Remembered email (non-sensitive convenience)

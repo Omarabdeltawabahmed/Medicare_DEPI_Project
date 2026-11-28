@@ -10,12 +10,15 @@
           s: "medicareDoctorSettings",
           m: "medicareMedicalRecords",
           r: "medicarePrescriptions",
-          l: "medicareLanguage",
+          l: "medicareLang",
+          lAlt: "medicareLanguage",
         };
         var ST = ["Pending", "Confirmed", "Rejected", "Completed", "Cancelled"];
         var lang = "en";
         try {
-          lang = localStorage.getItem(K.l) === "ar" ? "ar" : "en";
+          lang = window.MediLang
+            ? window.MediLang.get()
+            : (localStorage.getItem("medicareLang") || localStorage.getItem("medicareLanguage") || "en");
         } catch (e) {}
         var T = {
           en: {
@@ -450,7 +453,45 @@
         $("scope").addEventListener("change", renderAll);
 
         /* appointments */
+        var liveDoctorAppointments = null;
+        async function loadLiveDoctorAppointments() {
+          if (!window.apiFetch) return;
+          try {
+            var res = await window.apiFetch('/api/doctors/my-appointments');
+            if (Array.isArray(res)) {
+              liveDoctorAppointments = res;
+              renderAll();
+            }
+          } catch (err) {
+            console.warn("Could not load appointments from /api/doctors/my-appointments:", err);
+          }
+        }
+        async function loadLiveDoctors() {
+          if (!window.apiFetch) return;
+          try {
+            var res = await window.apiFetch('/api/doctors');
+            if (Array.isArray(res) && res.length > 0) {
+              doctors = res.map(function(d) {
+                return {
+                  id: String(d.id),
+                  name: d.name || d.fullName || ("Dr. " + (d.specialization || d.specialty || "")),
+                  spec: d.specialization || d.specialty || ""
+                };
+              });
+              if (!doctors.some(function(d) { return d.id === curId; })) {
+                curId = doctors[0].id;
+              }
+              renderDocSel();
+              renderAll();
+            }
+          } catch (err) {
+            console.warn("Could not load doctors from /api/doctors:", err);
+          }
+        }
         function allApps() {
+          if (liveDoctorAppointments && liveDoctorAppointments.length > 0) {
+            return liveDoctorAppointments;
+          }
           return rawArr(K.a).filter(function (a) {
             return isObj(a) && a.id !== undefined && a.id !== "";
           });
@@ -1374,20 +1415,32 @@
           document.documentElement.lang = lang;
           document.documentElement.dir = lang === "ar" ? "rtl" : "ltr";
           applyText();
-          $("langBtn").textContent = lang === "ar" ? "English" : "العربية";
+          if ($("langBtn")) {
+            $("langBtn").textContent = lang === "ar" ? "English" : "العربية";
+          }
           document.title = "MediCare – " + t("title");
         }
-        $("langBtn").addEventListener("click", function () {
-          lang = lang === "ar" ? "en" : "ar";
-          try {
-            localStorage.setItem(K.l, lang);
-          } catch (e) {}
+        window.addEventListener("medicarelangchange", function (e) {
+          var nextLang = (e && e.detail && e.detail.lang) || (window.MediLang ? window.MediLang.get() : "en");
+          lang = nextLang === "ar" ? "ar" : "en";
           applyLang();
           buildDayChk();
           loadAvailDays();
           renderDocSel();
           renderAll();
-          $("avMsg").textContent = "";
+        });
+        window.addEventListener("storage", function (e) {
+          if (e.key === "medicareLang" || e.key === "medicareLanguage") {
+            var newL = e.newValue === "ar" ? "ar" : "en";
+            if (newL !== lang) {
+              lang = newL;
+              applyLang();
+              buildDayChk();
+              loadAvailDays();
+              renderDocSel();
+              renderAll();
+            }
+          }
         });
         function loadAvailDays() {
           /* re-check boxes lost on rebuild are preserved in buildDayChk */
@@ -1435,4 +1488,6 @@
         renderDocSel();
         loadAvail();
         renderAll();
+        loadLiveDoctors();
+        loadLiveDoctorAppointments();
       })();

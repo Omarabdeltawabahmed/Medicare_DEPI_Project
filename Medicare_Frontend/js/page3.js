@@ -9,12 +9,15 @@
           p: "medicarePatientProfile",
           m: "medicareMedicalRecords",
           r: "medicarePrescriptions",
-          l: "medicareLanguage",
+          l: "medicareLang",
+          lAlt: "medicareLanguage",
           n: "medicareDemoNotificationsRead",
         };
         var lang = "en";
         try {
-          lang = localStorage.getItem(K.l) === "ar" ? "ar" : "en";
+          lang = window.MediLang
+            ? window.MediLang.get()
+            : (localStorage.getItem("medicareLang") || localStorage.getItem("medicareLanguage") || "en");
         } catch (e) {}
 
         var T = {
@@ -1403,23 +1406,25 @@
             renderMed();
           });
 
-        /* language */
-        document
-          .getElementById("langBtn")
-          .addEventListener("click", function () {
-            lang = lang === "ar" ? "en" : "ar";
-            try {
-              localStorage.setItem(K.l, lang);
-            } catch (e) {}
-            applyLang();
-            renderAll();
-            loadProfile();
-            document.getElementById("pfMsg").textContent = "";
-            document.getElementById("pfMsg").className = "";
-          });
-        /* keep storage in sync with other tabs */
-        window.addEventListener("storage", function () {
+        /* language change listener */
+        window.addEventListener("medicarelangchange", function (e) {
+          var nextLang = (e && e.detail && e.detail.lang) || (window.MediLang ? window.MediLang.get() : "en");
+          lang = nextLang === "ar" ? "ar" : "en";
+          applyLang();
           renderAll();
+          loadProfile();
+        });
+        /* keep storage in sync with other tabs */
+        window.addEventListener("storage", function (e) {
+          if (e.key === "medicareLang" || e.key === "medicareLanguage") {
+            var newL = e.newValue === "ar" ? "ar" : "en";
+            if (newL !== lang) {
+              lang = newL;
+              applyLang();
+              renderAll();
+              loadProfile();
+            }
+          }
         });
 
         function renderAll() {

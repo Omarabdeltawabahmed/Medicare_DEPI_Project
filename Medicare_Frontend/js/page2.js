@@ -13,6 +13,7 @@
             hi: "Hello,",
             "role.patient": "Patient",
             "role.doctor": "Doctor",
+            "role.admin": "Administrator",
             "bc.doctors": "Doctors",
             "bc.book": "Book Appointment",
             title: "Doctor Profile & Booking",
@@ -142,6 +143,7 @@
             hi: "مرحبًا،",
             "role.patient": "مريض",
             "role.doctor": "طبيب",
+            "role.admin": "مدير النظام",
             "bc.doctors": "الأطباء",
             "bc.book": "حجز موعد",
             title: "ملف الطبيب والحجز",
@@ -355,8 +357,9 @@
         if (!exists("medicareAppointments")) save("medicareAppointments", []);
         var lang = "en";
         try {
-          lang =
-            localStorage.getItem("medicareLanguage") === "ar" ? "ar" : "en";
+          lang = window.MediLang
+            ? window.MediLang.get()
+            : (localStorage.getItem("medicareLang") || localStorage.getItem("medicareLanguage") || "en");
         } catch (e) {}
         function t(k) {
           return (T[lang] && T[lang][k]) || T.en[k] || k;
@@ -1122,9 +1125,14 @@
           var s = getActiveUser();
           $("#userBox").hidden = !s;
           $("#authBtn").hidden = !!s;
-          if (s && s.name)
-            $("#userName").textContent =
-              t("hi") + " " + s.name + " (" + t("role." + s.role) + ")";
+          if (s && s.name) {
+            if (s.role === "admin") {
+              $("#userName").textContent = (document.documentElement.getAttribute("lang") === "ar") ? "أهلاً، مدير ميديكير" : "Hello, MediCare Admin";
+            } else {
+              $("#userName").textContent =
+                t("hi") + " " + s.name + " (" + t("role." + s.role) + ")";
+            }
+          }
         }
         function prefill() {
           var s = getActiveUser();
@@ -1174,12 +1182,19 @@
           renderFooter();
           if (lastRec) showDone();
         }
-        $("#langBtn").addEventListener("click", function () {
-          lang = lang === "ar" ? "en" : "ar";
-          try {
-            localStorage.setItem("medicareLanguage", lang);
-          } catch (e) {}
+        window.addEventListener("medicarelangchange", function (e) {
+          var nextLang = (e && e.detail && e.detail.lang) || (window.MediLang ? window.MediLang.get() : "en");
+          lang = nextLang === "ar" ? "ar" : "en";
           applyLang();
+        });
+        window.addEventListener("storage", function (e) {
+          if (e.key === "medicareLang" || e.key === "medicareLanguage") {
+            var newL = e.newValue === "ar" ? "ar" : "en";
+            if (newL !== lang) {
+              lang = newL;
+              applyLang();
+            }
+          }
         });
         $("#burger").addEventListener("click", function () {
           var o = $("#links").classList.toggle("open");

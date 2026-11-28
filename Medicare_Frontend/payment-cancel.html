@@ -119,20 +119,68 @@
           </svg>
         </div>
 
-        <h1>Payment Cancelled</h1>
-        <p class="subtext">
+        <h1 id="titleText">Payment Cancelled</h1>
+        <p class="subtext" id="subText">
           Your payment checkout session was cancelled or interrupted. No charge was completed and the appointment reservation has not been confirmed.
         </p>
 
         <div class="btn-row">
-          <a href="page2.html" class="btn-primary">Try Booking Again</a>
-          <a href="index.html" class="btn-secondary">Return Home</a>
+          <a href="page2.html" class="btn-primary" id="btnRetry">Try Booking Again</a>
+          <a href="index.html" class="btn-secondary" id="btnHome">Return Home</a>
         </div>
 
-        <div class="note-box">
+        <div class="note-box" id="noteBox">
           You can select an alternative time slot or try again at any time. If you encountered any technical difficulty, please contact our clinic support.
         </div>
       </div>
     </div>
+
+    <script>
+      (function() {
+        var I18N = {
+          en: {
+            title: "Payment Cancelled",
+            sub: "Your payment checkout session was cancelled or interrupted. No charge was completed and the appointment reservation has not been confirmed.",
+            btnRetry: "Try Booking Again",
+            btnHome: "Return Home",
+            note: "You can select an alternative time slot or try again at any time. If you encountered any technical difficulty, please contact our clinic support."
+          },
+          ar: {
+            title: "تم إلغاء عملية الدفع",
+            sub: "تم إلغاء جلسة الدفع أو مقاطعتها. لم يتم خصم أي مبالغ ولم يتم تأكيد حجز الموعد.",
+            btnRetry: "إعادة محاولة الحجز",
+            btnHome: "العودة للرئيسية",
+            note: "يمكنك اختيار موعد بديل أو إعادة المحاولة في أي وقت. إذا واجهت أي صعوبة تقنية، يُرجى التواصل مع دعم العيادة."
+          }
+        };
+
+        function getLang() {
+          if (window.MediLang && typeof window.MediLang.get === "function") return window.MediLang.get();
+          var s = localStorage.getItem("medicareLang") || localStorage.getItem("medicareLanguage");
+          return s === "ar" ? "ar" : "en";
+        }
+
+        function applyTexts() {
+          var lang = getLang();
+          var t = I18N[lang] || I18N.en;
+          var elTitle = document.getElementById("titleText");
+          if (elTitle) elTitle.textContent = t.title;
+          var elSub = document.getElementById("subText");
+          if (elSub) elSub.textContent = t.sub;
+          var elRetry = document.getElementById("btnRetry");
+          if (elRetry) elRetry.textContent = t.btnRetry;
+          var elHome = document.getElementById("btnHome");
+          if (elHome) elHome.textContent = t.btnHome;
+          var elNote = document.getElementById("noteBox");
+          if (elNote) elNote.textContent = t.note;
+        }
+
+        applyTexts();
+        window.addEventListener("medicarelangchange", applyTexts);
+        window.addEventListener("storage", function(e) {
+          if (e.key === "medicareLang" || e.key === "medicareLanguage") applyTexts();
+        });
+      })();
+    </script>
   </body>
 </html>

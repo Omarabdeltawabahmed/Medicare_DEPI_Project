@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using MediCare.Data.Models;
 using MediCare.Data.UnitOfWork;
 using MediCare.Services.Interfaces;
@@ -20,6 +21,7 @@ public class MedicalRecordsController : ControllerBase
     }
 
     [HttpPost("upload-attachment")]
+    [Authorize(Roles = "Doctor,Admin")]
     [ServiceFilter(typeof(CheckDoctorApprovalFilter))]
     public async Task<IActionResult> UploadAttachment(IFormFile file)
     {
@@ -42,6 +44,7 @@ public class MedicalRecordsController : ControllerBase
     }
 
     [HttpPost]
+    [Authorize(Roles = "Doctor,Admin")]
     [ServiceFilter(typeof(CheckDoctorApprovalFilter))]
     public async Task<IActionResult> Create([FromBody] MedicalRecord model)
     {
@@ -57,9 +60,10 @@ public class MedicalRecordsController : ControllerBase
     }
 
     [HttpGet("patient/{patientId}")]
+    [Authorize(Roles = "Patient,Doctor,Admin")]
     public async Task<IActionResult> GetByPatientId(string patientId)
     {
         var records = await _unitOfWork.MedicalRecords.FindAsync(r => r.PatientId == patientId);
-        return Ok(records);
+        return Ok(records ?? new List<MedicalRecord>());
     }
 }

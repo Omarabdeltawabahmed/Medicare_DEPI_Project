@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 using MediCare.Data.Context;
@@ -33,6 +34,7 @@ public class PrescriptionsController : ControllerBase
     }
 
     [HttpPost("create")]
+    [Authorize(Roles = "Doctor,Admin")]
     [ServiceFilter(typeof(CheckDoctorApprovalFilter))]
     public async Task<IActionResult> Create([FromBody] CreatePrescriptionDto dto)
     {
@@ -95,13 +97,15 @@ public class PrescriptionsController : ControllerBase
     }
 
     [HttpGet("patient/{patientId}")]
+    [Authorize(Roles = "Patient,Doctor,Admin")]
     public async Task<IActionResult> GetByPatient(string patientId)
     {
         var prescriptions = await _unitOfWork.Prescriptions.FindAsync(p => p.PatientId == patientId);
-        return Ok(prescriptions);
+        return Ok(prescriptions ?? new List<Prescription>());
     }
 
     [HttpGet("{prescriptionId:int}/print-data")]
+    [Authorize(Roles = "Patient,Doctor,Admin")]
     public async Task<IActionResult> GetPrintData(int prescriptionId)
     {
         var prescription = await _unitOfWork.Prescriptions.GetByIdAsync(prescriptionId);
