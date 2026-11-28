@@ -742,12 +742,14 @@
         }
       });
  
-      // Remembered email (pre-fill automatically when login.html loads)
-      var remembered = safeGet(STORAGE.rememberedEmail);
-      if (remembered) {
-        if (els.email) els.email.value = remembered;
-        var remCheck = els.remember || $('rememberMe') || $('remember');
-        if (remCheck) remCheck.checked = true;
+      // Ensure email field opens completely empty on load so native browser
+      // Password Manager displays the saved credentials dropdown on click
+      safeRemove(STORAGE.rememberedEmail);
+      try {
+        window.localStorage.removeItem('medicareRememberedEmail');
+      } catch (e) { /* ignore */ }
+      if (els.email) {
+        els.email.value = '';
       }
  
       // Form
