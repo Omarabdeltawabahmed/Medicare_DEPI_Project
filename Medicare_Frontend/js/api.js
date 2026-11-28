@@ -13,28 +13,40 @@ const AUTH_STORAGE_KEYS = {
 };
 
 function getToken() {
-  return localStorage.getItem(AUTH_STORAGE_KEYS.token);
+  try {
+    return localStorage.getItem(AUTH_STORAGE_KEYS.token) || sessionStorage.getItem(AUTH_STORAGE_KEYS.token);
+  } catch (e) {
+    return null;
+  }
 }
 
 function getCurrentUser() {
-  const raw = localStorage.getItem(AUTH_STORAGE_KEYS.currentUser);
-  if (!raw) return null;
   try {
+    const raw = localStorage.getItem(AUTH_STORAGE_KEYS.currentUser) || sessionStorage.getItem(AUTH_STORAGE_KEYS.currentUser);
+    if (!raw) return null;
     return JSON.parse(raw);
   } catch (e) {
     return null;
   }
 }
 
-function saveAuthSession(authData) {
+function saveAuthSession(authData, rememberMe = true) {
+  const primaryStorage = rememberMe ? localStorage : sessionStorage;
+  const alternateStorage = rememberMe ? sessionStorage : localStorage;
+
+  // Clean alternate storage to prevent stale token conflicts
+  try {
+    Object.values(AUTH_STORAGE_KEYS).forEach(k => alternateStorage.removeItem(k));
+  } catch (e) { /* ignore */ }
+
   if (authData.token) {
-    localStorage.setItem(AUTH_STORAGE_KEYS.token, authData.token);
+    primaryStorage.setItem(AUTH_STORAGE_KEYS.token, authData.token);
   }
   if (authData.userId) {
-    localStorage.setItem(AUTH_STORAGE_KEYS.userId, authData.userId);
+    primaryStorage.setItem(AUTH_STORAGE_KEYS.userId, authData.userId);
   }
   if (authData.roles) {
-    localStorage.setItem(AUTH_STORAGE_KEYS.userRoles, JSON.stringify(authData.roles));
+    primaryStorage.setItem(AUTH_STORAGE_KEYS.userRoles, JSON.stringify(authData.roles));
   }
   const primaryRole = Array.isArray(authData.roles) && authData.roles.length > 0 
     ? authData.roles[0] 
@@ -48,15 +60,17 @@ function saveAuthSession(authData) {
     role: primaryRole,
     signedInAt: new Date().toISOString()
   };
-  localStorage.setItem(AUTH_STORAGE_KEYS.currentUser, JSON.stringify(user));
+  primaryStorage.setItem(AUTH_STORAGE_KEYS.currentUser, JSON.stringify(user));
   return user;
 }
 
 function logout() {
-  localStorage.removeItem(AUTH_STORAGE_KEYS.token);
-  localStorage.removeItem(AUTH_STORAGE_KEYS.currentUser);
-  localStorage.removeItem(AUTH_STORAGE_KEYS.userRoles);
-  localStorage.removeItem(AUTH_STORAGE_KEYS.userId);
+  try {
+    Object.values(AUTH_STORAGE_KEYS).forEach(k => {
+      localStorage.removeItem(k);
+      sessionStorage.removeItem(k);
+    });
+  } catch (e) { /* ignore */ }
   window.location.href = "login.html";
 }
 
@@ -70,7 +84,8 @@ function requireRole(allowedRoles) {
   }
 
   const userRoles = Array.isArray(user.roles) ? user.roles : (user.role ? [user.role] : []);
-  const isAdmin = userRoles.includes("Admin") || (localStorage.getItem("medicare_roles") || "").includes("Admin");
+  const storedRoles = (localStorage.getItem("medicare_roles") || "") + (sessionStorage.getItem("medicare_roles") || "");
+  const isAdmin = userRoles.includes("Admin") || storedRoles.includes("Admin");
   if (isAdmin) {
     return user; // Full Admin access across all portals
   }
@@ -117,8 +132,12 @@ async function apiFetch(endpoint, options = {}) {
     const response = await fetch(url, config);
 
     if (response.status === 401) {
-      localStorage.removeItem(AUTH_STORAGE_KEYS.token);
-      localStorage.removeItem(AUTH_STORAGE_KEYS.currentUser);
+      try {
+        Object.values(AUTH_STORAGE_KEYS).forEach(k => {
+          localStorage.removeItem(k);
+          sessionStorage.removeItem(k);
+        });
+      } catch (e) { /* ignore */ }
       if (!window.location.pathname.endsWith("login.html") && !window.location.pathname.endsWith("register.html")) {
         window.location.href = "login.html";
       }
